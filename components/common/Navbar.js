@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/context/auth/authContext';
 
-export default function Navbar(props) {
+export default function Navbar() {
     const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
@@ -53,17 +53,7 @@ export default function Navbar(props) {
                                         : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                                 }`}
                             >
-                                Home
-                            </Link>
-                            <Link
-                                href="/about"
-                                className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                                    isActive('/about') 
-                                        ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20' 
-                                        : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                }`}
-                            >
-                                About
+                                Books
                             </Link>
                         </div>
                     </div>
