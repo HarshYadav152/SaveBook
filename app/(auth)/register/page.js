@@ -1,9 +1,11 @@
 "use client"
+import { useAuth } from '@/context/auth/authContext';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function Signup() {
+    const { register } = useAuth();
     const [credentials, setCredentials] = useState({ 
         username: '', 
         password: '',
@@ -33,27 +35,21 @@ export default function Signup() {
         setIsLoading(true);
         
         try {
-            const response = await fetch(`/api/auth/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ 
-                    username: credentials.username, 
-                    password: credentials.password 
-                })
-            });
+            // Use the register method from AuthContext
+            const result = await register(
+                credentials.username, 
+                "", // Email (you may want to add this field to your form)
+                credentials.password
+            );
             
-            const data = await response.json();
-            
-            if (data.success) {
-                localStorage.setItem('token', data.authtoken);
+            if (result.success) {
                 toast.success("Account created successfully! 🎉");
                 router.push("/");
             } else {
-                toast.error(data.message || "Registration failed");
+                toast.error(result.message || "Registration failed");
             }
         } catch (error) {
+            console.error("Registration error:", error);
             toast.error("Something went wrong");
         } finally {
             setIsLoading(false);

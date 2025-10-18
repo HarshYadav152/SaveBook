@@ -1,9 +1,11 @@
 "use client"
+import { useAuth } from '@/context/auth/authContext';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 
 const LoginPage = () => {
+    const { login } = useAuth();
     const [credentials, setCredentials] = useState({ username: '', password: '' });
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
@@ -13,27 +15,17 @@ const LoginPage = () => {
         setIsLoading(true);
         
         try {
-            const response = await fetch(`/api/auth/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ 
-                    username: credentials.username, 
-                    password: credentials.password 
-                })
-            });
+            // Use the login method from AuthContext instead of direct fetch
+            const result = await login(credentials.username, credentials.password);
             
-            const data = await response.json();
-            
-            if (data.success) {
-                localStorage.setItem('token', data.authtoken);
+            if (result.success) {
                 toast.success("Welcome back! 🎉");
                 router.push("/");
             } else {
-                toast.error("Invalid credentials. Please try again.");
+                toast.error(result.message || "Invalid credentials. Please try again.");
             }
         } catch (error) {
+            console.error("Login error:", error);
             toast.error("Something went wrong. Please try again.");
         } finally {
             setIsLoading(false);
