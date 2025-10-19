@@ -33,7 +33,7 @@ export default function Addnote() {
 
     const isFormValid = note.title.length >= 5 && note.description.length >= 5 && note.tag.length >= 5;
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-18 p-2">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-8">

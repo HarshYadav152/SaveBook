@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db/mongodb';
 import Notes from '@/lib/models/Notes';
-import { verifyJwtToken, verifyToken } from '@/lib/utils/JWT';
+import { verifyJwtToken } from '@/lib/utils/JWT';
 
 export async function GET(request) {
   await dbConnect();
 
   try {
-    const userId = request.headers.get('user-id');
+    const token = request.cookies.get('authToken');
+    const {userId} = verifyJwtToken(token.value)
+    
     const notes = await Notes.find({ user: userId });
     return NextResponse.json(notes);
   } catch (error) {

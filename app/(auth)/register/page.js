@@ -52,13 +52,13 @@ const SignupForm = () => {
         try {
             // Use the register method from AuthContext
             const result = await register(
-                credentials.username, 
-                "", // Email (you may want to add this field to your form)
+                credentials.username,
                 credentials.password
             );
             
             if (result.success) {
                 toast.success("Account created successfully! 🎉");
+                router.push("/login")
                 // The useEffect will handle the redirect
             } else {
                 toast.error(result.message || "Registration failed");
@@ -234,17 +234,17 @@ export default function Signup() {
         );
     }
 
-    // Redirect if already authenticated
-    if (isAuthenticated) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-                    <p className="text-white">Redirecting...</p>
-                </div>
-            </div>
-        );
-    }
+    // // Redirect if already authenticated
+    // if (isAuthenticated) {
+    //     return (
+    //         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
+    //             <div className="text-center">
+    //                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+    //                 <p className="text-white">Redirecting...</p>
+    //             </div>
+    //         </div>
+    //     );
+    // }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">

@@ -1,31 +1,51 @@
 "use client"
 import noteContext from '@/context/noteContext';
 import { useRouter } from 'next/navigation';
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, Suspense } from 'react'
 import toast from 'react-hot-toast';
 import Addnote from './AddNote';
 import NoteItem from './NoteItem';
 import { useAuth } from '@/context/auth/authContext';
 
-export default function Notes() {
-    const {isAuthenticated} = useAuth();
+// Separate navigation handler component to use router with Suspense
+const NavigationHandler = ({ isAuthenticated }) => {
     const router = useRouter();
+    
+    useEffect(() => {
+        if (!isAuthenticated) {
+            console.log("is authenticated : ", isAuthenticated);
+            router.push("/login");
+        }
+    }, [isAuthenticated, router]);
+    
+    return null;
+};
+
+export default function Notes() {
+    const { isAuthenticated } = useAuth();
     const context = useContext(noteContext);
-    const { notes = [], getNotes, editNote } = context || {};
+    const { notes: contextNotes = [], getNotes, editNote } = context || {};
+    
+    // Ensure notes is always an array
+    const notes = Array.isArray(contextNotes) ? contextNotes : [];
     
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [note, setNote] = useState({ id: "", etitle: "", edescription: "", etag: "" });
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTag, setSelectedTag] = useState('all');
     
-    useEffect(()=>{
-        if(isAuthenticated){
-            console.log("is authenticated : ",isAuthenticated)
-            router.push("/")
-        }else{
-            router.push("/login")
+    useEffect(() => {
+        async function fetch() {   
+            try {
+                await getNotes();
+            } catch (error) {
+                console.error("Error fetching notes:", error);
+                toast.error("Failed to load notes");
+            }
         }
-    },[])
+        fetch();
+    }, [getNotes]);
+    
     // Enhanced tag options with colors
     const tagOptions = [
         { id: 1, value: "General", color: "bg-blue-500" },
@@ -74,11 +94,16 @@ export default function Notes() {
 
     return (
         <>
+            {/* Navigation handler with Suspense */}
+            <Suspense fallback={null}>
+                <NavigationHandler isAuthenticated={isAuthenticated} />
+            </Suspense>
+            
             <Addnote />
 
             {/* Edit Note Modal */}
             {isEditModalOpen && (
-                <div className="fixed inset-0 bg-opacity-60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+                <div className="fixed inset-0 bg-opacity-60 flex items-center justify-center p-4 z-50 backdrop-blur-sm p-2">
                     <div className="bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                         {/* Modal Header */}
                         <div className="flex items-center justify-between p-6 border-b border-gray-700">

@@ -81,7 +81,7 @@ const AuthProvider = ({ children }) => {
     };
 
     // Register function
-    const register = async (username, email, password) => {
+    const register = async (username, password) => {
         try {
             setLoading(true);
             const response = await fetch('/api/auth/register', {
@@ -89,7 +89,7 @@ const AuthProvider = ({ children }) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ username, email, password }),
+                body: JSON.stringify({ username,password }),
                 credentials: 'include'
             });
 
@@ -97,7 +97,11 @@ const AuthProvider = ({ children }) => {
             
             if (data.success) {
                 // Automatically log in after successful registration
-                return await login(username, password);
+                // return await login(username, password);
+                return {
+                    success:true,
+                    message:data.message
+                }
             } else {
                 return { 
                     success: false, 

@@ -13,8 +13,7 @@ const NoteState = (props) => {
       const response = await fetch(`/api/notes`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
-          'auth-token': localStorage.getItem('token')
+          'Content-Type': 'application/json'
         }
       });
       const parsedText = await response.json();
@@ -30,8 +29,7 @@ const NoteState = (props) => {
       const response = await fetch(`/api/notes`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'auth-token': localStorage.getItem('token')
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ title, description, tag })
       });
@@ -51,8 +49,7 @@ const NoteState = (props) => {
       const response = await fetch(`/api/notes/${id}`, {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
-          'auth-token': localStorage.getItem('token')
+          'Content-Type': 'application/json'
         }
       });
       await response.json();
@@ -72,8 +69,7 @@ const NoteState = (props) => {
       const response = await fetch(`/api/notes/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'auth-token': localStorage.getItem('token')
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ title, description, tag })
       });
