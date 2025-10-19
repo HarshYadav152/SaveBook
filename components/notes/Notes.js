@@ -5,18 +5,27 @@ import React, { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import Addnote from './AddNote';
 import NoteItem from './NoteItem';
+import { useAuth } from '@/context/auth/authContext';
 
 export default function Notes() {
+    const {isAuthenticated} = useAuth();
     const router = useRouter();
     const context = useContext(noteContext);
     const { notes = [], getNotes, editNote } = context || {};
     
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [note, setNote] = useState({ id: "", etitle: "", edescription: "", etag: "" });
-    const [hasFetched, setHasFetched] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTag, setSelectedTag] = useState('all');
     
+    useEffect(()=>{
+        if(isAuthenticated){
+            console.log("is authenticated : ",isAuthenticated)
+            router.push("/")
+        }else{
+            router.push("/login")
+        }
+    },[])
     // Enhanced tag options with colors
     const tagOptions = [
         { id: 1, value: "General", color: "bg-blue-500" },
@@ -28,16 +37,6 @@ export default function Notes() {
         { id: 7, value: "Work", color: "bg-indigo-500" },
         { id: 8, value: "Ideas", color: "bg-teal-500" }
     ];
-
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token && !hasFetched) {
-            getNotes();
-            setHasFetched(true);
-        } else if (!token) {
-            router.push("/login");
-        }
-    }, [getNotes, hasFetched, router]);
 
     // Filter notes based on search and tag
     const filteredNotes = notes.filter(note => {

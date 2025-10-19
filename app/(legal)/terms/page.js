@@ -1,8 +1,82 @@
 "use client"
-import React from 'react'
+import React, { Suspense } from 'react'
 import Link from 'next/link'
 
-export default function TermsOfService() {
+// Loading component for the Terms of Service page
+const TermsPageLoading = () => {
+    return (
+        <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto">
+                {/* Header loading skeleton */}
+                <div className="text-center mb-12">
+                    <div className="w-28 h-8 bg-gray-800 rounded-lg mx-auto mb-6 animate-pulse"></div>
+                    
+                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500/30 to-purple-600/30 rounded-2xl mx-auto mb-6 animate-pulse"></div>
+                    
+                    <div className="h-10 bg-gray-800 rounded-lg w-64 mx-auto mb-4 animate-pulse"></div>
+                    <div className="h-5 bg-gray-800 rounded-lg max-w-md mx-auto animate-pulse"></div>
+                    
+                    <div className="flex flex-wrap justify-center gap-6 mt-8">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="text-center">
+                                <div className="h-8 w-8 bg-gray-800 rounded-full mx-auto animate-pulse"></div>
+                                <div className="h-4 w-16 bg-gray-800 rounded mt-1 animate-pulse"></div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Quick Summary loading skeleton */}
+                <div className="bg-gray-800 rounded-2xl border border-gray-700 p-6 mb-8">
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="flex flex-col items-center">
+                                <div className="h-8 w-8 bg-gray-700 rounded-full mb-2 animate-pulse"></div>
+                                <div className="h-4 w-20 bg-gray-700 rounded animate-pulse"></div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Main Content loading skeleton */}
+                <div className="bg-gray-800 rounded-2xl border border-gray-700 p-8">
+                    <div className="space-y-8">
+                        {/* Section loading skeletons */}
+                        {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className="animate-pulse">
+                                <div className="flex items-start mb-6">
+                                    <div className="w-2 h-12 bg-gray-700 rounded mr-4 mt-1"></div>
+                                    <div>
+                                        <div className="h-8 bg-gray-700 rounded w-48 mb-2"></div>
+                                        <div className="h-4 bg-gray-700 rounded w-36"></div>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="h-4 bg-gray-700 rounded w-full"></div>
+                                    <div className="h-4 bg-gray-700 rounded w-5/6"></div>
+                                    <div className="h-4 bg-gray-700 rounded w-4/6"></div>
+                                </div>
+                                <div className="mt-6 grid md:grid-cols-2 gap-4">
+                                    <div className="h-32 bg-gray-700/50 rounded-xl border border-gray-600"></div>
+                                    <div className="h-32 bg-gray-700/50 rounded-xl border border-gray-600"></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Acceptance Section loading skeleton */}
+                <div className="bg-green-500/10 rounded-2xl border border-green-500/20 p-6 mt-8 animate-pulse">
+                    <div className="h-5 bg-gray-700 rounded-lg w-4/5 mx-auto mb-2"></div>
+                    <div className="h-4 bg-gray-700 rounded-lg w-3/5 mx-auto"></div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Terms of Service content component
+const TermsOfServiceContent = () => {
     return (
         <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
@@ -431,4 +505,13 @@ export default function TermsOfService() {
             </div>
         </div>
     )
+}
+
+// Main component with Suspense
+export default function TermsOfService() {
+    return (
+        <Suspense fallback={<TermsPageLoading />}>
+            <TermsOfServiceContent />
+        </Suspense>
+    );
 }

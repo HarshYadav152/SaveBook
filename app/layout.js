@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import NoteState from "@/context/NoteState";
@@ -6,15 +6,20 @@ import AuthProvider from "@/context/auth/AuthState";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import LoadingProvider from "@/components/providers/LoadingProvider";
+import { Suspense } from "react";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Replace Geist with Inter (similar clean sans-serif)
+const inter = Inter({
   subsets: ["latin"],
+  display: "swap",
+  variable: "--font-sans",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// Replace Geist Mono with Roboto Mono
+const robotoMono = Roboto_Mono({
   subsets: ["latin"],
+  display: "swap",
+  variable: "--font-mono",
 });
 
 export const metadata = {
@@ -26,19 +31,21 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${robotoMono.variable} antialiased`}
       >
         <AuthProvider>
-          <LoadingProvider>
-            <Toaster position="bottom-right" reverseOrder={false} />
-            <Navbar />
-            <NoteState>
-              <main className="pt-16">
-                {children}
-              </main>
-            </NoteState>
-            <Footer />
-          </LoadingProvider>
+          <Suspense fallback={<div />}>
+            <LoadingProvider>
+              <Toaster position="bottom-right" reverseOrder={false} />
+              <Navbar />
+              <NoteState>
+                {/* <main className="pt-10"> */}
+                  {children}
+                {/* </main> */}
+              </NoteState>
+              <Footer />
+            </LoadingProvider>
+          </Suspense>
         </AuthProvider>
       </body>
     </html>

@@ -1,7 +1,14 @@
 "use client"
-import React, { useState, useEffect, useCallback } from 'react';
-import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
 import Loader from '../common/Loader';
+
+// Simple fallback for the loader itself
+const LoaderFallback = () => (
+  <div className="flex items-center justify-center">
+    <div className="h-16 w-16 rounded-full border-4 border-gray-700 border-t-blue-500 animate-spin"></div>
+  </div>
+);
 
 export default function LoadingProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -40,20 +47,18 @@ export default function LoadingProvider({ children }) {
     setPrevSearchParams(currentSearchParams);
   }, [pathname, searchParams, prevPathname, prevSearchParams, startLoading, stopLoading]);
 
-  // Add event listeners for navigation events using a router event hook
+  // Add event listeners for navigation events
   useEffect(() => {
     // Immediately detect link clicks before navigation
-    const handleLinkClick = () => {
-      startLoading();
+    const handleLinkClick = (e) => {
+      const link = e.target.closest('a');
+      if (link && link.href.startsWith(window.location.origin)) {
+        startLoading();
+      }
     };
 
     // Add event listener for link clicks
-    document.addEventListener('click', (e) => {
-      const link = e.target.closest('a');
-      if (link && link.href.startsWith(window.location.origin)) {
-        handleLinkClick();
-      }
-    });
+    document.addEventListener('click', handleLinkClick);
     
     // Initial page load should not show loading
     if (!prevPathname) {
@@ -71,10 +76,18 @@ export default function LoadingProvider({ children }) {
     <>
       {isLoading && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900/70 backdrop-blur-sm z-50">
-          <Loader />
+          <Suspense fallback={<LoaderFallback />}>
+            <Loader />
+          </Suspense>
         </div>
       )}
-      {children}
+      <Suspense fallback={
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900/70 backdrop-blur-sm z-50">
+          <LoaderFallback />
+        </div>
+      }>
+        {children}
+      </Suspense>
     </>
   );
 }
