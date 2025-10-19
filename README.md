@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# SaveBook
+A modern web application for note-taking and knowledge management built with Next.js.
 
-## Getting Started
+## ✨ Features
 
-First, run the development server:
+- **Modern UI**: Clean and responsive design for optimal user experience
+- **Note Organization**: Create, edit, and organize your notes efficiently
+- **Fast Performance**: Built on Next.js for optimal loading and rendering
+- **Responsive Design**: Works seamlessly across desktop, tablet, and mobile devices
+
+## 📋 Prerequisites
+
+- Node.js 18.x or later
+- npm, yarn, pnpm, or bun
+
+## 🚀 Getting Started
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/HarshYadav152/SaveBook.git
+   cd SaveNook
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Create a .env.local file in the root directory based on `.env.local.example` and set up your environment variables.
+
+### Development
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### Building for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+### Running Production Build
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+notebook/
+├── .github/           # GitHub templates for issues and PRs
+├── .next/             # Next.js build output
+├── app/               # Application routes and pages
+├── components/        # Reusable React components
+├── context/           # React context for state management
+├── lib/               # Utility functions and shared code
+├── public/            # Static assets
+├── .env.local         # Environment variables (not in git)
+├── .gitignore         # Git ignore file
+├── CODE_OF_CONDUCT.md # Community guidelines
+├── CONTRIBUTING.md    # Contribution guidelines
+├── LICENSE            # Project license
+├── README.md          # Project documentation
+├── SECURITY.md        # Security policies
+└── package.json       # Project dependencies and scripts
+```
 
-## Deploy on Vercel
+## 🧪 Testing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+-- soon
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🤝 Contributing
+
+We welcome contributions! Please see our Contributing Guidelines for details on how to submit pull requests, report issues, and suggest enhancements.
+
+All contributors are expected to follow our Code of Conduct.
+
+## 🔒 Security
+
+If you discover a security vulnerability, please follow our Security Policy for responsible disclosure.
+
+## 📄 License
+
+This project is licensed under the MIT [License](LICENCE).
+
+## 🙏 Acknowledgments
+
+- [Next.js](https://nextjs.org/) - The React framework for production
+- [Geist Font](https://vercel.com/font) - Modern and minimal typeface
+
+## 📞 Support
+
+For questions and support, please open an issue or contact the maintainers.
+
+---
+
+Built with ❤️ using [Next.js](https://nextjs.org/)
