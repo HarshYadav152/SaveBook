@@ -20,7 +20,7 @@ A modern web application for note-taking and knowledge management built with Nex
 1. Clone the repository:
    ```bash
    git clone https://github.com/HarshYadav152/SaveBook.git
-   cd SaveNook
+   cd SaveBook
    ```
 
 2. Install dependencies:
