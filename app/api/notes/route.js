@@ -1,48 +1,59 @@
-import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/db/mongodb';
-import Notes from '@/lib/models/Notes';
-import { verifyJwtToken } from '@/lib/utils/JWT';
+import dbConnect from "@/lib/db/mongodb";
+import Notes from "@/lib/models/Notes";
+import User from "@/lib/models/User";
+import { getAuth } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
-export async function GET(request) {
-  await dbConnect();
+export async function GET(req) {
+    try {
+        await dbConnect();
+        const { userId } = getAuth(req);
 
-  try {
-    const token = request.cookies.get('authToken');
-    const {userId} = verifyJwtToken(token.value)
-    
-    const notes = await Notes.find({ user: userId });
-    return NextResponse.json(notes);
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Server error" },
-      { status: 500 }
-    );
-  }
+        if (!userId) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+        // console.log("clerk user id : ", userId)
+        const user = await User.find({ clerkId: userId })
+        // console.log("use details is : ",user[0])
+        // console.log("user id : ", user[0]._id)
+        const notes = await Notes.find({ user: user[0]._id});
+        return NextResponse.json(notes);
+
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json(
+            { error: "Server error" },
+            { status: 500 }
+        );
+    }
 }
 
-export async function POST(request) {
-  await dbConnect();
+export async function POST(req) {
+    try {
+        await dbConnect();
+        const { userId } = getAuth(req);
 
-  try {
+        if (!userId) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
 
-    const { title, description, tag } = await request.json();
-    const token = request.cookies.get('authToken');
+        const { title, description, tag } = await req.json();
 
-    const {userId} = verifyJwtToken(token.value)
-    const note = await Notes.create({
-      title,
-      description,
-      tag,
-      user: userId
-    });
+        const user = await User.find({ clerkId: userId })
 
-    return NextResponse.json(note, { status: 201 });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Server error" },
-      { status: 500 }
-    );
-  }
+        const note = await Notes.create({
+            title,
+            description,
+            tag,
+            user: user[0]._id
+        });
+
+        return NextResponse.json(note, { status: 201 });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json(
+            { error: "Server error" },
+            { status: 500 }
+        );
+    }
 }
