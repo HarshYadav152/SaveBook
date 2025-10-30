@@ -1,35 +1,12 @@
+"use client"
 import Link from 'next/link';
-import { ArrowRight, BookOpen, Zap, Smartphone, Shield } from 'lucide-react';
+import { ArrowRight, BookOpen, Zap, Smartphone, Shield, FileText } from 'lucide-react';
+import { SignOutButton, SignUpButton, useUser } from '@clerk/nextjs';
 
 export default function HomePage() {
+  const { isSignedIn } = useUser();
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
-      {/* Navigation */}
-      <nav className="border-b border-gray-800 bg-gray-900/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <BookOpen className="h-8 w-8 text-blue-500" />
-              <span className="text-2xl font-bold text-white">SaveBook</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link 
-                href="/login" 
-                className="text-gray-300 hover:text-white font-medium transition-colors"
-              >
-                Sign In
-              </Link>
-              <Link 
-                href="/register" 
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-              >
-                Get Started
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-
+    <div className="min-h-screen">
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center">
@@ -38,11 +15,11 @@ export default function HomePage() {
             <span className="text-blue-500 block">Notebook</span>
           </h1>
           <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-            SaveBook is a modern, intuitive note-taking application that helps you capture, 
+            SaveBook is a modern, intuitive note-taking application that helps you capture,
             organize, and access your thoughts seamlessly across all your devices.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link 
+            <Link
               href="/book"
               className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-all duration-200 flex items-center gap-2"
             >
@@ -94,13 +71,26 @@ export default function HomePage() {
           <h2 className="text-4xl font-bold mb-6">
             Ready to Organize Your Thoughts?
           </h2>
-          <Link 
-            href="/register"
-            className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-200 inline-flex items-center gap-2"
-          >
-            Create Your Account
-            <ArrowRight className="h-5 w-5" />
-          </Link>
+          {!isSignedIn ? <SignOutButton>
+            <SignUpButton mode="modal" afterSignUpUrl="/book">
+              <button
+                className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-200 inline-flex items-center gap-2"
+              >
+                Create Your Account
+                <ArrowRight className="h-5 w-5" />
+              </button>
+            </SignUpButton>
+          </SignOutButton> :
+            <div className='flex justify-center items-center'>
+              <Link
+                href="/book"
+                className="w-auto flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+              >
+                <FileText className="h-5 w-5" />
+                Go to Notes
+              </Link>
+            </div>
+          }
         </div>
       </section>
     </div>
