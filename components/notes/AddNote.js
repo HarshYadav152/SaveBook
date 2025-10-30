@@ -3,7 +3,7 @@ import noteContext from '@/context/noteContext';
 import React, { useContext, useState } from 'react'
 import toast from 'react-hot-toast';
 
-export default function Addnote() {
+export default function Addnote({onClose}) {
     const context = useContext(noteContext);
     const { addNote } = context;
 
@@ -20,6 +20,7 @@ export default function Addnote() {
             await addNote(note.title, note.description, note.tag);
             toast.success("Note has been saved");
             setNote({ title: '', description: '', tag: '' });
+            onClose();
         } catch (error) {
             toast.error("Failed to save note");
         } finally {
@@ -33,7 +34,7 @@ export default function Addnote() {
 
     const isFormValid = note.title.length >= 5 && note.description.length >= 5 && note.tag.length >= 5;
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-18 p-2">
+        <div className="overflow-y-auto hide-scrollbar">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-8">

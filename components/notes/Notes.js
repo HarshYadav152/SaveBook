@@ -1,12 +1,11 @@
 "use client"
 import noteContext from '@/context/noteContext';
 import { useRouter } from 'next/navigation';
-import React, { useContext, useEffect, useState, Suspense } from 'react'
+import React, { useContext, useEffect, useState, Suspense, useCallback } from 'react'
 import toast from 'react-hot-toast';
 import Addnote from './AddNote';
 import NoteItem from './NoteItem';
 import { RedirectToSignIn, SignedIn, SignedOut, useAuth } from '@clerk/nextjs';
-
 
 export default function Notes() {
     const { userId } = useAuth();
@@ -20,21 +19,24 @@ export default function Notes() {
     const [note, setNote] = useState({ id: "", etitle: "", edescription: "", etag: "" });
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTag, setSelectedTag] = useState('all');
-    const [editLoading,setEditLoading] = useState(false);
+    const [editLoading, setEditLoading] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-    useEffect(() => {
-        async function fetch() {
-            if (userId) {
-                try {
-                    await getNotes();
-                } catch (error) {
-                    console.error("Error fetching notes:", error);
-                    toast.error("Failed to load notes");
-                }
+    // Memoize fetch function to prevent infinite re-renders
+    const fetchNotes = useCallback(async () => {
+        if (userId && getNotes) {
+            try {
+                await getNotes();
+            } catch (error) {
+                console.error("Error fetching notes:", error);
+                toast.error("Failed to load notes");
             }
         }
-        fetch();
     }, [getNotes, userId]);
+
+    useEffect(() => {
+        fetchNotes();
+    }, [fetchNotes]);
 
     // Enhanced tag options with colors
     const tagOptions = [
@@ -67,15 +69,21 @@ export default function Notes() {
     }
 
     const handleClick = async (e) => {
+        if (!editNote) {
+            toast.error("Edit function not available");
+            return;
+        }
+
         setEditLoading(true);
         try {
             await editNote(note.id, note.etitle, note.edescription, note.etag);
             setIsEditModalOpen(false);
             toast.success("Note updated successfully! 🎉");
         } catch (error) {
+            console.error("Error updating note:", error);
             toast.error("Failed to update note");
-        }finally{
-            setEditLoading(false)
+        } finally {
+            setEditLoading(false);
         }
     }
 
@@ -83,19 +91,55 @@ export default function Notes() {
         setNote({ ...note, [e.target.name]: e.target.value });
     }
 
-    const isFormValid = note.etitle?.length >= 5 && note.edescription?.length >= 5 && note.etag?.length >= 5;
+    const isFormValid = note.etitle?.length >= 5 && note.edescription?.length >= 5 && note.etag?.length >= 3;
 
     return (
         <>
-            {/* Navigation handler with Suspense */}
             <SignedIn>
+                {/* Add Note Modal */}
+                <div className={`fixed inset-0 z-50 ${isAddModalOpen ? 'visible' : 'invisible'}`}>
+                    {/* Backdrop */}
+                    <div
+                        className={`absolute inset-0 bg-black/70 backdrop-blur-sm transition-all duration-300 ${isAddModalOpen ? 'opacity-100' : 'opacity-0'
+                            }`}
+                        onClick={() => setIsAddModalOpen(false)}
+                    />
 
+                    {/* Modal */}
+                    <div className={`absolute left-1/2 top-1/2 w-full max-w-2xl transform transition-all duration-300 ${isAddModalOpen
+                        ? 'translate-x-[-50%] translate-y-[-50%] scale-100 opacity-100'
+                        : 'translate-x-[-50%] translate-y-[-40%] scale-95 opacity-0'
+                        }`}>
+                        <div className="bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl w-full max-h-[90vh] overflow-hidden">
+                            {/* Modal Header */}
+                            <div className="flex items-center justify-between p-6 border-b border-gray-700">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-white">
+                                        Add New Note
+                                    </h2>
+                                    <p className="text-gray-400 text-sm mt-1">Create a new note</p>
+                                </div>
+                                <button
+                                    onClick={() => setIsAddModalOpen(false)}
+                                    className="text-gray-400 hover:text-white transition-colors duration-200 p-2 hover:bg-gray-800 rounded-lg"
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
 
-                <Addnote />
+                            {/* Modal Body */}
+                            <div className="p-6 overflow-y-auto max-h-[calc(90vh-130px)] hide-scrollbar">
+                                <Addnote onClose={() => setIsAddModalOpen(false)} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Edit Note Modal */}
                 {isEditModalOpen && (
-                    <div className="fixed inset-0 bg-opacity-60 flex items-center justify-center p-4 z-50 backdrop-blur-sm p-2">
+                    <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
                         <div className="bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                             {/* Modal Header */}
                             <div className="flex items-center justify-between p-6 border-b border-gray-700">
@@ -133,8 +177,8 @@ export default function Notes() {
                                         minLength={5}
                                         required
                                     />
-                                    <p className="text-xs text-gray-400 mt-2">
-                                        {note.etitle.length}/5 characters
+                                    <p className={`text-xs mt-2 ${note.etitle.length >= 5 ? 'text-green-400' : 'text-gray-400'}`}>
+                                        {note.etitle.length}/5 characters {note.etitle.length >= 5 ? '✓' : ''}
                                     </p>
                                 </div>
 
@@ -146,7 +190,7 @@ export default function Notes() {
                                     <textarea
                                         name="edescription"
                                         id="edescription"
-                                        rows="4"
+                                        rows={4}
                                         value={note.edescription}
                                         onChange={onchange}
                                         className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-800 text-white placeholder-gray-500 resize-none transition-all duration-200 outline-none"
@@ -154,8 +198,8 @@ export default function Notes() {
                                         minLength={5}
                                         required
                                     />
-                                    <p className="text-xs text-gray-400 mt-2">
-                                        {note.edescription.length}/5 characters
+                                    <p className={`text-xs mt-2 ${note.edescription.length >= 5 ? 'text-green-400' : 'text-gray-400'}`}>
+                                        {note.edescription.length}/5 characters {note.edescription.length >= 5 ? '✓' : ''}
                                     </p>
                                 </div>
 
@@ -179,8 +223,8 @@ export default function Notes() {
                                             </option>
                                         ))}
                                     </select>
-                                    <p className="text-xs text-gray-400 mt-2">
-                                        Choose a category for your note
+                                    <p className={`text-xs mt-2 ${note.etag.length >= 3 ? 'text-green-400' : 'text-gray-400'}`}>
+                                        Choose a category for your note {note.etag.length >= 3 ? '✓' : ''}
                                     </p>
                                 </div>
                             </div>
@@ -194,14 +238,26 @@ export default function Notes() {
                                     Cancel
                                 </button>
                                 <button
-                                    disabled={!isFormValid}
+                                    disabled={!isFormValid || editLoading}
                                     onClick={handleClick}
                                     className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 font-medium flex items-center justify-center w-full sm:w-auto"
                                 >
-                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    {editLoading ? "Updating note":"Update note"}
+                                    {editLoading ? (
+                                        <>
+                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Updating...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Update Note
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </div>
@@ -209,7 +265,7 @@ export default function Notes() {
                 )}
 
                 {/* Notes Section */}
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-grey-900">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Header */}
                     <div className="text-center mb-8">
                         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4">
@@ -240,7 +296,7 @@ export default function Notes() {
                             </div>
 
                             {/* Tag Filter */}
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2 justify-center">
                                 <button
                                     onClick={() => setSelectedTag('all')}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${selectedTag === 'all'
@@ -265,7 +321,7 @@ export default function Notes() {
                             </div>
 
                             {/* Stats */}
-                            <div className="text-sm text-gray-400">
+                            <div className="text-sm text-gray-400 whitespace-nowrap">
                                 {filteredNotes.length} {filteredNotes.length === 1 ? 'note' : 'notes'}
                             </div>
                         </div>
@@ -327,6 +383,19 @@ export default function Notes() {
                             </div>
                         </div>
                     )}
+
+                    {/* Add Note Button - Moved to top */}
+                    <div className="flex justify-center mb-8">
+                        <button
+                            onClick={() => setIsAddModalOpen(true)}
+                            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-all duration-200 font-medium flex items-center justify-center gap-2 shadow-lg"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add New Note
+                        </button>
+                    </div>
                 </div>
             </SignedIn>
             <SignedOut>
