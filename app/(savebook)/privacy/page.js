@@ -5,7 +5,7 @@ import Link from 'next/link'
 // Loading component specifically styled for privacy page
 const PrivacyPageLoading = () => {
   return (
-    <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header loading state */}
         <div className="text-center mb-12">
@@ -52,7 +52,7 @@ const PrivacyPageLoading = () => {
 // Main content component
 const PrivacyPolicyContent = () => {
   return (
-    <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">

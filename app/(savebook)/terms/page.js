@@ -5,7 +5,7 @@ import Link from 'next/link'
 // Loading component for the Terms of Service page
 const TermsPageLoading = () => {
     return (
-        <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
                 {/* Header loading skeleton */}
                 <div className="text-center mb-12">
@@ -78,7 +78,7 @@ const TermsPageLoading = () => {
 // Terms of Service content component
 const TermsOfServiceContent = () => {
     return (
-        <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-12">
