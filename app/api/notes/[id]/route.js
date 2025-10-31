@@ -24,8 +24,12 @@ export async function GET(req, { params }) {
             );
         }
 
-        const note = await Notes.findOne({ _id: id, clerkId: userId });
+        const user = await User.findOne({ clerkId: userId });
+        if (!user) {
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
 
+        const note = await Notes.findOne({ _id: id, user: user._id });
         if (!note) {
             return NextResponse.json(
                 { error: "Note not found" },
