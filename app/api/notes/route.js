@@ -12,10 +12,10 @@ export async function GET(req) {
         if (!userId) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
-        // console.log("clerk user id : ", userId)
+        
         const user = await User.find({ clerkId: userId })
-        // console.log("use details is : ",user[0])
-        // console.log("user id : ", user[0]._id)
+        
+        
         const notes = await Notes.find({ user: user[0]._id});
         return NextResponse.json(notes);
 
