@@ -20,7 +20,7 @@ export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
     const pathname = usePathname();
-    const { isLoaded, userId } = useAuth();
+    const { userId } = useAuth();
 
     useEffect(() => {
         setIsMounted(true);
