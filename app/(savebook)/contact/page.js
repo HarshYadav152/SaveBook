@@ -108,7 +108,7 @@ export default function ContactPage() {
                 Get instant help from our support team during business hours.
               </p>
               <button className="bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors">
-                Start Chat (comming soon)
+                Start Chat (coming soon)
               </button>
             </div>
 
