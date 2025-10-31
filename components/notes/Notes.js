@@ -1,7 +1,7 @@
 "use client"
 import noteContext from '@/context/noteContext';
 import { useRouter } from 'next/navigation';
-import React, { useContext, useEffect, useState, Suspense, useCallback } from 'react'
+import React, { useContext, useEffect, useState, useCallback } from 'react'
 import toast from 'react-hot-toast';
 import Addnote from './AddNote';
 import NoteItem from './NoteItem';
