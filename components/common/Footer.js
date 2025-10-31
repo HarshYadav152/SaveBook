@@ -28,7 +28,7 @@ export default function Footer() {
         },
         {
             name: 'Portfolio',
-            href: 'https://HarshYadav152.me.com',
+            href: 'https://HarshYadav152.me',
             icon: Globe,
             description: 'See our work'
         },
