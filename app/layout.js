@@ -2,11 +2,13 @@ import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import NoteState from "@/context/NoteState";
-import AuthProvider from "@/context/auth/AuthState";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import LoadingProvider from "@/components/providers/LoadingProvider";
 import { Suspense } from "react";
+import {
+  ClerkProvider
+} from '@clerk/nextjs'
 
 // Replace Geist with Inter (similar clean sans-serif)
 const inter = Inter({
@@ -29,25 +31,26 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body
-        className={`${inter.variable} ${robotoMono.variable} antialiased`}
-      >
-        <AuthProvider>
+    <ClerkProvider>
+
+      <html lang="en">
+        <body
+          className={`${inter.variable} ${robotoMono.variable} antialiased`}
+        >
           <Suspense fallback={<div />}>
             <LoadingProvider>
               <Toaster position="bottom-right" reverseOrder={false} />
               <Navbar />
               <NoteState>
-                {/* <main className="pt-10"> */}
+                <main className="pt-10">
                   {children}
-                {/* </main> */}
+                </main>
               </NoteState>
               <Footer />
             </LoadingProvider>
           </Suspense>
-        </AuthProvider>
-      </body>
-    </html>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
