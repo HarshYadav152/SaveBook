@@ -20,7 +20,7 @@ A modern web application for note-taking and knowledge management built with Nex
 1. Clone the repository:
    ```bash
    git clone https://github.com/HarshYadav152/SaveBook.git
-   cd SaveBook
+   cd SaveBook/savebook
    ```
 
 2. Install dependencies:
@@ -58,19 +58,20 @@ npm start
 notebook/
 ├── .github/           # GitHub templates for issues and PRs
 ├── .next/             # Next.js build output
-├── app/               # Application routes and pages
-├── components/        # Reusable React components
-├── context/           # React context for state management
-├── lib/               # Utility functions and shared code
-├── public/            # Static assets
-├── .env.local         # Environment variables (not in git)
-├── .gitignore         # Git ignore file
+  savebook
+   ├── app/               # Application routes and pages
+   ├── components/        # Reusable React components
+   ├── context/           # React context for state management
+   ├── lib/               # Utility functions and shared code
+   ├── public/            # Static assets
+   ├── .env.local         # Environment variables (not in git)
+   ├── .gitignore         # Git ignore file
+   └── package.json       # Project dependencies and scripts
 ├── CODE_OF_CONDUCT.md # Community guidelines
 ├── CONTRIBUTING.md    # Contribution guidelines
 ├── LICENSE            # Project license
 ├── README.md          # Project documentation
 ├── SECURITY.md        # Security policies
-└── package.json       # Project dependencies and scripts
 ```
 
 ## 🧪 Testing
