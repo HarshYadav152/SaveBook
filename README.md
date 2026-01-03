@@ -100,6 +100,10 @@ This project is licensed under the MIT [License](LICENCE).
 ## 📞 Support
 
 For questions and support, please open an issue or contact the maintainers.
+---
+Project Mentor (Lead Maintainer & Core Developer) : [Harsh Yadav](https://github.com/harshyadav152) - SaveBook
+
+Project Admin (ECWoC26) : [Vinay Kumar](https://github.com/vinayboss9669) - SaveBook
 
 ---
 
