@@ -29,7 +29,12 @@ export async function GET(request) {
         return NextResponse.json({ 
             success: true, 
             user: {
-                username:user.username
+                username: user.username,
+                profileImage: user.profileImage,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                bio: user.bio,
+                location: user.location
             }
         }, { status: 200 });
 

@@ -17,6 +17,27 @@ const UserSchema = new Schema({
         type: Date,
         default: Date.now
     },
+    profileImage: {
+        type: String,
+        default: ''
+    },
+    firstName: {
+        type: String,
+        default: ''
+    },
+    lastName: {
+        type: String,
+        default: ''
+    },
+    bio: {
+        type: String,
+        default: ''
+    },
+    location: {
+        type: String,
+        default: ''
+    },
+
 });
 
 // Password hashing middleware

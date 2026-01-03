@@ -31,7 +31,7 @@ export default function Addnote() {
         setNote({ ...note, [e.target.name]: e.target.value });
     }
 
-    const isFormValid = note.title.length >= 5 && note.description.length >= 5 && note.tag.length >= 5;
+    const isFormValid = note.title.length >= 5 && note.description.length >= 5 && note.tag.length >= 2;
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-18 p-2">
             <div className="max-w-4xl mx-auto">
@@ -107,7 +107,7 @@ export default function Addnote() {
                                 onChange={onchange}
                                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-200 outline-none"
                                 placeholder="Select or type a tag"
-                                minLength={5}
+                                minLength={2}
                                 required
                             />
                             <datalist id="datalistOptions" className="bg-white dark:bg-gray-700">
@@ -121,7 +121,7 @@ export default function Addnote() {
                                 <option value="Ideas" className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
                             </datalist>
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                Choose from suggestions or type your own (min. 5 chars)
+                                Choose from suggestions or type your own (min. 2 chars)
                             </p>
                         </div>
 
