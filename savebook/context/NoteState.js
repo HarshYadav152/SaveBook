@@ -32,7 +32,7 @@ const NoteState = (props) => {
     }
     
     if (!contentType?.includes('application/json')) {
-      throw new Error(`Expected JSON but got ${contentType}`);
+      throw new Error(`Expected JSON but gots ${contentType}`);
     }
     
     return response.json();
