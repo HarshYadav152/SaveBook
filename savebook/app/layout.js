@@ -8,14 +8,13 @@ import Footer from "@/components/common/Footer";
 import LoadingProvider from "@/components/providers/LoadingProvider";
 import { Suspense } from "react";
 
-// Replace Geist with Inter (similar clean sans-serif)
+// Font configuration should stay in layout.js
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-sans",
 });
 
-// Replace Geist Mono with Roboto Mono
 const robotoMono = Roboto_Mono({
   subsets: ["latin"],
   display: "swap",
@@ -27,27 +26,56 @@ export const metadata = {
   description: "Save Notebook on the cloud",
 };
 
+// ClientBody component should be defined here
+function ClientBody({ children, className }) {
+  return (
+    <body className={className} suppressHydrationWarning={true}>
+      {children}
+    </body>
+  );
+}
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body
-        className={`${inter.variable} ${robotoMono.variable} antialiased`}
-      >
+    <html lang="en" className={`${inter.variable} ${robotoMono.variable}`}>
+      <ClientBody className="antialiased">
         <AuthProvider>
           <Suspense fallback={<div />}>
             <LoadingProvider>
-              <Toaster position="bottom-right" reverseOrder={false} />
+              {/* Enhanced Toaster configuration */}
+              <Toaster 
+                position="top-right"
+                reverseOrder={false}
+                toastOptions={{
+                  duration: 3000,
+                  style: {
+                    background: '#1f2937',
+                    color: '#fff',
+                    border: '1px solid #374151',
+                  },
+                  success: {
+                    style: {
+                      background: '#10b981',
+                      color: '#fff',
+                    },
+                  },
+                  error: {
+                    style: {
+                      background: '#ef4444',
+                      color: '#fff',
+                    },
+                  },
+                }}
+              />
               <Navbar />
               <NoteState>
-                {/* <main className="pt-10"> */}
-                  {children}
-                {/* </main> */}
+                {children}
               </NoteState>
               <Footer />
             </LoadingProvider>
           </Suspense>
         </AuthProvider>
-      </body>
+      </ClientBody>
     </html>
   );
 }

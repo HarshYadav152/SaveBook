@@ -1,12 +1,43 @@
 "use client"
 import React, { useCallback, useState } from 'react'
 import noteContext from './noteContext'
+import toast from 'react-hot-toast';
 
 const NoteState = (props) => {
   const notesInitial = [];
   const [notes, setNotes] = useState(notesInitial)
 
-  //Fetch all notes
+  // Helper function to handle fetch responses
+  const handleResponse = async (response) => {
+    const contentType = response.headers.get('content-type');
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorMessage = `HTTP ${response.status}`;
+      
+      try {
+        // Try to parse as JSON first
+        const errorJson = JSON.parse(errorText);
+        errorMessage = errorJson.message || errorJson.error || errorMessage;
+      } catch {
+        // If not JSON, check if it's HTML
+        if (contentType?.includes('text/html')) {
+          errorMessage = `Server returned HTML instead of JSON (${response.status})`;
+        } else {
+          errorMessage = errorText || errorMessage;
+        }
+      }
+      
+      throw new Error(errorMessage);
+    }
+    
+    if (!contentType?.includes('application/json')) {
+      throw new Error(`Expected JSON but got ${contentType}`);
+    }
+    
+    return response.json();
+  };
+
   // Fetch all notes with useCallback
   const getNotes = useCallback(async () => {
     try {
@@ -16,14 +47,15 @@ const NoteState = (props) => {
           'Content-Type': 'application/json'
         }
       });
-      const parsedText = await response.json();
-      setNotes(parsedText)
+      const parsedText = await handleResponse(response);
+      setNotes(parsedText);
     } catch (error) {
       console.error('Error fetching notes:', error);
+      toast.error(`Failed to load notes: ${error.message}`);
     }
   }, []);
 
-  // Add note
+  // Add note with toast
   const addNote = useCallback(async (title, description, tag) => {
     try {
       const response = await fetch(`/api/notes`, {
@@ -33,17 +65,21 @@ const NoteState = (props) => {
         },
         body: JSON.stringify({ title, description, tag })
       });
-      const note = await response.json();
-      // Optimistic update - add to existing notes instead of refetching
+      
+      const note = await handleResponse(response);
+      // Optimistic update
       setNotes(prevNotes => [note, ...prevNotes]);
+      toast.success('Note saved successfully! 🎉');
+      return note;
     } catch (error) {
       console.error('Error adding note:', error);
-      // If error, refetch to ensure consistency
-      getNotes();
+      toast.error(`Failed to save note: ${error.message}`);
+      getNotes(); // Refetch on error
+      throw error;
     }
   }, [getNotes]);
 
-  // delete note
+  // Delete note with toast
   const deleteNote = useCallback(async (id) => {
     try {
       const response = await fetch(`/api/notes/${id}`, {
@@ -52,18 +88,22 @@ const NoteState = (props) => {
           'Content-Type': 'application/json'
         }
       });
-      await response.json();
+      
+      await handleResponse(response);
 
       // Optimistic update
       const newNotes = notes.filter((note) => note._id !== id);
       setNotes(newNotes);
+      toast.success('Note deleted successfully! 🗑️');
     } catch (error) {
       console.error('Error deleting note:', error);
+      toast.error(`Failed to delete note: ${error.message}`);
       getNotes(); // Refetch on error
+      throw error;
     }
   }, [notes, getNotes]);
 
-  // Edit note 
+  // Edit note with toast
   const editNote = useCallback(async (id, title, description, tag) => {
     try {
       const response = await fetch(`/api/notes/${id}`, {
@@ -73,7 +113,8 @@ const NoteState = (props) => {
         },
         body: JSON.stringify({ title, description, tag })
       });
-      await response.json();
+      
+      await handleResponse(response);
 
       // Optimistic update
       let newNotes = JSON.parse(JSON.stringify(notes));
@@ -83,13 +124,17 @@ const NoteState = (props) => {
           newNotes[index].title = title;
           newNotes[index].description = description;
           newNotes[index].tag = tag;
+          newNotes[index].updatedAt = new Date().toISOString();
           break;
         }
       }
       setNotes(newNotes);
+      toast.success('Note updated successfully! ✏️');
     } catch (error) {
       console.error('Error updating note:', error);
+      toast.error(`Failed to update note: ${error.message}`);
       getNotes(); // Refetch on error
+      throw error;
     }
   }, [notes, getNotes]);
 
