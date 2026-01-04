@@ -36,7 +36,31 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <Suspense fallback={<div />}>
             <LoadingProvider>
-              <Toaster position="bottom-right" reverseOrder={false} />
+              {/* Enhanced Toaster configurations */}
+              <Toaster 
+                position="top-right"
+                reverseOrder={false}
+                toastOptions={{
+                  duration: 3000,
+                  style: {
+                    background: '#1f2937',
+                    color: '#fff',
+                    border: '1px solid #374151',
+                  },
+                  success: {
+                    style: {
+                      background: '#10b981',
+                      color: '#fff',
+                    },
+                  },
+                  error: {
+                    style: {
+                      background: '#ef4444',
+                      color: '#fff',
+                    },
+                  },
+                }}
+              />
               <Navbar />
               <NoteState>
                 {/* <main className="pt-10"> */}

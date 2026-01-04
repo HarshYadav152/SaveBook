@@ -7,13 +7,12 @@ export default function ProfilePage() {
   const { user, loading, checkUserAuthentication } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
-    profileImage: '',
     firstName: '',
     lastName: '',
     bio: '',
     location: ''
   });
-  const [imagePreview, setImagePreview] = useState('');
+  // imagePreview state removed as image upload feature is removed
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -22,13 +21,11 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user) {
       setFormData({
-        profileImage: user.profileImage || '',
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         bio: user.bio || '',
         location: user.location || ''
       });
-      setImagePreview(user.profileImage || '');
       setIsDataLoaded(true);
     }
   }, [user]);
@@ -41,57 +38,7 @@ export default function ProfilePage() {
     }));
   };
 
-  const handleImageChange = async (e) => {
-    const file = e.target.files[0];
-      
-    if (file) {
-      // Validate file type
-      if (!file.type.match('image.*')) {
-        setError('Please select an image file');
-        return;
-      }
-        
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setError('File size exceeds 5MB limit');
-        return;
-      }
-        
-      // Show loading state
-      setMessage('Uploading image...');
-        
-      const formData = new FormData();
-      formData.append('image', file);
-        
-      try {
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-          credentials: 'include'
-        });
-          
-        const result = await response.json();
-          
-        if (result.success) {
-          setImagePreview(result.imageUrl);
-          setFormData(prev => ({
-            ...prev,
-            profileImage: result.imageUrl
-          }));
-          setMessage('Image uploaded successfully!');
-          setError(''); // Clear any previous error
-            
-          // Clear message after 2 seconds
-          setTimeout(() => setMessage(''), 2000);
-        } else {
-          setError(result.message || 'Failed to upload image');
-        }
-      } catch (err) {
-        setError('An error occurred while uploading the image');
-        console.error('Image upload error:', err);
-      }
-    }
-  };
+  // handleImageChange function removed as image upload feature is removed
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -105,7 +52,6 @@ export default function ProfilePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          profileImage: formData.profileImage,
           firstName: formData.firstName,
           lastName: formData.lastName,
           bio: formData.bio,
@@ -121,15 +67,11 @@ export default function ProfilePage() {
         
         // Update form data to reflect the changes immediately
         setFormData({
-          profileImage: data.user.profileImage,
           firstName: data.user.firstName,
           lastName: data.user.lastName,
           bio: data.user.bio,
           location: data.user.location
         });
-        
-        // Update image preview
-        setImagePreview(data.user.profileImage);
         
         // Refresh user data from the server to ensure we have the latest data in context
         if (checkUserAuthentication) {
@@ -184,13 +126,11 @@ export default function ProfilePage() {
     // Reset form to current user data
     if (user) {
       setFormData({
-        profileImage: user.profileImage || '',
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         bio: user.bio || '',
         location: user.location || ''
       });
-      setImagePreview(user.profileImage || '');
     }
   };
   
@@ -232,20 +172,10 @@ export default function ProfilePage() {
                   </div>
                   
                   <div className="flex flex-col items-center mb-6">
-                    <div className="w-24 h-24 rounded-full bg-gray-200 border-4 border-white dark:border-gray-600 shadow-lg overflow-hidden mb-4">
-                      {user?.profileImage ? (
-                        <img 
-                          src={user.profileImage} 
-                          alt="Profile" 
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500">
-                          <span className="text-3xl">
-                            {user?.username?.charAt(0)?.toUpperCase() || 'U'}
-                          </span>
-                        </div>
-                      )}
+                    <div className="w-24 h-24 rounded-full bg-gray-200 border-4 border-white dark:border-gray-600 shadow-lg overflow-hidden mb-4 flex items-center justify-center">
+                      <span className="text-3xl text-gray-500">
+                        {user?.username?.charAt(0)?.toUpperCase() || 'U'}
+                      </span>
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 dark:text-white">{user?.username || 'N/A'}</h3>
                   </div>
@@ -277,37 +207,7 @@ export default function ProfilePage() {
               </div>
             ) : isDataLoaded ? (
               <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="flex flex-col items-center mb-8">
-                <div className="relative">
-                  <div className="w-32 h-32 rounded-full bg-gray-200 border-4 border-white dark:border-gray-700 shadow-lg overflow-hidden">
-                    {imagePreview ? (
-                      <img 
-                        src={imagePreview} 
-                        alt="Profile Preview" 
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500">
-                        <span className="text-4xl">
-                          {user?.username?.charAt(0)?.toUpperCase() || 'U'}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <label className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 transition-colors shadow-lg">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <input 
-                      type="file" 
-                      className="hidden" 
-                      accept="image/*"
-                      onChange={handleImageChange}
-                    />
-                  </label>
-                </div>
-              </div>
+
 
               <div className="space-y-4">
                 <div>
