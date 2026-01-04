@@ -6,7 +6,37 @@ const NoteState = (props) => {
   const notesInitial = [];
   const [notes, setNotes] = useState(notesInitial)
 
-  //Fetch all notes
+  // Helper function to handle fetch responses
+  const handleResponse = async (response) => {
+    const contentType = response.headers.get('content-type');
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorMessage = `HTTP ${response.status}`;
+      
+      try {
+        // Try to parse as JSON first
+        const errorJson = JSON.parse(errorText);
+        errorMessage = errorJson.message || errorJson.error || errorMessage;
+      } catch {
+        // If not JSON, check if it's HTML
+        if (contentType?.includes('text/html')) {
+          errorMessage = `Server returned HTML instead of JSON (${response.status})`;
+        } else {
+          errorMessage = errorText || errorMessage;
+        }
+      }
+      
+      throw new Error(errorMessage);
+    }
+    
+    if (!contentType?.includes('application/json')) {
+      throw new Error(`Expected JSON but gots ${contentType}`);
+    }
+    
+    return response.json();
+  };
+
   // Fetch all notes with useCallback
   const getNotes = useCallback(async () => {
     try {
@@ -89,7 +119,9 @@ const NoteState = (props) => {
       setNotes(newNotes);
     } catch (error) {
       console.error('Error updating note:', error);
-      getNotes(); // Refetch on error
+      toast.error(`Failed to update note: ${error.message}`);
+      getNotes();
+      throw error;
     }
   }, [notes, getNotes]);
 
