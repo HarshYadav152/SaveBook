@@ -40,7 +40,7 @@ export default function Notes() {
                 await getNotes();
             } catch (error) {
                 console.error("Error fetching notes:", error);
-                toast.error("Failed to load notes");
+                // Error toast is now handled in the context getNotes function
             }
         }
         fetch();
@@ -80,9 +80,10 @@ export default function Notes() {
         try {
             await editNote(note.id, note.etitle, note.edescription, note.etag);
             setIsEditModalOpen(false);
-            toast.success("Note updated successfully! 🎉");
+            // Toast is now handled in the context editNote function
         } catch (error) {
-            toast.error("Failed to update note");
+            // Error toast is now handled in the context editNote function
+            console.error("Update note error:", error);
         }
     }
 
