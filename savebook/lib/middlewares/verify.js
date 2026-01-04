@@ -16,8 +16,8 @@ export function middleware(request) {
   }
 
   // Get auth token from cookie
-  const token = request.cookies.get('authtoken')?.value;
-  
+  const token = request.cookies.get('authToken')?.value;
+
   if (!token) {
     // If accessing API route, return error response
     if (path.startsWith('/api/')) {
