@@ -42,7 +42,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <Suspense fallback={<div />}>
             <LoadingProvider>
-              {/* Enhanced Toaster configuration */}
+              {/* Enhanced Toaster configurations */}
               <Toaster 
                 position="top-right"
                 reverseOrder={false}

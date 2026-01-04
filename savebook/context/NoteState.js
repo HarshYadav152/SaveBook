@@ -133,7 +133,7 @@ const NoteState = (props) => {
     } catch (error) {
       console.error('Error updating note:', error);
       toast.error(`Failed to update note: ${error.message}`);
-      getNotes(); // Refetch on error
+      getNotes();
       throw error;
     }
   }, [notes, getNotes]);
