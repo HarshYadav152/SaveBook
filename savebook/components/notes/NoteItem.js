@@ -12,9 +12,10 @@ export default function NoteItem(props) {
         setIsDeleting(true);
         try {
             await deleteNote(note._id);
-            toast.success("Note deleted successfully 🗑️");
+            // Toast is now handled in the context deleteNote function
         } catch (error) {
-            toast.error("Failed to delete note");
+            // Error toast is now handled in the context deleteNote function
+            console.error("Delete note error:", error);
         } finally {
             setIsDeleting(false);
         }
