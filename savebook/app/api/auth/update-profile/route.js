@@ -22,9 +22,9 @@ export async function PUT(request) {
       return NextResponse.json({ success: false, message: "Unauthorized - Invalid token" }, { status: 401 });
     }
 
+    
     // Get user ID from token
-    const userId = decoded.userId;
-
+    const userId = new mongoose.Types.ObjectId(decoded.userId);
     // Get updated user data from request
     const { profileImage, firstName, lastName, bio, location } = await request.json();
 
