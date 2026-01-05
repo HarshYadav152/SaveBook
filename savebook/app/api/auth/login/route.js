@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request) {
   try {
     await dbConnect();
-    
+
     const { username, password } = await request.json();
 
     // Find user
@@ -28,23 +28,26 @@ export async function POST(request) {
     }
 
     // Generate token
-    const {authToken} = await generateAuthToken(user._id);
-    
+    const { authToken } = await generateAuthToken(user._id);
+
     // Create response
     const response = NextResponse.json(
-      { 
+      {
         success: true,
         data: {
           user: {
-            username:user.username
+            username: user.username,
+            encryptedMasterKey: user.encryptedMasterKey,
+            keySalt: user.keySalt,
+            keyIv: user.keyIv
           },
           authToken
         },
-        message: "Login successful" 
+        message: "Login successful"
       },
       { status: 200 }
     );
-    
+
     // Set cookie
     response.cookies.set('authToken', authToken, {
       httpOnly: true,
@@ -53,7 +56,7 @@ export async function POST(request) {
       maxAge: 60 * 60 * 24 * 7, // 1 week
       path: '/'
     });
-    
+
     return response;
   } catch (error) {
     console.error("Login error:", error);

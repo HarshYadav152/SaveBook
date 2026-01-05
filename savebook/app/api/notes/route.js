@@ -8,8 +8,8 @@ export async function GET(request) {
 
   try {
     const token = request.cookies.get('authToken');
-    const {userId} = verifyJwtToken(token.value)
-    
+    const { userId } = verifyJwtToken(token.value)
+
     const notes = await Notes.find({ user: userId });
     return NextResponse.json(notes);
   } catch (error) {
@@ -26,15 +26,19 @@ export async function POST(request) {
 
   try {
 
-    const { title, description, tag } = await request.json();
+    const { title, description, tag, encryptedKey, contentIv, titleIv, keyIv } = await request.json();
     const token = request.cookies.get('authToken');
 
-    const {userId} = verifyJwtToken(token.value)
+    const { userId } = verifyJwtToken(token.value)
     const note = await Notes.create({
       title,
       description,
       tag,
-      user: userId
+      user: userId,
+      encryptedKey,
+      contentIv,
+      titleIv,
+      keyIv
     });
 
     return NextResponse.json(note, { status: 201 });

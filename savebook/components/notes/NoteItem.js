@@ -8,7 +8,7 @@ export default function NoteItem(props) {
     const { note, updateNote } = props;
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const handleDelete = async () => { 
+    const handleDelete = async () => {
         setIsDeleting(true);
         try {
             await deleteNote(note._id);
@@ -20,7 +20,7 @@ export default function NoteItem(props) {
         }
     }
 
-    const handleEdit = () => {  
+    const handleEdit = () => {
         updateNote(note);
     }
 
@@ -47,15 +47,15 @@ export default function NoteItem(props) {
             if (isNaN(date.getTime())) {
                 return 'Unknown date';
             }
-            
+
             const now = new Date();
             const diffTime = Math.abs(now - date);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
+
             if (diffDays === 1) return 'Yesterday';
             if (diffDays < 7) return `${diffDays} days ago`;
             if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
-            
+
             return date.toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
@@ -71,7 +71,7 @@ export default function NoteItem(props) {
     const getReadingTime = (text) => {
         try {
             if (!text) return '< 1 min';
-            
+
             const wordsPerMinute = 200;
             const wordCount = text.split(/\s+/).length || 0;
             const readingTime = Math.ceil(wordCount / wordsPerMinute);
@@ -85,29 +85,36 @@ export default function NoteItem(props) {
     // Safely calculate description length and word count
     const descriptionLength = note?.description?.length || 0;
     const wordCount = note?.description ? note.description.split(/\s+/).filter(Boolean).length : 0;
-    
+
     // Safely get tag color
     const tagColor = getTagColor(note?.tag || 'General');
 
     return (
         <div className="group relative">
             <div className="relative bg-gray-900 rounded-2xl border border-gray-700 hover:border-gray-600 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:scale-[1.02]">
-                
+
                 {/* Header with Gradient */}
                 <div className="p-5 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-gray-900 relative">
                     <div className="flex items-start justify-between mb-2">
                         <h3 className="font-bold text-white text-lg leading-tight line-clamp-2 flex-1 pr-2">
                             {note?.title || 'Untitled Note'}
                         </h3>
-                        
+
                         {/* Tag moved to top right corner */}
-                        <div className="flex-shrink-0">
+                        <div className="flex-shrink-0 flex items-center space-x-2">
+                            {note?.encryptedKey && (
+                                <span className="text-gray-400" title="End-to-End Encrypted">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                </span>
+                            )}
                             <span className={`${tagColor.bg} ${tagColor.text} px-2 py-1 rounded-md text-xs font-medium`}>
                                 {note?.tag || 'General'}
                             </span>
                         </div>
                     </div>
-                    
+
                     {/* Metadata Row */}
                     <div className="flex items-center justify-between text-xs text-gray-400">
                         <div className="flex items-center space-x-2">
@@ -182,7 +189,7 @@ export default function NoteItem(props) {
                                 <span>{note?.date ? formatDate(note.date) : 'Unknown'}</span>
                             </div>
                         </div>
-                        
+
                         {/* Enhanced Character Count */}
                         <div className="flex items-center space-x-2 text-gray-400">
                             <div className="flex items-center space-x-1 bg-gray-700/50 px-2 py-1 rounded-lg border border-gray-600">

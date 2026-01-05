@@ -23,12 +23,12 @@ const AuthProvider = ({ children }) => {
                 method: 'GET',
                 credentials: 'include', // Important: sends cookies with request
             });
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
-                console.log("user data.user : ",data.user)
-                console.log("user data : ",data)
+                console.log("user data.user : ", data.user)
+                console.log("user data : ", data)
                 setUser(data.user);
                 setIsAuthenticated(true);
             } else {
@@ -44,6 +44,9 @@ const AuthProvider = ({ children }) => {
         }
     };
 
+    // Encryption State
+    const [masterKey, setMasterKey] = useState(null);
+
     // Login function
     const login = async (username, password) => {
         try {
@@ -58,22 +61,39 @@ const AuthProvider = ({ children }) => {
             });
 
             const data = await response.json();
-            
+
             if (data.success) {
-                setUser(data.data.user);
+                const userData = data.data.user;
+                setUser(userData);
                 setIsAuthenticated(true);
+
+                // Derive and Unwrap Master Key
+                if (userData.encryptedMasterKey && userData.keySalt && userData.keyIv) {
+                    try {
+                        const { deriveKeyFromPassword, unwrapKey, hexToBuffer } = await import('../../lib/utils/crypto');
+                        const salt = hexToBuffer(userData.keySalt);
+                        const kek = await deriveKeyFromPassword(password, salt);
+                        const umk = await unwrapKey(userData.encryptedMasterKey, userData.keyIv, kek);
+                        setMasterKey(umk);
+                        // Optional: Session persistence logic could go here
+                        console.log("Master Key successfully derived");
+                    } catch (e) {
+                        console.error("Failed to derive master key:", e);
+                    }
+                }
+
                 return { success: true, message: data.message };
             } else {
-                return { 
-                    success: false, 
-                    message: data.message || "Login failed" 
+                return {
+                    success: false,
+                    message: data.message || "Login failed"
                 };
             }
         } catch (error) {
             console.error("Login error:", error);
-            return { 
-                success: false, 
-                message: "An error occurred during login" 
+            return {
+                success: false,
+                message: "An error occurred during login"
             };
         } finally {
             setLoading(false);
@@ -84,35 +104,49 @@ const AuthProvider = ({ children }) => {
     const register = async (username, password) => {
         try {
             setLoading(true);
+
+            // Generate Keys
+            const { generateSalt, bufferToHex, deriveKeyFromPassword, generateSymmetricKey, wrapKey } = await import('../../lib/utils/crypto');
+
+            const salt = generateSalt();
+            const saltHex = bufferToHex(salt);
+            const kek = await deriveKeyFromPassword(password, salt);
+            const umk = await generateSymmetricKey();
+            const wrapped = await wrapKey(umk, kek);
+
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ username,password }),
+                body: JSON.stringify({
+                    username,
+                    password,
+                    encryptedMasterKey: wrapped.encryptedKey,
+                    keySalt: saltHex,
+                    keyIv: wrapped.iv
+                }),
                 credentials: 'include'
             });
 
             const data = await response.json();
-            
+
             if (data.success) {
-                // Automatically log in after successful registration
-                // return await login(username, password);
                 return {
-                    success:true,
-                    message:data.message
+                    success: true,
+                    message: data.message
                 }
             } else {
-                return { 
-                    success: false, 
-                    message: data.message || "Registration failed" 
+                return {
+                    success: false,
+                    message: data.message || "Registration failed"
                 };
             }
         } catch (error) {
             console.error("Registration error:", error);
-            return { 
-                success: false, 
-                message: "An error occurred during registration" 
+            return {
+                success: false,
+                message: "An error occurred during registration"
             };
         } finally {
             setLoading(false);
@@ -127,8 +161,9 @@ const AuthProvider = ({ children }) => {
                 method: 'GET',
                 credentials: 'include'
             });
-            
+
             setUser(null);
+            setMasterKey(null);
             setIsAuthenticated(false);
             router.push('/login');
         } catch (error) {
@@ -139,6 +174,7 @@ const AuthProvider = ({ children }) => {
     // Create the context value
     const contextValue = {
         user,
+        masterKey,
         loading,
         isAuthenticated,
         login,
