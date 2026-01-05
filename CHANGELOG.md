@@ -1,3 +1,34 @@
+## [2026-01-05]
+
+### ✨ Features
+-  Add toast notifications for CRUD operations #36 (c6a4f54) - @shivam154co
+-  Add toast notifications for CRUD operations #36 (a54918b) - @shivam154co
+-  Add toast notifications for CRUD operations #36 (f0a7540) - @shivam154co
+
+### 📝 Documentation
+-  auto update changelog (cf447ab) - @HarshYadav152
+-  auto update changelog (76b084c) - @JackSparrow-BlackPearl
+-  auto update changelog (13b12f1) - @JackSparrow-BlackPearl
+-  auto update changelog (5493e70) - @JackSparrow-BlackPearl
+
+### 🔧 Chore
+-  update greeting workflow (5fa859f) - @HarshYadav152
+-  auto changelog update to more detailed changelog (9a6b1b1) - @HarshYadav152
+
+### 📦 Other Changes
+- fixed (2b9b9a7) - @Harsh
+- Revert "feat: Add toast notifications for CRUD operations #36" (bd8cc79) - @Harsh Yadav
+- footer updation (42e84d7) - @Yash Yadav
+- added profile icon (4b8c003) - @Harsh
+- add Repository url (735d48d) - @HarshYadav152
+- Update licence file (e637ca0) - @HarshYadav152
+- add maintainer and admin section (0c0c196) - @HarshYadav152
+- greeting.yml added for greet new contributor (d80c426) - @HarshYadav152
+- ci: fix changelog automation with proper permissions (bc2e8f6) - @HarshYadav152
+- update yml (13e1d47) - @HarshYadav152
+- update auto changelog yml with auto pr (3982715) - @HarshYadav152
+
+
 ## [2026-01-04]
 
 ### ✨ Features
