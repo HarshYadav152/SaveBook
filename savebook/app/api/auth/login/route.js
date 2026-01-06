@@ -39,7 +39,12 @@ export async function POST(request) {
             username: user.username,
             encryptedMasterKey: user.encryptedMasterKey,
             keySalt: user.keySalt,
-            keyIv: user.keyIv
+            keyIv: user.keyIv,
+            profileImage: user.profileImage,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            bio: user.bio,
+            location: user.location
           },
           authToken
         },

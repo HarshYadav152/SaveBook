@@ -43,29 +43,33 @@ export default function NoteItem(props) {
     const formatDate = (dateString) => {
         try {
             const date = new Date(dateString);
-            // Check if date is valid
-            if (isNaN(date.getTime())) {
-                return 'Unknown date';
-            }
+            if (isNaN(date.getTime())) return 'Unknown date';
 
             const now = new Date();
-            const diffTime = Math.abs(now - date);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
+            // Compare calendar dates in LOCAL timezone
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const noteDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+            const diffTime = today - noteDay;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0) return 'Today';
             if (diffDays === 1) return 'Yesterday';
             if (diffDays < 7) return `${diffDays} days ago`;
-            if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
+            if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
 
             return date.toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
                 year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
             });
-        } catch (error) {
-            console.error("Date formatting error:", error);
+        } catch (err) {
+            console.error("Date formatting error:", err);
             return 'Unknown date';
         }
     };
+
 
     // Calculate reading time - with error handling
     const getReadingTime = (text) => {
