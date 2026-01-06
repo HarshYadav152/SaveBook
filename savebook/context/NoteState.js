@@ -1,7 +1,6 @@
 "use client"
 import React, { useCallback, useState } from 'react'
 import noteContext from './noteContext'
-import toast from 'react-hot-toast';
 
 const NoteState = (props) => {
   const notesInitial = [];
@@ -47,15 +46,14 @@ const NoteState = (props) => {
           'Content-Type': 'application/json'
         }
       });
-      const parsedText = await handleResponse(response);
-      setNotes(parsedText);
+      const parsedText = await response.json();
+      setNotes(parsedText)
     } catch (error) {
       console.error('Error fetching notes:', error);
-      toast.error(`Failed to load notes: ${error.message}`);
     }
   }, []);
 
-  // Add note with toast
+  // Add note
   const addNote = useCallback(async (title, description, tag) => {
     try {
       const response = await fetch(`/api/notes`, {
@@ -65,21 +63,17 @@ const NoteState = (props) => {
         },
         body: JSON.stringify({ title, description, tag })
       });
-      
-      const note = await handleResponse(response);
-      // Optimistic update
+      const note = await response.json();
+      // Optimistic update - add to existing notes instead of refetching
       setNotes(prevNotes => [note, ...prevNotes]);
-      toast.success('Note saved successfully! 🎉');
-      return note;
     } catch (error) {
       console.error('Error adding note:', error);
-      toast.error(`Failed to save note: ${error.message}`);
-      getNotes(); // Refetch on error
-      throw error;
+      // If error, refetch to ensure consistency
+      getNotes();
     }
   }, [getNotes]);
 
-  // Delete note with toast
+  // delete note
   const deleteNote = useCallback(async (id) => {
     try {
       const response = await fetch(`/api/notes/${id}`, {
@@ -88,22 +82,18 @@ const NoteState = (props) => {
           'Content-Type': 'application/json'
         }
       });
-      
-      await handleResponse(response);
+      await response.json();
 
       // Optimistic update
       const newNotes = notes.filter((note) => note._id !== id);
       setNotes(newNotes);
-      toast.success('Note deleted successfully! 🗑️');
     } catch (error) {
       console.error('Error deleting note:', error);
-      toast.error(`Failed to delete note: ${error.message}`);
       getNotes(); // Refetch on error
-      throw error;
     }
   }, [notes, getNotes]);
 
-  // Edit note with toast
+  // Edit note 
   const editNote = useCallback(async (id, title, description, tag) => {
     try {
       const response = await fetch(`/api/notes/${id}`, {
@@ -113,8 +103,7 @@ const NoteState = (props) => {
         },
         body: JSON.stringify({ title, description, tag })
       });
-      
-      await handleResponse(response);
+      await response.json();
 
       // Optimistic update
       let newNotes = JSON.parse(JSON.stringify(notes));
@@ -124,12 +113,10 @@ const NoteState = (props) => {
           newNotes[index].title = title;
           newNotes[index].description = description;
           newNotes[index].tag = tag;
-          newNotes[index].updatedAt = new Date().toISOString();
           break;
         }
       }
       setNotes(newNotes);
-      toast.success('Note updated successfully! ✏️');
     } catch (error) {
       console.error('Error updating note:', error);
       toast.error(`Failed to update note: ${error.message}`);
