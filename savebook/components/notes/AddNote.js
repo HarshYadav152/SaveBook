@@ -16,7 +16,16 @@ export default function Addnote() {
 
     const [note, setNote] = useState({ title: "", description: "", tag: "" });
     const [isSubmitting, setIsSubmitting] = useState(false);
-
+        const defaultTags = [
+        "General",
+        "Basic",
+        "Finance",
+        "Grocery",
+        "Office",
+        "Personal",
+        "Work",
+        "Ideas"
+    ];
     const handleSaveNote = async (e) => {
         e.preventDefault();
 
@@ -56,13 +65,15 @@ export default function Addnote() {
         }
     }
     // Collect unique tags from existing notes
-    const dynamicTags = Array.from(
+    const userTags = Array.from(
         new Set(
             notes
                 ?.map(note => note.tag)
                 .filter(tag => tag && tag.trim() !== "")
         )
     );
+    
+    const allTags = Array.from(new Set([...defaultTags, ...userTags]));
     const isFormValid = note.title.length >= 5 && note.description.length >= 5 && note.tag.length >= 2;
     
     return (
