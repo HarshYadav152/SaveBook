@@ -6,6 +6,7 @@ import AuthProvider from "@/context/auth/AuthState";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import LoadingProvider from "@/components/providers/LoadingProvider";
+import NextAuthProvider from "@/components/providers/NextAuthProvider";
 import { Suspense } from "react";
 
 // Replace Geist with Inter (similar clean sans-serif)
@@ -33,44 +34,46 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.variable} ${robotoMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <Suspense fallback={<div />}>
-            <LoadingProvider>
-              {/* Enhanced Toaster configurations */}
-              <Toaster 
-                position="top-right"
-                reverseOrder={false}
-                toastOptions={{
-                  duration: 3000,
-                  style: {
-                    background: '#1f2937',
-                    color: '#fff',
-                    border: '1px solid #374151',
-                  },
-                  success: {
+        <NextAuthProvider>
+          <AuthProvider>
+            <Suspense fallback={<div />}>
+              <LoadingProvider>
+                {/* Enhanced Toaster configurations */}
+                <Toaster 
+                  position="top-right"
+                  reverseOrder={false}
+                  toastOptions={{
+                    duration: 3000,
                     style: {
-                      background: '#10b981',
+                      background: '#1f2937',
                       color: '#fff',
+                      border: '1px solid #374151',
                     },
-                  },
-                  error: {
-                    style: {
-                      background: '#ef4444',
-                      color: '#fff',
+                    success: {
+                      style: {
+                        background: '#10b981',
+                        color: '#fff',
+                      },
                     },
-                  },
-                }}
-              />
-              <Navbar />
-              <NoteState>
-                {/* <main className="pt-10"> */}
-                  {children}
-                {/* </main> */}
-              </NoteState>
-              <Footer />
-            </LoadingProvider>
-          </Suspense>
-        </AuthProvider>
+                    error: {
+                      style: {
+                        background: '#ef4444',
+                        color: '#fff',
+                      },
+                    },
+                  }}
+                />
+                <Navbar />
+                <NoteState>
+                  {/* <main className="pt-10"> */}
+                    {children}
+                  {/* </main> */}
+                </NoteState>
+                <Footer />
+              </LoadingProvider>
+            </Suspense>
+          </AuthProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );

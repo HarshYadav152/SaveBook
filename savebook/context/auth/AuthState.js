@@ -1,6 +1,7 @@
 "use client"
 import React, { createContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import AuthContext from './authContext';
 
 const AuthProvider = ({ children }) => {
@@ -8,13 +9,33 @@ const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const router = useRouter();
+    const { data: session, status } = useSession();
 
     // Check if user is authenticated on component mount
     useEffect(() => {
-        checkUserAuthentication();
-    }, []);
+        if (status === 'loading') {
+            setLoading(true);
+            return;
+        }
+        
+        if (session) {
+            // User is authenticated via NextAuth (GitHub)
+            setUser({
+                id: session.user.id,
+                username: session.user.username || session.user.name,
+                email: session.user.email,
+                avatar: session.user.image,
+                isGithubUser: session.user.isGithubUser
+            });
+            setIsAuthenticated(true);
+            setLoading(false);
+        } else {
+            // Check for traditional auth
+            checkUserAuthentication();
+        }
+    }, [session, status]);
 
-    // Function to check if user is authenticated
+    // Function to check if user is authenticated via traditional method
     const checkUserAuthentication = async () => {
         try {
             setLoading(true);
@@ -122,11 +143,16 @@ const AuthProvider = ({ children }) => {
     // Logout function
     const logout = async () => {
         try {
-            // Call logout API to clear the cookie server-side
-            await fetch('/api/auth/logout', {
-                method: 'GET',
-                credentials: 'include'
-            });
+            if (session) {
+                // Sign out from NextAuth
+                await signOut({ redirect: false });
+            } else {
+                // Call logout API to clear the cookie server-side
+                await fetch('/api/auth/logout', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+            }
             
             setUser(null);
             setIsAuthenticated(false);

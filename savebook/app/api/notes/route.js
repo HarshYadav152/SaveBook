@@ -4,14 +4,21 @@ import Notes from '@/lib/models/Notes';
 import { verifyJwtToken } from '@/lib/utils/JWT';
 
 export async function GET(request) {
-  await dbConnect();
+  if (process.env.MONGODB_URI) {
+    await dbConnect();
+  }
 
   try {
-    const token = request.cookies.get('authToken');
-    const {userId} = verifyJwtToken(token.value)
-    
-    const notes = await Notes.find({ user: userId });
-    return NextResponse.json(notes);
+    if (process.env.MONGODB_URI) {
+      const token = request.cookies.get('authToken');
+      const {userId} = verifyJwtToken(token.value)
+
+      const notes = await Notes.find({ user: userId });
+      return NextResponse.json(notes);
+    } else {
+      // Offline mode: return empty array
+      return NextResponse.json([]);
+    }
   } catch (error) {
     console.error(error);
     return NextResponse.json(
