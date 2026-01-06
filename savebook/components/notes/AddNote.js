@@ -3,6 +3,13 @@ import noteContext from '@/context/noteContext';
 import React, { useContext, useState } from 'react'
 import toast from 'react-hot-toast';
 
+// Define Note Templates
+const NOTE_TEMPLATES = {
+  meeting: `Date: [Insert Date]\n\nAttendees: [List attendees]\n\nAgenda:\n- \n- \n- \n\nNotes:\n\nAction Items:\n- \n- `,
+  journal: `What happened today:\n[Write your experiences here]\n\nGoals for tomorrow:\n[List your goals]\n\nGratitude:\n[Write things you're grateful for]`,
+  checklist: `Project: [Project Name]\n\nTasks:\n- [ ] Define project goal\n- [ ] List all tasks\n- [ ] Assign owners\n- [ ] Set deadlines\n- [ ] Plan resources\n- [ ] Review progress\n- [ ] Complete project`
+};
+
 export default function Addnote() {
     const context = useContext(noteContext);
     const { addNote } = context;
@@ -31,7 +38,26 @@ export default function Addnote() {
         setNote({ ...note, [e.target.name]: e.target.value });
     }
 
+    // Apply Template Handler
+    const applyTemplate = (templateKey) => {
+        const template = NOTE_TEMPLATES[templateKey];
+        if (!template) return;
+
+        // If description is empty, directly apply the template
+        if (!note.description.trim()) {
+            setNote({ ...note, description: template });
+            toast.success(`${templateKey.charAt(0).toUpperCase() + templateKey.slice(1)} template applied!`);
+        } else {
+            // If description has content, ask for confirmation
+            if (window.confirm('Replace current content with this template? This action cannot be undone.')) {
+                setNote({ ...note, description: template });
+                toast.success(`${templateKey.charAt(0).toUpperCase() + templateKey.slice(1)} template applied!`);
+            }
+        }
+    }
+
     const isFormValid = note.title.length >= 5 && note.description.length >= 5 && note.tag.length >= 2;
+    
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-18 p-2">
             <div className="max-w-4xl mx-auto">
@@ -73,24 +99,69 @@ export default function Addnote() {
                             </p>
                         </div>
 
-                        {/* Description Field */}
+                        {/* Description Field with Templates */}
                         <div>
-                            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Description
-                            </label>
+                            <div className="flex items-center justify-between mb-2">
+                                <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Description
+                                </label>
+                                <span className="text-xs text-gray-600 dark:text-gray-400">
+                                    Quick Templates:
+                                </span>
+                            </div>
+
+                            {/* Templates Row - Quick Start Buttons */}
+                            <div className="flex flex-wrap gap-2 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                                <button
+                                    type="button"
+                                    onClick={() => applyTemplate('meeting')}
+                                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                                    title="Auto-fill with Meeting Notes template"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Meeting
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => applyTemplate('journal')}
+                                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                                    title="Auto-fill with Daily Journal template"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.998 10-10.747 0-6.002-4.5-10.747-10-10.747z" />
+                                    </svg>
+                                    Daily
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => applyTemplate('checklist')}
+                                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                                    title="Auto-fill with Project Checklist template"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                    </svg>
+                                    Checklist
+                                </button>
+                            </div>
+
                             <textarea
                                 name="description"
                                 id="description"
-                                rows="4"
+                                rows="6"
                                 value={note.description}
                                 onChange={onchange}
                                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none transition-all duration-200 outline-none"
-                                placeholder="Write your note content here..."
+                                placeholder="Write your note content here... or click a template button above to get started!"
                                 minLength={5}
                                 required
                             />
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                Minimum 5 characters required
+                                Minimum 5 characters required. Click template buttons to auto-fill with pre-formatted structures.
                             </p>
                         </div>
 
@@ -165,6 +236,10 @@ export default function Addnote() {
                         <li className="flex items-start">
                             <span className="mr-2">•</span>
                             Use descriptive titles to easily find your notes later
+                        </li>
+                        <li className="flex items-start">
+                            <span className="mr-2">•</span>
+                            Click template buttons (Meeting, Daily, Checklist) to auto-fill note structure
                         </li>
                         <li className="flex items-start">
                             <span className="mr-2">•</span>
