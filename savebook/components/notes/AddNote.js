@@ -12,7 +12,7 @@ const NOTE_TEMPLATES = {
 
 export default function Addnote() {
     const context = useContext(noteContext);
-    const { addNote } = context;
+    const { addNote, notes } = context;
 
     const [note, setNote] = useState({ title: "", description: "", tag: "" });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,7 +55,14 @@ export default function Addnote() {
             }
         }
     }
-
+    // Collect unique tags from existing notes
+    const dynamicTags = Array.from(
+        new Set(
+            notes
+                ?.map(note => note.tag)
+                .filter(tag => tag && tag.trim() !== "")
+        )
+    );
     const isFormValid = note.title.length >= 5 && note.description.length >= 5 && note.tag.length >= 2;
     
     return (
@@ -182,14 +189,13 @@ export default function Addnote() {
                                 required
                             />
                             <datalist id="datalistOptions" className="bg-white dark:bg-gray-700">
-                                <option value="General" className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
-                                <option value="Basic" className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
-                                <option value="Finance" className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
-                                <option value="Grocery" className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
-                                <option value="Office" className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
-                                <option value="Personal" className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
-                                <option value="Work" className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
-                                <option value="Ideas" className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
+                                {dynamicTags.map((tag, index) => (
+                                    <option
+                                        key={index}
+                                        value={tag}
+                                        className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    />
+                                ))}
                             </datalist>
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 Choose from suggestions or type your own (min. 2 chars)
