@@ -14,6 +14,8 @@ const SignupForm = () => {
         confirmPassword: ''
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [usernameError, setUsernameError] = useState("");
+    const [suggestions, setSuggestions] = useState([]);
     const router = useRouter();
 
     // Handle redirection based on authentication status
@@ -61,7 +63,10 @@ const SignupForm = () => {
                 router.push("/login")
                 // The useEffect will handle the redirect
             } else {
-                toast.error(result.message || "Registration failed");
+                setUsernameError(
+        result.message || "This username is already taken"
+    );
+    setSuggestions(result.suggestions || []);
             }
         } catch (error) {
             console.error("Registration error:", error);
@@ -72,7 +77,12 @@ const SignupForm = () => {
     };
 
     const onchange = (e) => {
-        setCredentials({ ...credentials, [e.target.name]: e.target.value });
+         setCredentials({ ...credentials, [e.target.name]: e.target.value });
+
+    if (e.target.name === "username") {
+        setUsernameError("");
+        setSuggestions([]);
+    }
     };
 
     // Show loading state while checking authentication
@@ -116,6 +126,25 @@ const SignupForm = () => {
                     placeholder="Create a password"
                     required
                 />
+                {usernameError && (
+    <p className="mt-1 text-sm text-red-400">
+        {usernameError}
+    </p>
+)}
+
+{suggestions.length > 0 && (
+    <div className="mt-2 text-sm text-gray-300">
+        <p className="mb-1">Available usernames:</p>
+        <ul className="list-disc list-inside">
+            {suggestions.map((name) => (
+                <li key={name} className="text-green-400">
+                    {name}
+                </li>
+            ))}
+        </ul>
+    </div>
+)}
+
             </div>
 
             {/* Confirm Password Field */}
