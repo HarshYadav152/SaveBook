@@ -1,3 +1,67 @@
+## [2026-01-06]
+
+### ✨ Features
+-  add Quick Start note templates (050b8f1) - @Monasri29-hub
+-  Add toast notifications for CRUD operations #36 (c6a4f54) - @shivam154co
+-  Add toast notifications for CRUD operations #36 (a54918b) - @shivam154co
+-  Add toast notifications for CRUD operations #36 (f0a7540) - @shivam154co
+
+### 🐛 Bug Fixes
+-  prevent today's notes from showing as yesterday (6fa7eef) - @KARTIK001-CODER
+
+### 📝 Documentation
+-  auto update changelog (3e08c93) - @vinayboss9669
+-  auto update changelog (88d5c2b) - @HarshYadav152
+-  auto update changelog (b303099) - @HarshYadav152
+-  auto update changelog (cf447ab) - @HarshYadav152
+-  auto update changelog (76b084c) - @JackSparrow-BlackPearl
+-  auto update changelog (13b12f1) - @JackSparrow-BlackPearl
+
+### 🔧 Chore
+-  update greeting workflow (5fa859f) - @HarshYadav152
+
+### 📦 Other Changes
+- updated profile image feat (e689258) - @Harsh
+- fixed (2b9b9a7) - @Harsh
+- Revert "feat: Add toast notifications for CRUD operations #36" (bd8cc79) - @Harsh Yadav
+- footer updation (42e84d7) - @Yash Yadav
+- added profile icon (4b8c003) - @Harsh
+- add Repository url (735d48d) - @HarshYadav152
+- Update licence file (e637ca0) - @HarshYadav152
+- add maintainer and admin section (0c0c196) - @HarshYadav152
+
+
+## [2026-01-06]
+
+### ✨ Features
+-  add Quick Start note templates (050b8f1) - @Monasri29-hub
+-  Add toast notifications for CRUD operations #36 (c6a4f54) - @shivam154co
+-  Add toast notifications for CRUD operations #36 (a54918b) - @shivam154co
+-  Add toast notifications for CRUD operations #36 (f0a7540) - @shivam154co
+
+### 📝 Documentation
+-  auto update changelog (88d5c2b) - @HarshYadav152
+-  auto update changelog (b303099) - @HarshYadav152
+-  auto update changelog (cf447ab) - @HarshYadav152
+-  auto update changelog (76b084c) - @JackSparrow-BlackPearl
+-  auto update changelog (13b12f1) - @JackSparrow-BlackPearl
+
+### 🔧 Chore
+-  update greeting workflow (5fa859f) - @HarshYadav152
+-  auto changelog update to more detailed changelog (9a6b1b1) - @HarshYadav152
+
+### 📦 Other Changes
+- updated profile image feat (e689258) - @Harsh
+- fixed (2b9b9a7) - @Harsh
+- Revert "feat: Add toast notifications for CRUD operations #36" (bd8cc79) - @Harsh Yadav
+- footer updation (42e84d7) - @Yash Yadav
+- added profile icon (4b8c003) - @Harsh
+- add Repository url (735d48d) - @HarshYadav152
+- Update licence file (e637ca0) - @HarshYadav152
+- add maintainer and admin section (0c0c196) - @HarshYadav152
+- greeting.yml added for greet new contributor (d80c426) - @HarshYadav152
+
+
 ## [2026-01-05]
 
 ### ✨ Features
