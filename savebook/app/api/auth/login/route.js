@@ -40,6 +40,11 @@ export async function POST(request) {
             encryptedMasterKey: user.encryptedMasterKey,
             keySalt: user.keySalt,
             keyIv: user.keyIv
+            profileImage: user.profileImage,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            bio: user.bio,
+            location: user.location
           },
           authToken
         },
