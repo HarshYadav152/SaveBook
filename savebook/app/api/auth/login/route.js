@@ -36,7 +36,12 @@ export async function POST(request) {
         success: true,
         data: {
           user: {
-            username:user.username
+            username: user.username,
+            profileImage: user.profileImage,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            bio: user.bio,
+            location: user.location
           },
           authToken
         },
