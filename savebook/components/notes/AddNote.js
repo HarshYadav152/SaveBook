@@ -18,10 +18,11 @@ export default function Addnote() {
         setIsSubmitting(true);
         try {
             await addNote(note.title, note.description, note.tag);
-            toast.success("Note has been saved");
             setNote({ title: '', description: '', tag: '' });
+            // Toast is now handled in the context addNote function
         } catch (error) {
-            toast.error("Failed to save note");
+            // Error toast is now handled in the context addNote function
+            console.error("Save note error:", error);
         } finally {
             setIsSubmitting(false);
         }
@@ -172,7 +173,7 @@ export default function Addnote() {
                         </li>
                         <li className="flex items-start">
                             <span className="mr-2">•</span>
-                            All fields require at least 5 characters for better note quality
+                            All fieldss require at least 5 characters for better note quality
                         </li>
                     </ul>
                 </div>

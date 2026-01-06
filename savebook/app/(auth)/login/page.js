@@ -4,6 +4,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
+import PasswordInput from '@/components/common/PasswordInput';
 
 // Login Form Component
 const LoginForm = () => {
@@ -90,7 +91,7 @@ const LoginForm = () => {
                 </div>
             </div>
 
-            {/* Password Field */}
+            {/* Password Field - UPDATED */}
             <div>
                 <div className="flex items-center justify-between mb-2">
                     <label htmlFor="password" className="block text-sm font-medium text-gray-300">
@@ -100,24 +101,16 @@ const LoginForm = () => {
                         Forgot password?
                     </a>
                 </div>
-                <div className="relative">
-                    <input
-                        type="password"
-                        name="password"
-                        id="password"
-                        required
-                        value={credentials.password}
-                        onChange={onchange}
-                        disabled={isLoading}
-                        className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
-                        placeholder="Enter your password"
-                    />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                        <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
+                <PasswordInput
+                    name="password"
+                    id="password"
+                    required
+                    value={credentials.password}
+                    onChange={onchange}
+                    disabled={isLoading}
+                    className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
+                    placeholder="Enter your password"
+                />
             </div>
 
             {/* Submit Button */}
@@ -211,18 +204,6 @@ const LoginPage = () => {
             </div>
         );
     }
-
-    // // Redirect if already authenticated
-    // if (isAuthenticated) {
-    //     return (
-    //         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
-    //             <div className="text-center">
-    //                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-    //                 <p className="text-white">Redirecting...</p>
-    //             </div>
-    //         </div>
-    //     );
-    // }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
