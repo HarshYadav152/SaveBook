@@ -332,7 +332,11 @@ export default function Notes() {
                                 <div className="text-3xl font-bold text-white mb-2">
                                     {filteredNotes.reduce((total, note) => total + (note.description?.length || 0), 0).toLocaleString()}
                                 </div>
-                                <div className="text-gray-400 text-sm">Total Character</div>
+                                <div className="text-gray-400 text-sm">
+                                    {filteredNotes.reduce((total, note) => total + (note.description?.length || 0), 0) === 1
+                                        ? "1 Character"
+                                        : "Total Characters"}
+                                </div>
                             </div>
                         </div>
                     </div>
