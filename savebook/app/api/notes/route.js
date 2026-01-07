@@ -9,21 +9,25 @@ export async function GET(request) {
   await dbConnect();
 
   try {
-    const cookie = request.headers.get("cookie");
-    if (!cookie) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const token = request.cookies.get('authToken');
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Unauthorized: No token provided" },
+        { status: 401 }
+      );
     }
 
-    const match = cookie.match(/authToken=([^;]+)/);
-    if (!match) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const decoded = verifyJwtToken(token.value);
+
+    if (!decoded || !decoded.userId) {
+      return NextResponse.json(
+        { error: "Unauthorized: Invalid token" },
+        { status: 401 }
+      );
     }
 
-    const decoded = verifyJwtToken(match[1]);
-    if (!decoded.success) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
+    // Upstream added this extra check, preserving it as it is good security practice
     const user = await User.findById(decoded.userId).select("-password");
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -34,8 +38,51 @@ export async function GET(request) {
     }).lean();
 
     return NextResponse.json(notes);
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request) {
+  await dbConnect();
+
+  try {
+    const { title, description, tag } = await request.json();
+    const token = request.cookies.get('authToken');
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Unauthorized: No token provided" },
+        { status: 401 }
+      );
+    }
+
+    const decoded = verifyJwtToken(token.value);
+
+    if (!decoded || !decoded.userId) {
+      return NextResponse.json(
+        { error: "Unauthorized: Invalid token" },
+        { status: 401 }
+      );
+    }
+
+    const note = await Notes.create({
+      title,
+      description,
+      tag,
+      user: decoded.userId
+    });
+
+    return NextResponse.json(note, { status: 201 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Server error" },
+      { status: 500 }
+    );
   }
 }
