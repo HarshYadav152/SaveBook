@@ -1,6 +1,7 @@
 import dbConnect from "@/lib/db/mongodb";
 import User from "@/lib/models/User";
 import { verifyJwtToken } from "@/lib/utils/JWT";
+import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 
 export async function PUT(request) {

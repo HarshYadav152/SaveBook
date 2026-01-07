@@ -1,18 +1,21 @@
-import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
-import User from '../models/User';
+import * as jose from 'jose'
 
-// Generate access token
+const JWT_SECRET = process.env.ACCESS_TOKEN_SECRET || 'your-secret-key-here';
+
+// Generate access token (for API routes - Node.js runtime)
 export const generateAuthToken = async (userId) => {
   try {
-    const authToken = jwt.sign(
-      { _id: userId },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: process.env.ACCESS_TOKEN_EXPIRY || '7d' }
-    );
+    const secret = new TextEncoder().encode(JWT_SECRET);
     
-    return { authToken: authToken };
+    const authToken = await new jose.SignJWT({ userId: userId.toString() })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime(process.env.ACCESS_TOKEN_EXPIRY || '7d')
+      .sign(secret);
+    
+    return { authToken };
   } catch (error) {
+    console.error("Token generation error:", error);
     return { 
       success: false, 
       error: "Error generating access token", 
@@ -21,69 +24,8 @@ export const generateAuthToken = async (userId) => {
   }
 };
 
-export const generateResetToken = () => {
-  return crypto.randomBytes(32).toString('hex');
-};
-
-// Verify token from request
-export const verifyToken = async (request) => {
-  try {
-    // Get token from cookies
-    const token = request.cookies.get('authToken')?.value;
-    
-    if (!token) {
-      return {
-        success: false,
-        error: "Unauthorized - No token provided",
-        status: 401
-      };
-    }
-    
-    // Verify token
-    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    
-    // Get user from database
-    const user = await User.findById(decodedToken._id).select("-password");
-    
-    if (!user) {
-      return {
-        success: false,
-        error: "Unauthorized - Invalid token",
-        status: 401
-      };
-    }
-    return {
-      success: true,
-      user,
-      userId: user._id
-    };
-  } catch (error) {
-    if (error.name === 'JsonWebTokenError') {
-      return {
-        success: false,
-        error: "Invalid token",
-        status: 401
-      };
-    }
-    
-    if (error.name === 'TokenExpiredError') {
-      return {
-        success: false,
-        error: "Token expired",
-        status: 401
-      };
-    }
-    
-    return {
-      success: false,
-      error: error.message || "Authentication failed",
-      status: 401
-    };
-  }
-};
-
-// Verify token directly without request
-export const verifyJwtToken = (token) => {
+// Verify token (Edge-compatible)
+export const verifyJwtToken = async (token) => {
   try {
     if (!token) {
       return {
@@ -92,14 +34,19 @@ export const verifyJwtToken = (token) => {
         status: 401
       };
     }
-
-    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    
+    console.log("Verifying token...");
+    const secret = new TextEncoder().encode(JWT_SECRET);
+    const { payload } = await jose.jwtVerify(token, secret);
+    console.log("Decoded token:", payload);
+    
     return {
       success: true,
-      userId: decodedToken._id
+      userId: payload.userId
     };
   } catch (error) {
-    if (error.name === 'TokenExpiredError') {
+    console.error("Token verification error:", error.message);
+    if (error.code === 'ERR_JWT_EXPIRED') {
       return {
         success: false,
         error: "Token expired",
@@ -112,17 +59,4 @@ export const verifyJwtToken = (token) => {
       status: 401
     };
   }
-};
-
-// Create token cookie
-export const createTokenCookie = (token) => {
-  return {
-    name: 'authToken',
-    value: token,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge: 60 * 60 * 24 * 7, // 1 week
-    path: '/'
-  };
 };
