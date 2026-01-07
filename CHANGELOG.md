@@ -10,6 +10,37 @@
 -  prevent today's notes from showing as yesterday (6fa7eef) - @KARTIK001-CODER
 
 ### 📝 Documentation
+-  auto update changelog (41d1994) - @vinayboss9669
+-  auto update changelog (ac6d11e) - @HarshYadav152
+-  auto update changelog (396de9d) - @vinayboss9669
+-  auto update changelog (3e08c93) - @vinayboss9669
+-  auto update changelog (88d5c2b) - @HarshYadav152
+-  auto update changelog (b303099) - @HarshYadav152
+-  auto update changelog (cf447ab) - @HarshYadav152
+
+### 📦 Other Changes
+- Fix pluralization for Total Character text (576ed28) - @heisenberg7519
+- Keep default tags and distinguish user-created tags (8ec47ab) - @heisenberg7519
+- Fix tags dropdown to show user-created tags (a95a93e) - @heisenberg7519
+- updated profile image feat (e689258) - @Harsh
+- fixed (2b9b9a7) - @Harsh
+- Revise README.md for improved presentation (d28ae8a) - @Nitya Gosain
+- Revert "feat: Add toast notifications for CRUD operations #36" (bd8cc79) - @Harsh Yadav
+- footer updation (42e84d7) - @Yash Yadav
+
+
+## [2026-01-07]
+
+### ✨ Features
+-  add Quick Start note templates (050b8f1) - @Monasri29-hub
+-  Add toast notifications for CRUD operations #36 (c6a4f54) - @shivam154co
+-  Add toast notifications for CRUD operations #36 (a54918b) - @shivam154co
+-  Add toast notifications for CRUD operations #36 (f0a7540) - @shivam154co
+
+### 🐛 Bug Fixes
+-  prevent today's notes from showing as yesterday (6fa7eef) - @KARTIK001-CODER
+
+### 📝 Documentation
 -  auto update changelog (ac6d11e) - @HarshYadav152
 -  auto update changelog (396de9d) - @vinayboss9669
 -  auto update changelog (3e08c93) - @vinayboss9669
