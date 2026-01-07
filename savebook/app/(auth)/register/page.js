@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
+import PasswordInput from '@/components/common/PasswordInput';
 
 // Signup Form Component
 const SignupForm = () => {
@@ -100,31 +101,29 @@ const SignupForm = () => {
                 />
             </div>
 
-            {/* Password Field */}
+            {/* Password Field - UPDATED */}
             <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
                     Password
                 </label>
-                <input
-                    type="password"
+                <PasswordInput
                     name="password"
                     id="password"
                     value={credentials.password}
                     onChange={onchange}
                     disabled={isLoading || isAuthenticated}
                     className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
-                    placeholder="Create a password"
+                    placeholder="Create a password (min. 6 characters)"
                     required
                 />
             </div>
 
-            {/* Confirm Password Field */}
+            {/* Confirm Password Field - UPDATED */}
             <div>
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
                     Confirm Password
                 </label>
-                <input
-                    type="password"
+                <PasswordInput
                     name="confirmPassword"
                     id="confirmPassword"
                     value={credentials.confirmPassword}
@@ -233,18 +232,6 @@ export default function Signup() {
             </div>
         );
     }
-
-    // // Redirect if already authenticated
-    // if (isAuthenticated) {
-    //     return (
-    //         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
-    //             <div className="text-center">
-    //                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-    //                 <p className="text-white">Redirecting...</p>
-    //             </div>
-    //         </div>
-    //     );
-    // }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
