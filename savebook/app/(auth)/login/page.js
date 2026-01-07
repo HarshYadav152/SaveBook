@@ -1,36 +1,32 @@
 "use client"
 import { useAuth } from '@/context/auth/authContext';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 
 // Login Form Component
 const LoginForm = () => {
-    const { login, isAuthenticated } = useAuth();
+    const { login, isAuthenticated, loading } = useAuth();
     const [credentials, setCredentials] = useState({ username: '', password: '' });
     const [isLoading, setIsLoading] = useState(false);
+    const [hasRedirected, setHasRedirected] = useState(false);
     const router = useRouter();
 
     // Handle redirection based on authentication status
     useEffect(() => {
-        if (isAuthenticated) {
-            router.push("/");
+        // Only redirect if authenticated, not loading, and hasn't already redirected
+        if (isAuthenticated && !loading && !hasRedirected) {
+            setHasRedirected(true);
+            router.push("/notes");
         }
-    }, [isAuthenticated, router]);
-
-    useEffect(()=>{
-        if(isAuthenticated){
-            router.push("/")
-        }
-    },[])
+    }, [isAuthenticated, loading, hasRedirected, router]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        // Prevent submission if already authenticated
-        if (isAuthenticated) {
-            router.push("/");
+        // Prevent submission if already authenticated or loading
+        if (isAuthenticated || isLoading) {
             return;
         }
         
@@ -41,8 +37,8 @@ const LoginForm = () => {
             
             if (result.success) {
                 toast.success("Welcome back! 🎉");
-                router.push("/")
-                // The useEffect will handle the redirect
+                // Don't call router.push here - let useEffect handle it
+                // The AuthState will update isAuthenticated which triggers the redirect
             } else {
                 toast.error(result.message || "Invalid credentials. Please try again.");
             }
@@ -59,7 +55,7 @@ const LoginForm = () => {
     }
 
     // Show loading state while checking authentication
-    if (isAuthenticated === undefined) {
+    if (loading) {
         return <LoginFormSkeleton />;
     }
 
@@ -146,11 +142,6 @@ const LoginForm = () => {
                     <Link 
                         href="/register" 
                         className="font-medium text-blue-400 hover:text-blue-300 transition-colors duration-200"
-                        onClick={(e) => {
-                            if (isLoading) {
-                                e.preventDefault();
-                            }
-                        }}
                     >
                         Register
                     </Link>
@@ -164,13 +155,10 @@ const LoginForm = () => {
 const LoginFormSkeleton = () => {
     return (
         <div className="space-y-6">
-            {/* Username Field Skeleton */}
             <div>
                 <div className="h-5 w-20 bg-gray-700 rounded mb-2 animate-pulse"></div>
                 <div className="h-12 bg-gray-700 rounded-lg animate-pulse"></div>
             </div>
-
-            {/* Password Field Skeleton */}
             <div>
                 <div className="flex justify-between mb-2">
                     <div className="h-5 w-20 bg-gray-700 rounded animate-pulse"></div>
@@ -178,11 +166,7 @@ const LoginFormSkeleton = () => {
                 </div>
                 <div className="h-12 bg-gray-700 rounded-lg animate-pulse"></div>
             </div>
-
-            {/* Button Skeleton */}
             <div className="h-12 bg-gradient-to-r from-blue-600/30 to-purple-700/30 rounded-lg animate-pulse"></div>
-
-            {/* Sign up link Skeleton */}
             <div className="flex justify-center">
                 <div className="h-5 w-48 bg-gray-700 rounded animate-pulse"></div>
             </div>
@@ -192,10 +176,18 @@ const LoginFormSkeleton = () => {
 
 // Main component
 const LoginPage = () => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, loading } = useAuth();
+    const router = useRouter();
+
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (!loading && isAuthenticated) {
+            router.push('/notes');
+        }
+    }, [isAuthenticated, loading, router]);
 
     // Show loading while checking initial auth state
-    if (isAuthenticated === undefined) {
+    if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
                 <div className="max-w-md w-full space-y-8">
@@ -211,18 +203,6 @@ const LoginPage = () => {
             </div>
         );
     }
-
-    // // Redirect if already authenticated
-    // if (isAuthenticated) {
-    //     return (
-    //         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
-    //             <div className="text-center">
-    //                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-    //                 <p className="text-white">Redirecting...</p>
-    //             </div>
-    //         </div>
-    //     );
-    // }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
