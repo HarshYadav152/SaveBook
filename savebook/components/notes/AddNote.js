@@ -200,7 +200,7 @@ export default function Addnote() {
                                 required
                             />
                             <datalist id="datalistOptions" className="bg-white dark:bg-gray-700">
-                                {dynamicTags.map((tag, index) => (
+                                {allTags.map((tag, index) => (
                                     <option
                                         key={index}
                                         value={tag}
