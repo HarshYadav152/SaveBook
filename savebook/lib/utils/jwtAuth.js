@@ -1,15 +1,4 @@
-import jwt from "jsonwebtoken";
-
-export function verifyJwtTokenString(token) {
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return { success: true, userId: decoded.userId };
-  } catch (error) {
-    return { success: false };
-  }
-}
-
-import * as jose from 'jose'
+import * as jose from 'jose';
 
 const JWT_SECRET = process.env.ACCESS_TOKEN_SECRET || 'your-secret-key-here';
 
@@ -17,20 +6,20 @@ const JWT_SECRET = process.env.ACCESS_TOKEN_SECRET || 'your-secret-key-here';
 export const generateAuthToken = async (userId) => {
   try {
     const secret = new TextEncoder().encode(JWT_SECRET);
-    
+
     const authToken = await new jose.SignJWT({ userId: userId.toString() })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
       .setExpirationTime(process.env.ACCESS_TOKEN_EXPIRY || '7d')
       .sign(secret);
-    
+
     return { authToken };
   } catch (error) {
     console.error("Token generation error:", error);
-    return { 
-      success: false, 
-      error: "Error generating access token", 
-      status: 500 
+    return {
+      success: false,
+      error: "Error generating access token",
+      status: 500
     };
   }
 };
@@ -45,10 +34,12 @@ export const verifyJwtToken = async (token) => {
         status: 401
       };
     }
-    
+
+    // console.log("Verifying token...");
     const secret = new TextEncoder().encode(JWT_SECRET);
     const { payload } = await jose.jwtVerify(token, secret);
-    
+    // console.log("Decoded token:", payload);
+
     return {
       success: true,
       userId: payload.userId
