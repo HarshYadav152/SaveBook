@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db/mongodb";
 import Notes from "@/lib/models/Notes";
 import User from "@/lib/models/User";
-import { verifyJwtToken } from "@/lib/utils/jwt";
+import { verifyJwtToken } from "@/lib/utils/JWT";
 import mongoose from "mongoose";
 
 export async function GET(request) {
