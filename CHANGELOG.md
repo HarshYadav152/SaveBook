@@ -1,3 +1,57 @@
+## [2026-01-08]
+
+### 📝 Documentation
+-  auto update changelog (b54b674) - @HarshYadav152
+-  auto update changelog (eb6575a) - @HarshYadav152
+
+### 📦 Other Changes
+- Work on e2ee notes auth routes (e1e5ad2) - @Bhoomika S
+- add redirect in next confix and update some depedencies (0d801a0) - @Harsh Yadav
+- added a middleware for handling redirect at root (14c1214) - @Harsh Yadav
+- add more entry in env example (d71b56e) - @Harsh Yadav
+- add robots.txt and a savebook logo (2a82bcb) - @Harsh Yadav
+- update JWT utility file with jose for edge runtime compatibility (a249b9f) - @Harsh Yadav
+- update AuthState with removing some comments and incorrect redirect (ae3aa76) - @Harsh Yadav
+- update AddNote and Notes component for bugs and enhancements (2a730dc) - @Harsh Yadav
+- Update navbar for clearly indicating user loggedin or not (f16c8be) - @Harsh Yadav
+- upadate footer with respective urls (0022862) - @Harsh Yadav
+- remove previous Notes component and create a Hero page (f85eeb7) - @Harsh Yadav
+- new favicon added (1cd5896) - @Harsh Yadav
+- SEO elements added and a sitemap.js for generate sitemap.xml (f76aebf) - @Harsh Yadav
+- create docs/ route (d2f8cb2) - @Harsh Yadav
+- fix some critical authToken issues in auth api routes (6a35b24) - @Harsh Yadav
+- move / component to /notes (1f48402) - @Harsh Yadav
+- update login client side page with some enhancement (ed2384b) - @Harsh Yadav
+- add clean documentation page (ee772ba) - @Harsh Yadav
+
+
+## [2026-01-07]
+
+### 📝 Documentation
+-  auto update changelog (eb6575a) - @HarshYadav152
+-  auto update changelog (41d1994) - @vinayboss9669
+
+### 📦 Other Changes
+- add redirect in next confix and update some depedencies (0d801a0) - @Harsh Yadav
+- added a middleware for handling redirect at root (14c1214) - @Harsh Yadav
+- add more entry in env example (d71b56e) - @Harsh Yadav
+- add robots.txt and a savebook logo (2a82bcb) - @Harsh Yadav
+- update JWT utility file with jose for edge runtime compatibility (a249b9f) - @Harsh Yadav
+- update AuthState with removing some comments and incorrect redirect (ae3aa76) - @Harsh Yadav
+- update AddNote and Notes component for bugs and enhancements (2a730dc) - @Harsh Yadav
+- Update navbar for clearly indicating user loggedin or not (f16c8be) - @Harsh Yadav
+- upadate footer with respective urls (0022862) - @Harsh Yadav
+- remove previous Notes component and create a Hero page (f85eeb7) - @Harsh Yadav
+- new favicon added (1cd5896) - @Harsh Yadav
+- SEO elements added and a sitemap.js for generate sitemap.xml (f76aebf) - @Harsh Yadav
+- create docs/ route (d2f8cb2) - @Harsh Yadav
+- fix some critical authToken issues in auth api routes (6a35b24) - @Harsh Yadav
+- move / component to /notes (1f48402) - @Harsh Yadav
+- update login client side page with some enhancement (ed2384b) - @Harsh Yadav
+- add clean documentation page (ee772ba) - @Harsh Yadav
+- Fix pluralization for Total Character text (576ed28) - @heisenberg7519
+
+
 ## [2026-01-07]
 
 ### ✨ Features
