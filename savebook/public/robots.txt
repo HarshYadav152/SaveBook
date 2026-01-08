@@ -1,0 +1,29 @@
+# *
+User-agent: *
+Allow: /
+
+# Disallow admin and private routes
+Disallow: /api/
+Disallow: /dashboard/
+
+# Sitemap
+Sitemap: https://notes.geetasystems.co.in/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Block specific bots (optional)
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
