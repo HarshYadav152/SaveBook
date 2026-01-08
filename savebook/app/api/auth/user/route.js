@@ -1,9 +1,5 @@
-import dbConnect from "@/lib/db/mongodb";
-import User from "@/lib/models/User";
-import { verifyJwtToken } from "@/lib/utils/jwt";
-import { NextResponse } from "next/server";
 import { NextResponse } from 'next/server';
-import { verifyJwtToken } from '@/lib/utils/jwt';
+import { verifyJwtToken } from '@/lib/utils/JWT';
 import dbConnect from '@/lib/db/mongodb';
 import User from '@/lib/models/User';
 
