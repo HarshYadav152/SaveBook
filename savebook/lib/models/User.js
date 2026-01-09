@@ -6,7 +6,7 @@ const UserSchema = new Schema({
     username: {
         type: String,
         required: true,
-        lowercase:true,
+        lowercase: true,
         unique: true
     },
     password: {
@@ -16,6 +16,18 @@ const UserSchema = new Schema({
     date: {
         type: Date,
         default: Date.now
+    },
+    encryptedMasterKey: {
+        type: String,
+        default: null // Will be null for legacy users until migration
+    },
+    keySalt: {
+        type: String,
+        default: null
+    },
+    keyIv: {
+        type: String,
+        default: null
     },
     profileImage: {
         type: String,
@@ -37,7 +49,6 @@ const UserSchema = new Schema({
         type: String,
         default: ''
     },
-
 });
 
 // Password hashing middleware

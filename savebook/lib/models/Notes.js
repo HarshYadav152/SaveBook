@@ -18,6 +18,22 @@ const NotesSchema = new Schema({
         type: String,
         default: "General"
     },
+    encryptedKey: {
+        type: String, // NDK encrypted with UMK
+        default: null
+    },
+    contentIv: {
+        type: String, // IV for content
+        default: null
+    },
+    titleIv: {
+        type: String, // IV for title
+        default: null
+    },
+    keyIv: {
+        type: String, // IV for encryptedKey
+        default: null
+    },
     date: {
         type: Date,
         default: Date.now
