@@ -8,21 +8,22 @@ import NoteItem from './NoteItem';
 import { useAuth } from '@/context/auth/authContext';
 
 // Separate navigation handler component to use router with Suspense
-const NavigationHandler = ({ isAuthenticated }) => {
+const NavigationHandler = ({ isAuthenticated, loading }) => {
     const router = useRouter();
     
     useEffect(() => {
-        if (!isAuthenticated) {
-            console.log("is authenticated : ", isAuthenticated);
+        // Only redirect if loading is complete and user is not authenticated
+        if (!loading && !isAuthenticated) {
+            console.log("User not authenticated, redirecting to login");
             router.push("/login");
         }
-    }, [isAuthenticated, router]);
+    }, [isAuthenticated, loading, router]);
     
     return null;
 };
 
 export default function Notes() {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, loading } = useAuth();
     const context = useContext(noteContext);
     const { notes: contextNotes = [], getNotes, editNote } = context || {};
     
@@ -35,16 +36,19 @@ export default function Notes() {
     const [selectedTag, setSelectedTag] = useState('all');
     
     useEffect(() => {
-        async function fetch() {   
-            try {
-                await getNotes();
-            } catch (error) {
-                console.error("Error fetching notes:", error);
-                toast.error("Failed to load notes");
+        // Only fetch notes if authenticated and not loading
+        if (isAuthenticated && !loading) {
+            async function fetch() {   
+                try {
+                    await getNotes();
+                } catch (error) {
+                    console.error("Error fetching notes:", error);
+                    toast.error("Failed to load notes");
+                }
             }
+            fetch();
         }
-        fetch();
-    }, [getNotes]);
+    }, [isAuthenticated, loading, getNotes]);
     
     // Enhanced tag options with colors
     const tagOptions = [
@@ -92,18 +96,39 @@ export default function Notes() {
 
     const isFormValid = note.etitle?.length >= 5 && note.edescription?.length >= 5 && note.etag?.length >= 5;
 
+    // Show loading spinner while checking authentication
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-900">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                    <p className="text-gray-400 text-lg">Loading...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Don't render notes if not authenticated (will be redirected)
+    if (!isAuthenticated) {
+        return (
+            <Suspense fallback={null}>
+                <NavigationHandler isAuthenticated={isAuthenticated} loading={loading} />
+            </Suspense>
+        );
+    }
+
     return (
         <>
             {/* Navigation handler with Suspense */}
             <Suspense fallback={null}>
-                <NavigationHandler isAuthenticated={isAuthenticated} />
+                <NavigationHandler isAuthenticated={isAuthenticated} loading={loading} />
             </Suspense>
             
             <Addnote />
 
             {/* Edit Note Modal */}
             {isEditModalOpen && (
-                <div className="fixed inset-0 bg-opacity-60 flex items-center justify-center p-4 z-50 backdrop-blur-sm p-2">
+                <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
                     <div className="bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                         {/* Modal Header */}
                         <div className="flex items-center justify-between p-6 border-b border-gray-700">
@@ -332,7 +357,11 @@ export default function Notes() {
                                 <div className="text-3xl font-bold text-white mb-2">
                                     {filteredNotes.reduce((total, note) => total + (note.description?.length || 0), 0).toLocaleString()}
                                 </div>
-                                <div className="text-gray-400 text-sm">Total Character</div>
+                                <div className="text-gray-400 text-sm">
+                                    {filteredNotes.reduce((total, note) => total + (note.description?.length || 0), 0) === 1
+                                        ? "1 Character"
+                                        : "Total Characters"}
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -27,8 +27,6 @@ const AuthProvider = ({ children }) => {
             const data = await response.json();
 
             if (data.success) {
-                console.log("user data.user : ", data.user)
-                console.log("user data : ", data)
                 setUser(data.user);
                 setIsAuthenticated(true);
             } else {
@@ -165,7 +163,7 @@ const AuthProvider = ({ children }) => {
             setUser(null);
             setMasterKey(null);
             setIsAuthenticated(false);
-            router.push('/login');
+            router.push('/');
         } catch (error) {
             console.error("Logout failed:", error);
         }

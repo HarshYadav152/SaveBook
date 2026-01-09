@@ -20,7 +20,7 @@ export async function GET(request, { params }) {
     }
 
     const token = request.cookies.get('authToken');
-    const { userId } = verifyJwtToken(token.value)
+    const { userId } = await verifyJwtToken(token.value)
 
     const note = await Notes.findOne({ _id: id, user: userId });
 
@@ -57,7 +57,7 @@ export async function PUT(request, { params }) {
     }
 
     const token = request.cookies.get('authToken');
-    const { userId } = verifyJwtToken(token.value)
+    const { userId } = await verifyJwtToken(token.value)
 
     const { title, description, tag } = await request.json();
 
@@ -118,7 +118,7 @@ export async function DELETE(request, { params }) {
     }
 
     const token = request.cookies.get('authToken');
-    const { userId } = verifyJwtToken(token.value)
+    const { userId } = await verifyJwtToken(token.value)
 
     // Find note and verify ownership
     let note = await Notes.findById(id);
