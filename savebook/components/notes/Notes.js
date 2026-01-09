@@ -35,26 +35,23 @@ export default function Notes() {
 
     
     useEffect(() => {
-        
-        if (!isAuthenticated) {
-            clearNotes?.();          
-            router.push("/login");
-            return;
+    if (!isAuthenticated) {
+        router.push("/login");
+        return;
+    }
+
+    const fetchNotes = async () => {
+        try {
+            await getNotes();
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to load notes");
         }
+    };
 
-        
-        clearNotes?.();
+    fetchNotes();
+}, [isAuthenticated]);
 
-        const fetchUserNotes = async () => {
-            try {
-                await getNotes();    
-                console.error(error);
-                toast.error("Failed to load notes");
-            }
-        };
-
-        fetchUserNotes();
-    }, [isAuthenticated]);
 
     
     const tagOptions = [
