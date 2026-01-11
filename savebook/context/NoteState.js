@@ -65,7 +65,7 @@ const NoteState = (props) => {
       });
       const note = await response.json();
       // Optimistic update - add to existing notes instead of refetching
-      setNotes(prevNotes => [note, ...prevNotes]);
+      setNotes(prevNotes => [note, ...(Array.isArray(prevNotes) ? prevNotes : [])]);
     } catch (error) {
       console.error('Error adding note:', error);
       // If error, refetch to ensure consistency
