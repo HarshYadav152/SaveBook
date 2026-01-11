@@ -27,8 +27,6 @@ const AuthProvider = ({ children }) => {
             const data = await response.json();
             
             if (data.success) {
-                console.log("user data.user : ",data.user)
-                console.log("user data : ",data)
                 setUser(data.user);
                 setIsAuthenticated(true);
             } else {
@@ -96,8 +94,6 @@ const AuthProvider = ({ children }) => {
             const data = await response.json();
             
             if (data.success) {
-                // Automatically log in after successful registration
-                // return await login(username, password);
                 return {
                     success:true,
                     message:data.message
@@ -130,7 +126,7 @@ const AuthProvider = ({ children }) => {
             
             setUser(null);
             setIsAuthenticated(false);
-            router.push('/login');
+            router.push('/');
         } catch (error) {
             console.error("Logout failed:", error);
         }
