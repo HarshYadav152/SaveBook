@@ -99,7 +99,7 @@ const TermsOfServiceContent = () => {
                         Terms of Service
                     </h1>
                     <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                        Guidelines and rules for using Notebook
+                        Guidelines and rules for using SaveBook
                     </p>
                     
                     <div className="flex flex-wrap justify-center gap-6 mt-8">
@@ -150,7 +150,7 @@ const TermsOfServiceContent = () => {
                                 </div>
                             </div>
                             <p className="text-gray-300 leading-relaxed mb-4">
-                                By accessing or using Notebook ("the Service"), you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this Service.
+                                By accessing or using SaveBook ("the Service"), you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this Service.
                             </p>
                             <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mt-4">
                                 <p className="text-blue-300 text-sm">
