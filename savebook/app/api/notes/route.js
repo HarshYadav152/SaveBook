@@ -18,7 +18,7 @@ export async function GET(request) {
       );
     }
 
-    const decoded = verifyJwtToken(token.value);
+    const decoded = await verifyJwtToken(token.value);
 
     if (!decoded || !decoded.userId) {
       return NextResponse.json(
@@ -61,7 +61,7 @@ export async function POST(request) {
       );
     }
 
-    const decoded = verifyJwtToken(token.value);
+    const decoded = await verifyJwtToken(token.value);
 
     if (!decoded || !decoded.userId) {
       return NextResponse.json(

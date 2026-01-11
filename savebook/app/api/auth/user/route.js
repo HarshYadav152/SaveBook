@@ -20,7 +20,7 @@ export async function GET(request) {
         }
 
         // Verify token
-        const tokenInfo = verifyJwtToken(tokenValue);
+        const tokenInfo = await verifyJwtToken(tokenValue);
 
         if (!tokenInfo || !tokenInfo.userId) {
             return NextResponse.json(

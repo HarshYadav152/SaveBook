@@ -28,7 +28,7 @@ export async function GET(request, { params }) {
       );
     }
 
-    const { userId } = verifyJwtToken(token.value);
+    const { userId } = await verifyJwtToken(token.value);
 
     if (!userId) {
       return NextResponse.json(
@@ -80,7 +80,7 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const { userId } = verifyJwtToken(token.value);
+    const { userId } = await verifyJwtToken(token.value);
 
     if (!userId) {
       return NextResponse.json(
@@ -156,7 +156,7 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    const { userId } = verifyJwtToken(token.value);
+    const { userId } = await verifyJwtToken(token.value);
 
     if (!userId) {
       return NextResponse.json(
