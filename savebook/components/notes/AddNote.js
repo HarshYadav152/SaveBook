@@ -67,8 +67,8 @@ export default function Addnote() {
     // Collect unique tags from existing notes
     const userTags = Array.from(
         new Set(
-            notes
-                ?.map(note => note.tag)
+            (Array.isArray(notes) ? notes : [])
+                .map(note => note.tag)
                 .filter(tag => tag && tag.trim() !== "")
         )
     );
