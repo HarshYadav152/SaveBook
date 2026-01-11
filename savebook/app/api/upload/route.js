@@ -15,13 +15,13 @@ export async function POST(request) {
   try {
     // Verify authentication
     const authtoken = request.cookies.get("authToken");
-    
+
     if (!authtoken) {
       return NextResponse.json({ success: false, message: "Unauthorized - No token provided" }, { status: 401 });
     }
 
-    const decoded = verifyJwtToken(authtoken.value);
-    
+    const decoded = await verifyJwtToken(authtoken.value);
+
     if (!decoded || !decoded.success) {
       return NextResponse.json({ success: false, message: "Unauthorized - Invalid token" }, { status: 401 });
     }
@@ -54,9 +54,9 @@ export async function POST(request) {
       // Convert to base64 data URL
       const base64 = buffer.toString('base64');
       const dataUrl = `data:${fileType};base64,${base64}`;
-      
-      return NextResponse.json({ 
-        success: true, 
+
+      return NextResponse.json({
+        success: true,
         imageUrl: dataUrl,
         message: "Image uploaded successfully (as data URL since Cloudinary is not configured)"
       });
@@ -65,7 +65,7 @@ export async function POST(request) {
     // Upload to Cloudinary
     const uploadResult = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        { 
+        {
           folder: 'savebook/profile_images',
           resource_type: 'auto'
         },
@@ -80,8 +80,8 @@ export async function POST(request) {
       stream.end(buffer);
     });
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       imageUrl: uploadResult.secure_url,
       publicId: uploadResult.public_id
     });

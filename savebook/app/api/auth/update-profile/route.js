@@ -11,19 +11,19 @@ export async function PUT(request) {
 
     // Get token from cookies
     const authtoken = request.cookies.get("authToken");
-    
+
     if (!authtoken) {
       return NextResponse.json({ success: false, message: "Unauthorized - No token provided" }, { status: 401 });
     }
 
     // Verify token
-    const decoded = verifyJwtToken(authtoken.value);
-    
+    const decoded = await verifyJwtToken(authtoken.value);
+
     if (!decoded || !decoded.success) {
       return NextResponse.json({ success: false, message: "Unauthorized - Invalid token" }, { status: 401 });
     }
 
-    
+
     // Get user ID from token
     const userId = new mongoose.Types.ObjectId(decoded.userId);
     // Get updated user data from request
@@ -32,7 +32,7 @@ export async function PUT(request) {
     // Update user
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { 
+      {
         ...(profileImage !== undefined && { profileImage }),
         ...(firstName !== undefined && { firstName }),
         ...(lastName !== undefined && { lastName }),
@@ -47,8 +47,8 @@ export async function PUT(request) {
     }
 
     // Return success response with updated user data
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: "Profile updated successfully",
       user: {
         username: updatedUser.username,

@@ -20,7 +20,22 @@ export async function GET(request, { params }) {
     }
 
     const token = request.cookies.get('authToken');
-    const { userId } = verifyJwtToken(token.value)
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Unauthorized: No token provided" },
+        { status: 401 }
+      );
+    }
+
+    const { userId } = await verifyJwtToken(token.value);
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Unauthorized: Invalid token" },
+        { status: 401 }
+      );
+    }
 
     const note = await Notes.findOne({ _id: id, user: userId });
 
@@ -57,7 +72,22 @@ export async function PUT(request, { params }) {
     }
 
     const token = request.cookies.get('authToken');
-    const { userId } = verifyJwtToken(token.value)
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Unauthorized: No token provided" },
+        { status: 401 }
+      );
+    }
+
+    const { userId } = await verifyJwtToken(token.value);
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Unauthorized: Invalid token" },
+        { status: 401 }
+      );
+    }
 
     const { title, description, tag } = await request.json();
 
@@ -118,7 +148,22 @@ export async function DELETE(request, { params }) {
     }
 
     const token = request.cookies.get('authToken');
-    const { userId } = verifyJwtToken(token.value)
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Unauthorized: No token provided" },
+        { status: 401 }
+      );
+    }
+
+    const { userId } = await verifyJwtToken(token.value);
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Unauthorized: Invalid token" },
+        { status: 401 }
+      );
+    }
 
     // Find note and verify ownership
     let note = await Notes.findById(id);
