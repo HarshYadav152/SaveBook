@@ -24,8 +24,64 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata = {
-  title: "SaveBook | Your Personal Notebook",
-  description: "Save Notebook on the cloud",
+  metadataBase: new URL('https://notes.geetasystems.co.in'),
+  title: {
+    default: "SaveBook | Your Personal Notebook & Cloud Note-Taking App",
+    template: "%s | SaveBook"
+  },
+  description: "SaveBook is a powerful cloud-based notebook application. Save, organize, and access your notes from anywhere. Free personal notebook with secure cloud storage.",
+  keywords: ["notebook app", "cloud notes", "personal notebook", "note taking", "online notebook", "save notes", "digital notebook", "cloud storage notes"],
+  authors: [{ name: "Harsh Yadav" }],
+  creator: "SaveBook",
+  publisher: "SaveBook",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://notes.geetasystems.co.in",
+    title: "SaveBook | Your Personal Notebook & Cloud Note-Taking App",
+    description: "Save, organize, and access your notes from anywhere with SaveBook's secure cloud storage.",
+    siteName: "SaveBook",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "SaveBook - Cloud Notebook App",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SaveBook | Your Personal Notebook",
+    description: "Save, organize, and access your notes from anywhere.",
+    images: ["/twitter-image.jpg"],
+    creator: "@savebook",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "your-google-verification-code", // Add Google Search Console verification
+    // yandex: "your-yandex-verification-code",
+    // bing: "your-bing-verification-code",
+  },
+  alternates: {
+    canonical: "https://notes.geetasystems.co.in",
+  },
+  category: "Productivity",
 };
 
 export default function RootLayout({ children }) {

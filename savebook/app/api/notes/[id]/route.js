@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import dbConnect from '@/lib/db/mongodb';
 import Notes from '@/lib/models/Notes';
-import { verifyJwtToken } from '@/lib/utils/JWT';
+import { verifyJwtToken } from '@/lib/utils/jwt';
 
 // Get a specific note by ID
 export async function GET(request, { params }) {

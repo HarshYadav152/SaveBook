@@ -15,7 +15,7 @@ export const authOptions = {
         try {
           await dbConnect()
           
-          // Check if user already exists
+          // Check if user already exists by email or GitHub ID
           let existingUser = await User.findOne({ 
             $or: [
               { email: user.email },
@@ -24,15 +24,26 @@ export const authOptions = {
           })
 
           if (existingUser) {
-            // Update GitHub ID if not set
+            // Update GitHub ID if not set (account linking)
             if (!existingUser.githubId) {
               existingUser.githubId = profile.id.toString()
+              existingUser.isGithubUser = true
               await existingUser.save()
             }
           } else {
-            // Create new user
+            // Create new user with unique username
+            let username = profile.login || user.name?.replace(/\s+/g, '').toLowerCase() || user.email.split('@')[0]
+            
+            // Ensure username uniqueness
+            let counter = 1
+            let originalUsername = username
+            while (await User.findOne({ username })) {
+              username = `${originalUsername}${counter}`
+              counter++
+            }
+            
             existingUser = new User({
-              username: profile.login || user.name?.replace(/\s+/g, '').toLowerCase() || user.email.split('@')[0],
+              username,
               email: user.email,
               githubId: profile.id.toString(),
               avatar: user.image,
@@ -48,6 +59,21 @@ export const authOptions = {
         }
       }
       return true
+    },
+    async redirect({ url, baseUrl }) {
+      // Redirect to /notes after successful GitHub login
+      if (url === baseUrl || url === `${baseUrl}/`) {
+        return `${baseUrl}/notes`
+      }
+      // Allow relative callback URLs
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`
+      }
+      // Allow callback URLs on the same origin
+      if (new URL(url).origin === baseUrl) {
+        return url
+      }
+      return `${baseUrl}/notes`
     },
     async session({ session, token }) {
       if (token.sub) {
