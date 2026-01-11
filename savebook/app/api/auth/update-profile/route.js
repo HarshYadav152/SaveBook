@@ -17,7 +17,7 @@ export async function PUT(request) {
     }
 
     // Verify token
-    const decoded = verifyJwtToken(authtoken.value);
+    const decoded = await verifyJwtToken(authtoken.value);
     
     if (!decoded || !decoded.success) {
       return NextResponse.json({ success: false, message: "Unauthorized - Invalid token" }, { status: 401 });
