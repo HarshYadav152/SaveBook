@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 
-export function verifyJwtToken(token) {
+export function verifyJwtTokenString(token) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return { success: true, userId: decoded.id };
+    return { success: true, userId: decoded.userId };
   } catch (error) {
     return { success: false };
   }
@@ -46,10 +46,8 @@ export const verifyJwtToken = async (token) => {
       };
     }
     
-    console.log("Verifying token...");
     const secret = new TextEncoder().encode(JWT_SECRET);
     const { payload } = await jose.jwtVerify(token, secret);
-    console.log("Decoded token:", payload);
     
     return {
       success: true,

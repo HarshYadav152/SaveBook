@@ -21,6 +21,9 @@ const AuthProvider = ({ children }) => {
             // This endpoint will use the HttpOnly cookie automatically
             const response = await fetch('/api/auth/user', {
                 method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 credentials: 'include', // Important: sends cookies with request
             });
             
