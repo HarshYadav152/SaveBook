@@ -63,7 +63,7 @@ const LoginForm = () => {
         <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Username Field */}
             <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="username" className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2">
                     Username
                 </label>
                 <div className="relative">
@@ -75,7 +75,7 @@ const LoginForm = () => {
                         value={credentials.username}
                         onChange={onchange}
                         disabled={isLoading}
-                        className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
                         placeholder="Enter your username"
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">

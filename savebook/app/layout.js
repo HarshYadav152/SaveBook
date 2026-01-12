@@ -6,6 +6,7 @@ import AuthProvider from "@/context/auth/AuthState";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import LoadingProvider from "@/components/providers/LoadingProvider";
+import ThemeProvider from "@/context/theme/ThemeProvider";
 import { Suspense } from "react";
 import Head from "next/head";
 
@@ -113,9 +114,10 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.variable} ${robotoMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <Suspense fallback={<div />}>
-            <LoadingProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <Suspense fallback={<div />}>
+              <LoadingProvider>
               {/* Enhanced Toaster configurations */}
               <Toaster 
                 position="top-right"
@@ -139,6 +141,12 @@ export default function RootLayout({ children }) {
                       color: '#fff',
                     },
                   },
+                  loading: {
+                    style: {
+                      background: '#3b82f6',
+                      color: '#fff',
+                    },
+                  },
                 }}
               />
               <Navbar />
@@ -148,7 +156,8 @@ export default function RootLayout({ children }) {
               <Footer />
             </LoadingProvider>
           </Suspense>
-        </AuthProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

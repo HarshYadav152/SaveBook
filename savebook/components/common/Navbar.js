@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/context/auth/authContext';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
     const pathname = usePathname();
@@ -110,6 +111,7 @@ export default function Navbar() {
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-4">
+                        <ThemeToggle />
                         {loading ? (
                             // Loading skeleton
                             <div className="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
@@ -189,6 +191,7 @@ export default function Navbar() {
 
                     {/* Mobile menu button */}
                     <div className="md:hidden flex items-center space-x-2">
+                        <ThemeToggle />
                         {loading ? (
                             <div className="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
                         ) : isAuthenticated ? (
