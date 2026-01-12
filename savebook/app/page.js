@@ -10,7 +10,11 @@ import {
   UserPlus,
   Book,
   Sparkles,
-  Loader2
+  Loader2,
+  Shield,
+  Zap,
+  Layout,
+  Globe,
 } from "lucide-react";
 
 export default function Home() {
@@ -71,8 +75,8 @@ export default function Home() {
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-full mb-8">
               <Sparkles className="w-4 h-4 text-blue-500" />
               <span className="text-blue-600 dark:text-blue-400 font-medium">
-                {isAuthenticated && user 
-                  ? `Welcome back, ${user.username}!` 
+                {isAuthenticated && user
+                  ? `Welcome back, ${user.username}!`
                   : "Your Digital Notebook"}
               </span>
             </div>
@@ -84,11 +88,11 @@ export default function Home() {
                   Empowering your thoughts with a seamless, distraction-free note-taking experience.
                 </strong>
               </p>
-              
+
               <div className="max-w-3xl mx-auto text-left bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
                 <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
-                  SaveBook is a high-performance, modern web application designed for note-taking and knowledge management. 
-                  Built leveraging the latest <span className="font-semibold text-blue-600 dark:text-blue-400">Next.js</span> features, it provides a fast, 
+                  SaveBook is a high-performance, modern web application designed for note-taking and knowledge management.
+                  Built leveraging the latest <span className="font-semibold text-blue-600 dark:text-blue-400">Next.js</span> features, it provides a fast,
                   intuitive, and clutter-free environment for organizing your digital life.
                 </p>
               </div>
@@ -105,7 +109,7 @@ export default function Home() {
               ) : isAuthenticated ? (
                 // Authenticated user - Show "Go to Notes" button
                 <>
-                  <Link 
+                  <Link
                     href="/notes"
                     className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-blue-500/30 transition-all transform hover:scale-105 w-full sm:w-auto justify-center"
                   >
@@ -114,7 +118,7 @@ export default function Home() {
                     <ArrowRight className="w-5 h-5" />
                   </Link>
 
-                  <Link 
+                  <Link
                     href="/profile"
                     className="inline-flex items-center gap-2 px-6 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all w-full sm:w-auto justify-center"
                   >
@@ -124,7 +128,7 @@ export default function Home() {
               ) : (
                 // Not authenticated - Show "Start Taking Notes", "Login", and "Sign Up"
                 <>
-                  <Link 
+                  <Link
                     href="/notes"
                     className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-blue-500/30 transition-all transform hover:scale-105 w-full sm:w-auto justify-center"
                   >
@@ -134,7 +138,7 @@ export default function Home() {
                   </Link>
 
                   <div className="flex gap-4 w-full sm:w-auto">
-                    <Link 
+                    <Link
                       href="/login"
                       className="inline-flex items-center gap-2 px-6 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all w-full sm:w-auto justify-center"
                     >
@@ -142,7 +146,7 @@ export default function Home() {
                       Login
                     </Link>
 
-                    <Link 
+                    <Link
                       href="/register"
                       className="inline-flex items-center gap-2 px-6 py-4 bg-emerald-500 dark:bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-600 dark:hover:bg-emerald-700 transition-all w-full sm:w-auto justify-center"
                     >
@@ -182,6 +186,122 @@ export default function Home() {
               </motion.div>
             )}
           </motion.div>
+        </div>
+
+        {/* Features Section */}
+        <div id="features" className="py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+              Powerful Features
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400">
+              Everything you need to organize your digital life.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                icon: Shield,
+                title: "Secure Cloud Storage",
+                description:
+                  "Your notes are encrypted and stored securely in the cloud, accessible from anywhere.",
+              },
+              {
+                icon: Zap,
+                title: "Lightning Fast",
+                description:
+                  "Built on Next.js for instant page loads and seamless interactions.",
+              },
+              {
+                icon: Layout,
+                title: "Clean Interface",
+                description:
+                  "Distraction-free writing environment designed to help you focus on your thoughts.",
+              },
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                viewport={{ once: true }}
+                className="p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-shadow border border-gray-100 dark:border-gray-700"
+              >
+                <div className="w-14 h-14 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-6">
+                  <feature.icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* About Section */}
+        <div id="about" className="py-20 border-t border-gray-200 dark:border-gray-800">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+                About SaveBook
+              </h2>
+              <div className="space-y-6 text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p>
+                  SaveBook was born from a simple idea: note-taking should be effortless.
+                  We believe that your tools should get out of the way and let your creativity flow.
+                </p>
+                <p>
+                  Whether you're a student, professional, or creative writer, SaveBook adapts to your workflow.
+                  With cross-device synchronization and a beautiful, modern interface, your ideas are always with you.
+                </p>
+                <div className="flex items-center gap-4 pt-4">
+                  <Globe className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    Open Source & Community Driven
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl transform rotate-3 opacity-20 blur-xl"></div>
+              <div className="relative bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-900 dark:text-white">Our Mission</h4>
+                    <p className="text-sm text-gray-500">Simplicity meets Power</p>
+                  </div>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 italic">
+                  "To provide a digital sanctuary for your thoughts, accessible anywhere, anytime."
+                </p>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>
