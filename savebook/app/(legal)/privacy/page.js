@@ -73,7 +73,7 @@ const PrivacyPolicyContent = () => {
             Privacy Policy
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            How we protect and handle your data in Notebook
+            How we protect and handle your data in SaveBook
           </p>
           
           <div className="flex flex-wrap justify-center gap-4 mt-6">
@@ -117,10 +117,10 @@ const PrivacyPolicyContent = () => {
                 Introduction
               </h2>
               <p className="text-gray-300 leading-relaxed mb-4">
-                Welcome to Notebook. We are committed to protecting your privacy and ensuring the security of your personal notes and data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our notebook application.
+                Welcome to SaveBook. We are committed to protecting your privacy and ensuring the security of your personal notes and data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our notebook application.
               </p>
               <p className="text-gray-300 leading-relaxed">
-                By using Notebook, you consent to the data practices described in this policy. If you do not agree with the data practices described in this Privacy Policy, you should not use our application.
+                By using SaveBook, you consent to the data practices described in this policy. If you do not agree with the data practices described in this Privacy Policy, you should not use our application.
               </p>
             </section>
 
