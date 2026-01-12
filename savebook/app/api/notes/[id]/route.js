@@ -2,14 +2,13 @@ import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import dbConnect from '@/lib/db/mongodb';
 import Notes from '@/lib/models/Notes';
-import { verifyJwtToken } from '@/lib/utils/jwt';
 
 // Get a specific note by ID
 export async function GET(request, { params }) {
   await dbConnect();
 
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Validate ID format
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -46,7 +45,7 @@ export async function PUT(request, { params }) {
   await dbConnect();
 
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Validate ID format
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -107,7 +106,7 @@ export async function DELETE(request, { params }) {
   await dbConnect();
 
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Validate ID format
     if (!mongoose.Types.ObjectId.isValid(id)) {

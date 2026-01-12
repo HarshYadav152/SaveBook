@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
-import { verifyJwtToken } from '@/lib/utils/jwt';
+import { verifyJwtToken } from '@/lib/utils/jwtAuth';
 
 // Configure Cloudinary (you'll need to add these to your .env.local)
 if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
