@@ -84,7 +84,7 @@ const SignupForm = () => {
         <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Username Field */}
             <div>
-                <label htmlFor="username" className="block text-sm font-medium text-black mb-2">
+                <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
                     Username
                 </label>
                 <input
@@ -94,7 +94,7 @@ const SignupForm = () => {
                     value={credentials.username}
                     onChange={onchange}
                     disabled={isLoading || isAuthenticated}
-                    className="w-full px-4 py-3 border border-black/20 bg-white text-black rounded-xl focus:ring-2 focus:ring-black focus:border-black transition-all duration-200 outline-none disabled:opacity-50 placeholder:text-gray-400"
+                    className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
                     placeholder="Choose a username"
                     required
                 />
@@ -102,7 +102,7 @@ const SignupForm = () => {
 
             {/* Password Field */}
             <div>
-                <label htmlFor="password" className="block text-sm font-medium text-black mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
                     Password
                 </label>
                 <input
@@ -112,15 +112,15 @@ const SignupForm = () => {
                     value={credentials.password}
                     onChange={onchange}
                     disabled={isLoading || isAuthenticated}
-                    className="w-full px-4 py-3 border border-black/20 bg-white text-black rounded-xl focus:ring-2 focus:ring-black focus:border-black transition-all duration-200 outline-none disabled:opacity-50 placeholder:text-gray-400"
-                    placeholder="Create a password (min. 6 characters)"
+                    className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
+                    placeholder="Create a password"
                     required
                 />
             </div>
 
             {/* Confirm Password Field */}
             <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-black mb-2">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
                     Confirm Password
                 </label>
                 <input
@@ -130,7 +130,7 @@ const SignupForm = () => {
                     value={credentials.confirmPassword}
                     onChange={onchange}
                     disabled={isLoading || isAuthenticated}
-                    className="w-full px-4 py-3 border border-black/20 bg-white text-black rounded-xl focus:ring-2 focus:ring-black focus:border-black transition-all duration-200 outline-none disabled:opacity-50 placeholder:text-gray-400"
+                    className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
                     placeholder="Confirm your password"
                     required
                 />
@@ -140,7 +140,7 @@ const SignupForm = () => {
             <button
                 type="submit"
                 disabled={isLoading || isAuthenticated}
-                className="w-full bg-black text-white py-3.5 px-4 rounded-xl font-semibold text-base hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-sm"
+                className="w-full bg-gradient-to-r from-green-600 to-blue-700 text-white py-3 px-4 rounded-lg font-medium hover:from-green-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-green-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
                 {isLoading ? (
                     <>
@@ -157,18 +157,18 @@ const SignupForm = () => {
 
             {/* Login link */}
             <div className="text-center">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-300">
                     Already have an account?{' '}
                     <Link 
                         href="/login" 
-                        className="font-medium text-black hover:underline transition-colors duration-200"
+                        className="font-medium text-green-400 hover:text-green-300"
                         onClick={(e) => {
                             if (isLoading || isAuthenticated) {
                                 e.preventDefault();
                             }
                         }}
                     >
-                        Sign in
+                        Login
                     </Link>
                 </span>
             </div>
@@ -182,28 +182,28 @@ const SignupFormSkeleton = () => {
         <div className="space-y-6">
             {/* Username Field Skeleton */}
             <div>
-                <div className="h-5 w-20 bg-gray-200 rounded mb-2 animate-pulse"></div>
-                <div className="h-12 bg-gray-100 rounded-xl animate-pulse"></div>
+                <div className="h-5 w-20 bg-gray-700 rounded mb-2 animate-pulse"></div>
+                <div className="h-12 bg-gray-700 rounded-lg animate-pulse"></div>
             </div>
 
             {/* Password Field Skeleton */}
             <div>
-                <div className="h-5 w-20 bg-gray-200 rounded mb-2 animate-pulse"></div>
-                <div className="h-12 bg-gray-100 rounded-xl animate-pulse"></div>
+                <div className="h-5 w-20 bg-gray-700 rounded mb-2 animate-pulse"></div>
+                <div className="h-12 bg-gray-700 rounded-lg animate-pulse"></div>
             </div>
 
             {/* Confirm Password Field Skeleton */}
             <div>
-                <div className="h-5 w-32 bg-gray-200 rounded mb-2 animate-pulse"></div>
-                <div className="h-12 bg-gray-100 rounded-xl animate-pulse"></div>
+                <div className="h-5 w-32 bg-gray-700 rounded mb-2 animate-pulse"></div>
+                <div className="h-12 bg-gray-700 rounded-lg animate-pulse"></div>
             </div>
 
             {/* Button Skeleton */}
-            <div className="h-12 bg-gray-900 rounded-xl animate-pulse"></div>
+            <div className="h-12 bg-gradient-to-r from-green-600/30 to-blue-700/30 rounded-lg animate-pulse"></div>
 
             {/* Sign up link Skeleton */}
             <div className="flex justify-center">
-                <div className="h-5 w-48 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-5 w-48 bg-gray-700 rounded animate-pulse"></div>
             </div>
         </div>
     );
@@ -216,17 +216,17 @@ export default function Signup() {
     // Show loading while checking initial auth state
     if (isAuthenticated === undefined) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center">
                 <div className="max-w-md w-full">
                     {/* Header Skeleton */}
                     <div className="text-center mb-8">
-                        <div className="mx-auto h-12 w-12 bg-black rounded-full flex items-center justify-center mb-4 animate-pulse"></div>
-                        <div className="h-8 w-48 bg-gray-200 rounded mx-auto mb-2 animate-pulse"></div>
-                        <div className="h-4 w-32 bg-gray-100 rounded mx-auto animate-pulse"></div>
+                        <div className="mx-auto h-12 w-12 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center mb-4 animate-pulse"></div>
+                        <div className="h-8 w-48 bg-gray-700 rounded mx-auto mb-2 animate-pulse"></div>
+                        <div className="h-4 w-32 bg-gray-700 rounded mx-auto animate-pulse"></div>
                     </div>
 
                     {/* Form Skeleton */}
-                    <div className="bg-white p-8 rounded-2xl border border-black/10">
+                    <div className="bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-700">
                         <SignupFormSkeleton />
                     </div>
                 </div>
@@ -234,26 +234,38 @@ export default function Signup() {
         );
     }
 
+    // // Redirect if already authenticated
+    // if (isAuthenticated) {
+    //     return (
+    //         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
+    //             <div className="text-center">
+    //                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+    //                 <p className="text-white">Redirecting...</p>
+    //             </div>
+    //         </div>
+    //     );
+    // }
+
     return (
-        <div className="min-h-screen bg-white flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
             <div className="max-w-md w-full">
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <div className="mx-auto h-12 w-12 bg-black rounded-full flex items-center justify-center mb-4">
+                    <div className="mx-auto h-12 w-12 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center mb-4">
                         <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                         </svg>
                     </div>
-                    <h2 className="text-3xl font-bold text-black font-display">
+                    <h2 className="text-3xl font-bold text-white">
                         Create Account
                     </h2>
-                    <p className="mt-2 text-gray-600">
+                    <p className="mt-2 text-gray-300">
                         Join us and get started
                     </p>
                 </div>
 
                 {/* Signup Form */}
-                <div className="bg-white p-8 rounded-2xl border border-black/10">
+                <div className="bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-700">
                     <SignupForm />
                 </div>
             </div>

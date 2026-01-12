@@ -63,50 +63,64 @@ const LoginForm = () => {
         <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Username Field */}
             <div>
-                <label htmlFor="username" className="block text-sm font-medium text-black mb-2">
+                <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
                     Username
                 </label>
-                <input
-                    type="text"
-                    name="username"
-                    id="username"
-                    required
-                    value={credentials.username}
-                    onChange={onchange}
-                    disabled={isLoading}
-                    className="w-full px-4 py-3 border border-black/20 bg-white text-black rounded-xl focus:ring-2 focus:ring-black focus:border-black transition-all duration-200 outline-none disabled:opacity-50 placeholder:text-gray-400"
-                    placeholder="Enter your username"
-                />
+                <div className="relative">
+                    <input
+                        type="text"
+                        name="username"
+                        id="username"
+                        required
+                        value={credentials.username}
+                        onChange={onchange}
+                        disabled={isLoading}
+                        className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
+                        placeholder="Enter your username"
+                    />
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
             </div>
 
             {/* Password Field */}
             <div>
                 <div className="flex items-center justify-between mb-2">
-                    <label htmlFor="password" className="block text-sm font-medium text-black">
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-300">
                         Password
                     </label>
-                    <a href="#" className="text-sm text-gray-600 hover:text-black transition-colors duration-200">
+                    <a href="#" className="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-200">
                         Forgot password?
                     </a>
                 </div>
-                <input
-                    type="password"
-                    name="password"
-                    id="password"
-                    required
-                    value={credentials.password}
-                    onChange={onchange}
-                    disabled={isLoading}
-                    className="w-full px-4 py-3 border border-black/20 bg-white text-black rounded-xl focus:ring-2 focus:ring-black focus:border-black transition-all duration-200 outline-none disabled:opacity-50 placeholder:text-gray-400"
-                    placeholder="Enter your password"
-                />
+                <div className="relative">
+                    <input
+                        type="password"
+                        name="password"
+                        id="password"
+                        required
+                        value={credentials.password}
+                        onChange={onchange}
+                        disabled={isLoading}
+                        className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
+                        placeholder="Enter your password"
+                    />
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
             </div>
 
             {/* Submit Button */}
             <button
                 type="submit"
                 disabled={isLoading || isAuthenticated}
-                className="w-full bg-black text-white py-3.5 px-4 rounded-xl font-semibold text-base hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-sm"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
             >
                 {isLoading ? (
                     <>
@@ -123,13 +137,13 @@ const LoginForm = () => {
 
             {/* Sign up link */}
             <div className="text-center">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-300">
                     Don't have an account?{' '}
                     <Link 
                         href="/register" 
-                        className="font-medium text-black hover:underline transition-colors duration-200"
+                        className="font-medium text-blue-400 hover:text-blue-300 transition-colors duration-200"
                     >
-                        Create account
+                        Register
                     </Link>
                 </span>
             </div>
@@ -142,19 +156,19 @@ const LoginFormSkeleton = () => {
     return (
         <div className="space-y-6">
             <div>
-                <div className="h-5 w-20 bg-gray-200 rounded mb-2 animate-pulse"></div>
-                <div className="h-12 bg-gray-100 rounded-xl animate-pulse"></div>
+                <div className="h-5 w-20 bg-gray-700 rounded mb-2 animate-pulse"></div>
+                <div className="h-12 bg-gray-700 rounded-lg animate-pulse"></div>
             </div>
             <div>
                 <div className="flex justify-between mb-2">
-                    <div className="h-5 w-20 bg-gray-200 rounded animate-pulse"></div>
-                    <div className="h-5 w-32 bg-gray-200 rounded animate-pulse"></div>
+                    <div className="h-5 w-20 bg-gray-700 rounded animate-pulse"></div>
+                    <div className="h-5 w-32 bg-gray-700 rounded animate-pulse"></div>
                 </div>
-                <div className="h-12 bg-gray-100 rounded-xl animate-pulse"></div>
+                <div className="h-12 bg-gray-700 rounded-lg animate-pulse"></div>
             </div>
-            <div className="h-12 bg-gray-900 rounded-xl animate-pulse"></div>
+            <div className="h-12 bg-gradient-to-r from-blue-600/30 to-purple-700/30 rounded-lg animate-pulse"></div>
             <div className="flex justify-center">
-                <div className="h-5 w-48 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-5 w-48 bg-gray-700 rounded animate-pulse"></div>
             </div>
         </div>
     );
@@ -175,14 +189,14 @@ const LoginPage = () => {
     // Show loading while checking initial auth state
     if (loading) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center p-4">
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
                 <div className="max-w-md w-full space-y-8">
                     <div className="text-center">
-                        <div className="mx-auto h-12 w-12 bg-black rounded-full flex items-center justify-center mb-4 animate-pulse"></div>
-                        <div className="h-8 w-48 bg-gray-200 rounded mx-auto mb-2 animate-pulse"></div>
-                        <div className="h-4 w-32 bg-gray-100 rounded mx-auto animate-pulse"></div>
+                        <div className="mx-auto h-12 w-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4 animate-pulse"></div>
+                        <div className="h-8 w-48 bg-gray-700 rounded mx-auto mb-2 animate-pulse"></div>
+                        <div className="h-4 w-32 bg-gray-700 rounded mx-auto animate-pulse"></div>
                     </div>
-                    <div className="bg-white p-8 rounded-2xl border border-black/10">
+                    <div className="bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-700">
                         <LoginFormSkeleton />
                     </div>
                 </div>
@@ -191,25 +205,25 @@ const LoginPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-white flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
             <div className="max-w-md w-full space-y-8">
                 {/* Header */}
                 <div className="text-center">
-                    <div className="mx-auto h-12 w-12 bg-black rounded-full flex items-center justify-center mb-4">
+                    <div className="mx-auto h-12 w-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4">
                         <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                     </div>
-                    <h2 className="text-3xl font-bold text-black font-display">
+                    <h2 className="text-3xl font-extrabold text-white">
                         Welcome back
                     </h2>
-                    <p className="mt-2 text-sm text-gray-600">
+                    <p className="mt-2 text-sm text-gray-300">
                         Sign in to your account
                     </p>
                 </div>
 
                 {/* Login Form */}
-                <div className="bg-white p-8 rounded-2xl border border-black/10">
+                <div className="bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-700">
                     <LoginForm />
                 </div>
             </div>

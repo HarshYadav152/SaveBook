@@ -20,7 +20,7 @@ export async function POST(request) {
       return NextResponse.json({ success: false, message: "Unauthorized - No token provided" }, { status: 401 });
     }
 
-    const decoded = await verifyJwtToken(authtoken.value);
+    const decoded = verifyJwtToken(authtoken.value);
     
     if (!decoded || !decoded.success) {
       return NextResponse.json({ success: false, message: "Unauthorized - Invalid token" }, { status: 401 });
