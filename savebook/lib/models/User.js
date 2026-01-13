@@ -11,7 +11,25 @@ const UserSchema = new Schema({
     },
     password: {
         type: String,
-        required: true
+        required: function() {
+            return !this.isGithubUser;
+        }
+    },
+    email: {
+        type: String,
+        sparse: true
+    },
+    githubId: {
+        type: String,
+        sparse: true
+    },
+    avatar: {
+        type: String,
+        default: ''
+    },
+    isGithubUser: {
+        type: Boolean,
+        default: false
     },
     date: {
         type: Date,
@@ -42,7 +60,7 @@ const UserSchema = new Schema({
 
 // Password hashing middleware
 UserSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
+    if (!this.isModified("password") || !this.password) return next();
 
     try {
         const salt = await bcrypt.genSalt(10);
@@ -55,6 +73,7 @@ UserSchema.pre("save", async function (next) {
 
 // Method to check if password matches
 UserSchema.methods.comparePassword = async function (candidatePassword) {
+    if (!this.password) return false;
     return await bcrypt.compare(candidatePassword, this.password);
 };
 

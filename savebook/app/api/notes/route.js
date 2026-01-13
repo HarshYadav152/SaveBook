@@ -1,36 +1,50 @@
-import { NextResponse } from "next/server";
-import dbConnect from "@/lib/db/mongodb";
-import Notes from "@/lib/models/Notes";
-import User from "@/lib/models/User";
-import mongoose from "mongoose";
-import { verifyJwtToken } from "@/lib/utils/jwtAuth";
+import { NextResponse } from 'next/server';
+import dbConnect from '@/lib/db/mongodb';
+import Notes from '@/lib/models/Notes';
+import { verifyJwtToken } from '@/lib/utils/JWT';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 export async function GET(request) {
-  await dbConnect();
-
   try {
-    const token = request.cookies.get("authToken")?.value;
-    if(!token){
-      return NextResponse.json({error:"Token not provided"},{status:401})
+    // Check for NextAuth session first (GitHub OAuth)
+    const session = await getServerSession(authOptions);
+    let userId = null;
+
+    if (session?.user?.id) {
+      // GitHub OAuth user
+      userId = session.user.id;
+    } else {
+      // JWT token user (username/password)
+      const token = request.cookies.get('authToken');
+      if (!token) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      
+      const decoded = await verifyJwtToken(token.value);
+      if (!decoded.success) {
+        return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+      }
+      userId = decoded.userId;
     }
-    const decoded = await verifyJwtToken(token);
-    if (!decoded.success) {
+
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await User.findById(decoded.userId).select("-password");
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (process.env.MONGODB_URI) {
+      await dbConnect();
+      const notes = await Notes.find({ user: userId });
+      // Ensure we always return an array
+      return NextResponse.json(Array.isArray(notes) ? notes : []);
+    } else {
+      // Offline mode: return empty array
+      return NextResponse.json([]);
     }
-
-    const notes = await Notes.find({
-      user: new mongoose.Types.ObjectId(decoded.userId),
-    }).lean();
-
-    return NextResponse.json(notes);
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  } catch (error) {
+    console.error('Notes GET error:', error);
+    // Always return an empty array on error to prevent crashes
+    return NextResponse.json([]);
   }
 }
 
@@ -38,38 +52,46 @@ export async function POST(request) {
   try {
     await dbConnect();
 
-    // Auth
-    const token = request.cookies.get("authToken")?.value;
-    if (!token) {
-      return NextResponse.json({ error: "Token not provided" }, { status: 401 });
+    const { title, description, tag } = await request.json();
+    
+    // Check for NextAuth session first (GitHub OAuth)
+    const session = await getServerSession(authOptions);
+    let userId = null;
+
+    if (session?.user?.id) {
+      // GitHub OAuth user
+      userId = session.user.id;
+    } else {
+      // JWT token user (username/password)
+      const token = request.cookies.get('authToken');
+      if (!token) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      
+      const decoded = await verifyJwtToken(token.value);
+      if (!decoded.success) {
+        return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+      }
+      userId = decoded.userId;
     }
-    const decoded = await verifyJwtToken(token);
-    if (!decoded.success) {
+
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Parse body
-    const body = await request.json();
-    const { title, description, tag} = body;
-
-
-    // Ensure user exists
-    const user = await User.findById(decoded.userId).select("_id");
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Create note
     const note = await Notes.create({
-      user: new mongoose.Types.ObjectId(decoded.userId),
-      title: title.trim(),
-      description: description.trim(),
-      tag: tag.trim(),
+      title,
+      description,
+      tag,
+      user: userId
     });
 
     return NextResponse.json(note, { status: 201 });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    console.error('Notes POST error:', error);
+    return NextResponse.json(
+      { error: "Server error" },
+      { status: 500 }
+    );
   }
 }

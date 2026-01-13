@@ -125,7 +125,7 @@ export default function Home() {
                 // Not authenticated - Show "Start Taking Notes", "Login", and "Sign Up"
                 <>
                   <Link 
-                    href="/notes"
+                    href="/register"
                     className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-blue-500/30 transition-all transform hover:scale-105 w-full sm:w-auto justify-center"
                   >
                     <Book className="w-6 h-6" />

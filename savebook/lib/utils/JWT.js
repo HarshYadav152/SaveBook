@@ -1,14 +1,3 @@
-import jwt from "jsonwebtoken";
-
-export function verifyJwtTokenString(token) {
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return { success: true, userId: decoded.userId };
-  } catch (error) {
-    return { success: false };
-  }
-}
-
 import * as jose from 'jose'
 
 const JWT_SECRET = process.env.ACCESS_TOKEN_SECRET || 'your-secret-key-here';
