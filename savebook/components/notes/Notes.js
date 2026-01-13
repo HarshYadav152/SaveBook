@@ -14,7 +14,6 @@ const NavigationHandler = ({ isAuthenticated, loading }) => {
     useEffect(() => {
         // Only redirect if loading is complete and user is not authenticated
         if (!loading && !isAuthenticated) {
-            console.log("User not authenticated, redirecting to login");
             router.push("/login");
         }
     }, [isAuthenticated, loading, router]);
@@ -128,7 +127,7 @@ export default function Notes() {
 
             {/* Edit Note Modal */}
             {isEditModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+                <div className="fixed inset-0 bg-opacity-60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
                     <div className="bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                         {/* Modal Header */}
                         <div className="flex items-center justify-between p-6 border-b border-gray-700">
