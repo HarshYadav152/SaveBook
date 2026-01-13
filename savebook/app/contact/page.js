@@ -12,6 +12,7 @@ const ContactPage = () => {
         message: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [alert, setAlert] = useState({ type: '', message: '' });
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -38,7 +39,8 @@ const ContactPage = () => {
             // Simulate form submission (replace with actual API call when ready)
             await new Promise(resolve => setTimeout(resolve, 1500));
             
-            toast.success("Message sent successfully! We'll get back to you soon. 🎉");
+            // Show in-page alert instead of toast
+            setAlert({ type: 'info', message: "Contact service will be added. We'll get back to you soon." });
             
             // Reset form
             setFormData({
@@ -56,7 +58,7 @@ const ContactPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#101828] py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-[#101828] pt-20 md:pt-24 lg:pt-28 pb-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
                 {/* Header Section */}
                 <div className="text-center mb-12">
@@ -67,6 +69,20 @@ const ContactPage = () => {
                         Have questions or feedback? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
                     </p>
                 </div>
+                {/* Alert (replaces success toast) */}
+                {alert.message && (
+                    <div className="mb-6 flex justify-center">
+                        <div className={`w-full sm:w-11/12 md:w-full rounded-lg px-4 py-3 ${alert.type === 'error' ? 'bg-red-600' : 'bg-blue-600'} text-white flex items-start justify-between`}>
+                            <div className="flex items-start space-x-3">
+                                <svg className="w-5 h-5 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                                </svg>
+                                <p className="text-sm">{alert.message}</p>
+                            </div>
+                            <button onClick={() => setAlert({ type: '', message: '' })} aria-label="Dismiss alert" className="ml-4 text-white opacity-90 hover:opacity-100">×</button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Main Content Grid */}
                 <div className="grid md:grid-cols-3 gap-8">
