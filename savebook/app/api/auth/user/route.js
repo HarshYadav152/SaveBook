@@ -1,6 +1,6 @@
 import dbConnect from "@/lib/db/mongodb";
 import User from "@/lib/models/User";
-import { verifyJwtToken } from "@/lib/utils/jwt";
+import { verifyJwtToken } from "@/lib/utils/JWT";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { NextResponse } from "next/server";

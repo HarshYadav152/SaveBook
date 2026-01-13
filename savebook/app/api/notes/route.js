@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db/mongodb';
 import Notes from '@/lib/models/Notes';
-import { verifyJwtToken } from '@/lib/utils/jwt';
+import { verifyJwtToken } from '@/lib/utils/JWT';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 

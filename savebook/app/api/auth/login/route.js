@@ -1,6 +1,6 @@
 import dbConnect from '@/lib/db/mongodb';
 import User from '@/lib/models/User';
-import { generateAuthToken } from "@/lib/utils/jwt";
+import { generateAuthToken } from "@/lib/utils/JWT";
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {
