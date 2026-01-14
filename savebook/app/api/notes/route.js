@@ -9,15 +9,25 @@ export async function GET(request) {
   await dbConnect();
 
   try {
-    const token = request.cookies.get("authToken")?.value;
-    if(!token){
-      return NextResponse.json({error:"Token not provided"},{status:401})
-    }
-    const decoded = await verifyJwtToken(token);
-    if (!decoded.success) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const token = request.cookies.get('authToken');
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Unauthorized: No token provided" },
+        { status: 401 }
+      );
     }
 
+    const decoded = await verifyJwtToken(token.value);
+
+    if (!decoded || !decoded.success) {
+      return NextResponse.json(
+        { error: "Unauthorized: Invalid token" },
+        { status: 401 }
+      );
+    }
+
+    // Upstream added this extra check, preserving it as it is good security practice
     const user = await User.findById(decoded.userId).select("-password");
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -28,9 +38,12 @@ export async function GET(request) {
     }).lean();
 
     return NextResponse.json(notes);
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -39,18 +52,18 @@ export async function POST(request) {
     await dbConnect();
 
     // Auth
-    const token = request.cookies.get("authToken")?.value;
+    const token = request.cookies.get("authToken");
     if (!token) {
       return NextResponse.json({ error: "Token not provided" }, { status: 401 });
     }
-    const decoded = await verifyJwtToken(token);
+    const decoded = await verifyJwtToken(token.value);
     if (!decoded.success) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Parse body
     const body = await request.json();
-    const { title, description, tag} = body;
+    const { title, description, tag } = body;
 
 
     // Ensure user exists

@@ -4,52 +4,59 @@ import { verifyJwtToken } from "@/lib/utils/jwtAuth";
 import { NextResponse } from 'next/server';
 
 export async function GET(request) {
-  try {
-    const token = request.cookies.get('authToken')?.value;
-    if (!token) {
-      return NextResponse.json(
-        { success: false, message: 'Not authenticated' },
-        { status: 401 }
-      );
-    }
+    try {
+        // Connect to database
+        await dbConnect();
 
-    const tokenInfo = await verifyJwtToken(token);
-    
-    if (!tokenInfo.success) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid token' },
-        { status: 401 }
-      );
-    }
+        // Get token from cookies
+        const authToken = request.cookies.get('authToken');
+        const tokenValue = authToken?.value;
 
-    await dbConnect();
-    
-    // FIX: Use tokenInfo.userId instead of tokenInfo.data._id
-    const user = await User.findById(tokenInfo.userId).select('-password');
-    
-    if (!user) {
-      return NextResponse.json(
-        { success: false, message: 'User not found' },
-        { status: 404 }
-      );
-    }
+        if (!tokenValue) {
+            return NextResponse.json(
+                { success: false, message: 'Unauthorized - No token provided' },
+                { status: 401 }
+            );
+        }
 
-    return NextResponse.json({
-      success: true,
-      user: {
-        username: user.username,
-        profileImage: user.profileImage,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        bio: user.bio,
-        location: user.location
-      }
-    });
-  } catch (error) {
-    console.error('User auth check error:', error);
-    return NextResponse.json(
-      { success: false, message: 'Server error' },
-      { status: 500 }
-    );
-  }
+        // Verify token
+        const tokenInfo = await verifyJwtToken(tokenValue);
+
+        if (!tokenInfo || !tokenInfo.success) {
+            return NextResponse.json(
+                { success: false, message: 'Unauthorized - Invalid token' },
+                { status: 401 }
+            );
+        }
+
+        // Find user by ID but exclude the password
+        const user = await User.findById(tokenInfo.userId).select("-password");
+
+        if (!user) {
+            return NextResponse.json(
+                { success: false, message: "User not found" },
+                { status: 404 }
+            );
+        }
+
+        // Return user data
+        return NextResponse.json({
+            success: true,
+            user: {
+                username: user.username,
+                profileImage: user.profileImage,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                bio: user.bio,
+                location: user.location
+            }
+        }, { status: 200 });
+
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        return NextResponse.json(
+            { success: false, message: "Internal Server Error" },
+            { status: 500 }
+        );
+    }
 }

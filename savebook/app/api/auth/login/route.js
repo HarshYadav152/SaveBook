@@ -1,12 +1,12 @@
 import dbConnect from '@/lib/db/mongodb';
 import User from '@/lib/models/User';
-import { generateAuthToken } from '@/lib/utils/jwtAuth';
+import { generateAuthToken } from "@/lib/utils/jwtAuth";
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {
   try {
     await dbConnect();
-    
+
     const { username, password } = await request.json();
 
     // Find user
@@ -32,7 +32,7 @@ export async function POST(request) {
 
     // Create response
     const response = NextResponse.json(
-      { 
+      {
         success: true,
         data: {
           user: {
@@ -44,11 +44,11 @@ export async function POST(request) {
             location: user.location
           }
         },
-        message: "Login successful" 
+        message: "Login successful"
       },
       { status: 200 }
     );
-    
+
     // Set cookie with 'lax' sameSite for better compatibility
     response.cookies.set('authToken', authToken, {
       httpOnly: true,
@@ -57,7 +57,7 @@ export async function POST(request) {
       maxAge: 60 * 60 * 24 * 7, // 1 week
       path: '/'
     });
-    
+
     console.log('Cookie set successfully');
     return response;
   } catch (error) {
