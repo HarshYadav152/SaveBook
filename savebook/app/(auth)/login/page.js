@@ -75,7 +75,7 @@ const LoginForm = () => {
                         value={credentials.username}
                         onChange={onchange}
                         disabled={isLoading}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
                         placeholder="Enter your username"
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">

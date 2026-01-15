@@ -285,7 +285,7 @@ export default function Navbar() {
 
             {/* Mobile Navigation Menu */}
             {isMenuOpen && (
-                <div className="md:hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+                <div className="md:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200 dark:border-slate-700">
                     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                         {isAuthenticated ? (
                             <div className="space-y-3">

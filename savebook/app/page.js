@@ -36,7 +36,7 @@ export default function Home() {
               <h1 className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 SaveBook
               </h1>
-              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse max-w-md mx-auto"></div>
+              <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded-lg animate-pulse max-w-md mx-auto"></div>
             </div>
           </div>
         </div>
@@ -85,7 +85,7 @@ export default function Home() {
                 </strong>
               </p>
               
-              <div className="max-w-3xl mx-auto text-left bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
+              <div className="max-w-3xl mx-auto text-left bg-gray-50 dark:bg-slate-800/50 rounded-2xl p-8 border border-gray-200 dark:border-slate-700">
                 <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
                   SaveBook is a high-performance, modern web application designed for note-taking and knowledge management. 
                   Built leveraging the latest <span className="font-semibold text-blue-600 dark:text-blue-400">Next.js</span> features, it provides a fast, 
@@ -98,7 +98,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-12">
               {loading ? (
                 // Loading state
-                <div className="flex items-center gap-2 px-8 py-4 bg-gray-200 dark:bg-gray-700 rounded-xl">
+                <div className="flex items-center gap-2 px-8 py-4 bg-gray-200 dark:bg-slate-700 rounded-xl">
                   <Loader2 className="w-6 h-6 animate-spin text-gray-600 dark:text-gray-400" />
                   <span className="text-gray-600 dark:text-gray-400">Loading...</span>
                 </div>
@@ -116,7 +116,7 @@ export default function Home() {
 
                   <Link 
                     href="/profile"
-                    className="inline-flex items-center gap-2 px-6 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all w-full sm:w-auto justify-center"
+                    className="inline-flex items-center gap-2 px-6 py-4 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-400 dark:hover:border-slate-600 transition-all w-full sm:w-auto justify-center"
                   >
                     View Profile
                   </Link>
@@ -136,7 +136,7 @@ export default function Home() {
                   <div className="flex gap-4 w-full sm:w-auto">
                     <Link 
                       href="/login"
-                      className="inline-flex items-center gap-2 px-6 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all w-full sm:w-auto justify-center"
+                      className="inline-flex items-center gap-2 px-6 py-4 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-400 dark:hover:border-slate-600 transition-all w-full sm:w-auto justify-center"
                     >
                       <LogIn className="w-5 h-5" />
                       Login
