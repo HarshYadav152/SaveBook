@@ -1,4 +1,4 @@
-import * as jose from 'jose'
+import * as jose from 'jose';
 
 const JWT_SECRET = process.env.ACCESS_TOKEN_SECRET || 'your-secret-key-here';
 
@@ -35,10 +35,10 @@ export const verifyJwtToken = async (token) => {
       };
     }
 
-    console.log("Verifying token...");
+    // console.log("Verifying token...");
     const secret = new TextEncoder().encode(JWT_SECRET);
     const { payload } = await jose.jwtVerify(token, secret);
-    console.log("Decoded token:", payload);
+    // console.log("Decoded token:", payload);
 
     return {
       success: true,

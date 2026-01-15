@@ -129,7 +129,6 @@ const NoteState = (props) => {
       // Optimistic update: Use original plaintext for UI
       const newNoteLocal = { ...note, title, description, tag };
       setNotes(prevNotes => [newNoteLocal, ...prevNotes]);
-
     } catch (error) {
       console.error('Error adding note:', error);
       getNotes();

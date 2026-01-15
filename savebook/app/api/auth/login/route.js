@@ -1,6 +1,6 @@
 import dbConnect from '@/lib/db/mongodb';
 import User from '@/lib/models/User';
-import { generateAuthToken } from "@/lib/utils/JWT";
+import { generateAuthToken } from "@/lib/utils/jwtAuth";
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {
@@ -52,7 +52,8 @@ export async function POST(request) {
       { status: 200 }
     );
 
-    // Set cookie
+    // Set cookie with 'lax' sameSite for better compatibility
+
     response.cookies.set('authToken', authToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

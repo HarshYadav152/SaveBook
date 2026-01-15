@@ -2,14 +2,14 @@ import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import dbConnect from '@/lib/db/mongodb';
 import Notes from '@/lib/models/Notes';
-import { verifyJwtToken } from '@/lib/utils/JWT';
+import { verifyJwtToken } from "@/lib/utils/jwtAuth";
 
 // Get a specific note by ID
 export async function GET(request, { params }) {
   await dbConnect();
 
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Validate ID format
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -20,9 +20,25 @@ export async function GET(request, { params }) {
     }
 
     const token = request.cookies.get('authToken');
-    const { userId } = await verifyJwtToken(token.value)
 
-    const note = await Notes.findOne({ _id: id, user: userId });
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Unauthorized: No token provided" },
+        { status: 401 }
+      );
+    }
+
+    const decoded = await verifyJwtToken(token.value);
+
+    if (!decoded || !decoded.success) {
+      return NextResponse.json(
+        { error: "Unauthorized: Invalid token" },
+        { status: 401 }
+      );
+    }
+
+    const note = await Notes.findOne({ _id: id, user: decoded.userId });
 
     if (!note) {
       return NextResponse.json(
@@ -46,7 +62,7 @@ export async function PUT(request, { params }) {
   await dbConnect();
 
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Validate ID format
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -57,7 +73,22 @@ export async function PUT(request, { params }) {
     }
 
     const token = request.cookies.get('authToken');
-    const { userId } = await verifyJwtToken(token.value)
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Unauthorized: No token provided" },
+        { status: 401 }
+      );
+    }
+
+    const decoded = await verifyJwtToken(token.value);
+
+    if (!decoded || !decoded.success) {
+      return NextResponse.json(
+        { error: "Unauthorized: Invalid token" },
+        { status: 401 }
+      );
+    }
 
     const { title, description, tag } = await request.json();
 
@@ -78,7 +109,7 @@ export async function PUT(request, { params }) {
     }
 
     // Verify user owns this note
-    if (note.user.toString() !== userId) {
+    if (note.user.toString() !== decoded.userId) {
       return NextResponse.json(
         { error: "Not authorized" },
         { status: 401 }
@@ -107,7 +138,7 @@ export async function DELETE(request, { params }) {
   await dbConnect();
 
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Validate ID format
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -118,7 +149,22 @@ export async function DELETE(request, { params }) {
     }
 
     const token = request.cookies.get('authToken');
-    const { userId } = await verifyJwtToken(token.value)
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Unauthorized: No token provided" },
+        { status: 401 }
+      );
+    }
+
+    const decoded = await verifyJwtToken(token.value);
+
+    if (!decoded || !decoded.success) {
+      return NextResponse.json(
+        { error: "Unauthorized: Invalid token" },
+        { status: 401 }
+      );
+    }
 
     // Find note and verify ownership
     let note = await Notes.findById(id);
@@ -131,7 +177,7 @@ export async function DELETE(request, { params }) {
     }
 
     // Verify user owns this note
-    if (note.user.toString() !== userId) {
+    if (note.user.toString() !== decoded.userId) {
       return NextResponse.json(
         { error: "Not authorized" },
         { status: 401 }
