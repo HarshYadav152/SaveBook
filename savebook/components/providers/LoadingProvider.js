@@ -75,14 +75,14 @@ export default function LoadingProvider({ children }) {
   return (
     <>
       {isLoading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900/70 backdrop-blur-sm z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 dark:bg-black/70 backdrop-blur-sm z-50">
           <Suspense fallback={<LoaderFallback />}>
             <Loader />
           </Suspense>
         </div>
       )}
       <Suspense fallback={
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900/70 backdrop-blur-sm z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 dark:bg-black/70 backdrop-blur-sm z-50">
           <LoaderFallback />
         </div>
       }>

@@ -14,6 +14,7 @@ html, body {
 
 html {
     scroll-behavior: smooth;
+    color-scheme: light;
 }
 
 /* Light mode (default) */
@@ -22,24 +23,17 @@ html {
 }
 
 html body {
-    @apply bg-white text-gray-800;
+    @apply bg-white text-gray-900;
 }
 
 /* Dark mode - Applied to entire html element */
 html.dark {
-    @apply bg-slate-900;
+    color-scheme: dark;
+    @apply bg-slate-950;
 }
 
 html.dark body {
-    @apply bg-slate-900 text-gray-100;
-}
-
-html.dark {
-    color-scheme: dark;
-}
-
-html {
-    color-scheme: light;
+    @apply bg-slate-950 text-gray-100;
 }
 
 /* Smooth transitions for theme switching - selective only */
@@ -47,9 +41,18 @@ body {
     @apply transition-colors duration-200;
 }
 
-/* Apply transitions to text and backgrounds only, not layout */
-p, a, h1, h2, h3, h4, h5, h6, button, input, textarea, select {
+/* Apply transitions to specific elements only, preventing layout issues */
+p, a, span, h1, h2, h3, h4, h5, h6 {
     @apply transition-colors duration-200;
+}
+
+button, input, textarea, select {
+    @apply transition-colors duration-200;
+}
+
+/* Critical layout elements should not transition */
+nav, header, main, footer {
+    transition: none !important;
 }
 
 /* Scrollbar styling */
@@ -78,16 +81,24 @@ a {
 
 /* Input and form styling */
 input, textarea, select {
-    @apply bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100;
+    @apply bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-slate-700 rounded transition-colors;
+}
+
+input:focus, textarea:focus, select:focus {
+    @apply ring-2 ring-blue-500 dark:ring-blue-400;
 }
 
 input::placeholder, textarea::placeholder {
     @apply text-gray-500 dark:text-gray-400;
 }
 
-/* Button styling */
+/* Button styling with proper dark mode contrast */
 button {
-    @apply text-gray-900 dark:text-gray-100;
+    @apply text-gray-900 dark:text-gray-100 transition-colors;
+}
+
+button:disabled {
+    @apply opacity-50 cursor-not-allowed;
 }
 
 /* Code block styling */
@@ -111,29 +122,39 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Card and container styling */
 .card, [class*="card"] {
-    @apply bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100;
+    @apply bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-slate-700;
 }
 
-/* Border styling */
-border, [class*="border"] {
+/* Ensure proper borders throughout */
+[class*="border-"] {
     @apply border-gray-200 dark:border-slate-700;
+}
+
+/* Modal and overlay styling */
+[class*="modal"], [class*="overlay"], [role="dialog"] {
+    @apply bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100;
 }
 
 /* Scrollbar styling */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    @apply bg-gray-100 dark:bg-gray-800;
+    @apply bg-gray-100 dark:bg-slate-800;
 }
 
 ::-webkit-scrollbar-thumb {
-    @apply bg-gray-400 dark:bg-gray-600 rounded-full hover:bg-gray-500 dark:hover:bg-gray-500;
+    @apply bg-gray-400 dark:bg-slate-600 rounded-full hover:bg-gray-500 dark:hover:bg-slate-500;
 }
 
 /* Selection color */
 ::selection {
-    @apply bg-blue-500 text-white dark:bg-purple-600;
+    @apply bg-blue-500 text-white dark:bg-blue-600;
+}
+
+/* Focus styles for accessibility */
+:focus-visible {
+    @apply outline-none ring-2 ring-offset-2 ring-blue-500 dark:ring-blue-400 dark:ring-offset-slate-950;
 }
