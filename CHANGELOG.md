@@ -1,3 +1,32 @@
+## [2026-01-15]
+
+### ✨ Features
+-  update support email address on Contact Us page (088f4d0) - @Abhijeet-980
+
+### 📝 Documentation
+-  auto update changelog (17d2cce) - @vinayboss9669
+-  auto update changelog (384ca31) - @HarshYadav152
+-  auto update changelog (9a91d5b) - @JackSparrow-BlackPearl
+
+### 📦 Other Changes
+- Fix issue 19: prevent notes from leaking across users (22d607f) - @Hina
+- Fix: Add missing await to verifyJwtToken in upload route (2e05089) - @Your Name
+- Fix: Critical security vulnerability - Improper Token Validation (71d5b6d) - @Your Name
+-  implement in-page alert for contact form submission and update styles (665a776) - @Abhijeet-980
+- one remaining import path update (68c36a9) - @Harsh Yadav
+- rename jwt utility and update imports (a32fd33) - @Harsh Yadav
+- remove middleware (703f015) - @Harsh Yadav
+- change import path (bdd2185) - @Harsh Yadav
+- rename JWT to jwt and rename function name (3f841f1) - @Harsh Yadav
+- revise context and fix import error (5b2114d) - @Harsh Yadav
+- notes array null fix (26b0d2f) - @Harsh Yadav
+- add register /endpoint (983b302) - @Harsh Yadav
+- remove console logs and fix some bugs (e44cf16) - @Harsh Yadav
+- remove console logs and minor bug fix (38c7e8d) - @Harsh Yadav
+- update savebook name (f98a91a) - @Harsh Yadav
+- update savebook name (8d53843) - @Harsh Yadav
+
+
 ## [2026-01-14]
 
 ### ✨ Features
