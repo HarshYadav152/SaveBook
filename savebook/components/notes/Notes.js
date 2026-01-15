@@ -27,25 +27,19 @@ export default function Notes() {
     const { notes: contextNotes = [], getNotes, editNote } = context || {};
     
     // Ensure notes is always an array
-    const notes = Array.isArray(contextNotes) ? contextNotes : [];
-    
+    const notes =
+        isAuthenticated && Array.isArray(contextNotes)
+            ? contextNotes
+            : [];
+
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [note, setNote] = useState({ id: "", etitle: "", edescription: "", etag: "" });
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTag, setSelectedTag] = useState('all');
-    
+
     useEffect(() => {
-        // Only fetch notes if authenticated and not loading
         if (isAuthenticated && !loading) {
-            async function fetch() {   
-                try {
-                    await getNotes();
-                } catch (error) {
-                    console.error("Error fetching notes:", error);
-                    toast.error("Failed to load notes");
-                }
-            }
-            fetch();
+            getNotes().catch(() => toast.error("Failed to load notes"));
         }
     }, [isAuthenticated, loading, getNotes]);
     
