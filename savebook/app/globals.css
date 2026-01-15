@@ -17,144 +17,267 @@ html {
     color-scheme: light;
 }
 
-/* Light mode (default) */
+/* ============================================
+   LIGHT MODE (default)
+   ============================================ */
 html {
-    @apply bg-white;
+    background-color: #ffffff;
 }
 
 html body {
-    @apply bg-white text-gray-900;
+    background-color: #ffffff;
+    color: #1f2937;
 }
 
-/* Dark mode - Applied to entire html element */
+/* ============================================
+   DARK MODE
+   ============================================ */
 html.dark {
     color-scheme: dark;
-    @apply bg-slate-950;
+    background-color: #0f172a;
 }
 
 html.dark body {
-    @apply bg-slate-950 text-gray-100;
+    background-color: #0f172a;
+    color: #e2e8f0;
 }
 
-/* Smooth transitions for theme switching - selective only */
+/* ============================================
+   SMOOTH TRANSITIONS
+   ============================================ */
 body {
-    @apply transition-colors duration-200;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Apply transitions to specific elements only, preventing layout issues */
+/* Apply transitions to specific elements only */
 p, a, span, h1, h2, h3, h4, h5, h6 {
-    @apply transition-colors duration-200;
+    transition: color 0.3s ease;
 }
 
 button, input, textarea, select {
-    @apply transition-colors duration-200;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
-/* Critical layout elements should not transition */
+/* Critical layout elements should NOT transition */
 nav, header, main, footer {
     transition: none !important;
 }
 
-/* Scrollbar styling */
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    @apply bg-gray-100 dark:bg-slate-800;
+    background-color: #f3f4f6;
+}
+
+html.dark ::-webkit-scrollbar-track {
+    background-color: #1e293b;
 }
 
 ::-webkit-scrollbar-thumb {
-    @apply bg-gray-400 dark:bg-slate-600 rounded-full hover:bg-gray-500 dark:hover:bg-slate-500;
+    background-color: #9ca3af;
+    border-radius: 5px;
 }
 
-/* Selection color */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #6b7280;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+    background-color: #475569;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+    background-color: #64748b;
+}
+
+/* ============================================
+   TEXT SELECTION
+   ============================================ */
 ::selection {
-    @apply bg-blue-500 text-white dark:bg-blue-600;
+    background-color: #3b82f6;
+    color: white;
 }
 
-/* Link styling */
+html.dark ::selection {
+    background-color: #2563eb;
+    color: white;
+}
+
+/* ============================================
+   LINK STYLING
+   ============================================ */
 a {
-    @apply text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors;
+    color: #2563eb;
+    transition: color 0.3s ease;
 }
 
-/* Input and form styling */
+a:hover {
+    color: #1d4ed8;
+}
+
+html.dark a {
+    color: #60a5fa;
+}
+
+html.dark a:hover {
+    color: #93c5fd;
+}
+
+/* ============================================
+   FORM ELEMENTS
+   ============================================ */
 input, textarea, select {
-    @apply bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-slate-700 rounded transition-colors;
+    background-color: #ffffff;
+    color: #1f2937;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+html.dark input,
+html.dark textarea,
+html.dark select {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    border-color: #334155;
 }
 
 input:focus, textarea:focus, select:focus {
-    @apply ring-2 ring-blue-500 dark:ring-blue-400;
+    outline: none;
+    ring: 2px solid #3b82f6;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+html.dark input:focus,
+html.dark textarea:focus,
+html.dark select:focus {
+    ring: 2px solid #60a5fa;
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
 }
 
 input::placeholder, textarea::placeholder {
-    @apply text-gray-500 dark:text-gray-400;
+    color: #9ca3af;
 }
 
-/* Button styling with proper dark mode contrast */
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+    color: #6b7280;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
 button {
-    @apply text-gray-900 dark:text-gray-100 transition-colors;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 button:disabled {
-    @apply opacity-50 cursor-not-allowed;
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-/* Code block styling */
+/* ============================================
+   TEXT STYLING
+   ============================================ */
+p {
+    color: #374151;
+    line-height: 1.625;
+}
+
+html.dark p {
+    color: #d1d5db;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #1f2937;
+    font-weight: bold;
+}
+
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6 {
+    color: #f1f5f9;
+}
+
+/* ============================================
+   CODE BLOCKS
+   ============================================ */
 code {
-    @apply bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-gray-200 px-2 py-1 rounded text-sm;
+    background-color: #f3f4f6;
+    color: #111827;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+}
+
+html.dark code {
+    background-color: #1e293b;
+    color: #e2e8f0;
 }
 
 pre {
-    @apply bg-gray-900 dark:bg-slate-950 text-gray-100 dark:text-gray-300 p-4 rounded-lg overflow-x-auto;
+    background-color: #111827;
+    color: #f3f4f6;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
 }
 
-/* Paragraph text */
-p {
-    @apply text-gray-700 dark:text-gray-300 leading-relaxed;
+html.dark pre {
+    background-color: #0f172a;
+    color: #d1d5db;
 }
 
-/* Heading styling */
-h1, h2, h3, h4, h5, h6 {
-    @apply text-gray-900 dark:text-gray-100 font-bold;
-}
-
-/* Card and container styling */
+/* ============================================
+   CARD & CONTAINER STYLING
+   ============================================ */
 .card, [class*="card"] {
-    @apply bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-slate-700;
+    background-color: #ffffff;
+    color: #1f2937;
+    border: 1px solid #e5e7eb;
 }
 
-/* Ensure proper borders throughout */
-[class*="border-"] {
-    @apply border-gray-200 dark:border-slate-700;
+html.dark .card,
+html.dark [class*="card"] {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    border-color: #334155;
 }
 
-/* Modal and overlay styling */
+/* ============================================
+   MODAL & OVERLAY STYLING
+   ============================================ */
 [class*="modal"], [class*="overlay"], [role="dialog"] {
-    @apply bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100;
+    background-color: #ffffff;
+    color: #1f2937;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+html.dark [class*="modal"],
+html.dark [class*="overlay"],
+html.dark [role="dialog"] {
+    background-color: #1e293b;
+    color: #e2e8f0;
 }
 
-::-webkit-scrollbar-track {
-    @apply bg-gray-100 dark:bg-slate-800;
-}
-
-::-webkit-scrollbar-thumb {
-    @apply bg-gray-400 dark:bg-slate-600 rounded-full hover:bg-gray-500 dark:hover:bg-slate-500;
-}
-
-/* Selection color */
-::selection {
-    @apply bg-blue-500 text-white dark:bg-blue-600;
-}
-
-/* Focus styles for accessibility */
+/* ============================================
+   ACCESSIBILITY - FOCUS STYLES
+   ============================================ */
 :focus-visible {
-    @apply outline-none ring-2 ring-offset-2 ring-blue-500 dark:ring-blue-400 dark:ring-offset-slate-950;
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+html.dark :focus-visible {
+    outline-color: #60a5fa;
 }
