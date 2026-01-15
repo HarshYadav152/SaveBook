@@ -74,6 +74,21 @@ SaveBook/
 
 ---
 
+## 🌓 Theme Support
+
+SaveBook supports both **Light and Dark themes** for a comfortable viewing experience in any lighting condition.
+
+### Theme Features
+- **Automatic Detection** – Respects your system's color scheme preference on first visit
+- **Manual Toggle** – Switch between light and dark modes using the theme toggle button in the navbar
+- **Persistent Storage** – Your theme preference is saved locally and remembered across sessions
+- **Smooth Transitions** – Theme changes apply with smooth color transitions for a polished experience
+
+### Using the Theme
+Simply click the **sun/moon icon** in the navbar to toggle between light and dark modes. Your preference is automatically saved!
+
+---
+
 ## 🤝 Contributing to ECWoC 2026
 
 > [!IMPORTANT]

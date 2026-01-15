@@ -54,6 +54,14 @@ const ThemeProvider = ({ children }) => {
     };
 
     // Render immediately with theme applied
+    if (!isMounted) {
+        return (
+            <ThemeContext.Provider value={{ theme: 'light', toggleTheme: () => {}, setThemeMode: () => {} }}>
+                {children}
+            </ThemeContext.Provider>
+        );
+    }
+
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme, setThemeMode }}>
             {children}

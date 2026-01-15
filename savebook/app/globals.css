@@ -42,10 +42,13 @@ html {
     color-scheme: light;
 }
 
-/* Smooth transitions for theme switching */
-html,
-body,
-body * {
+/* Smooth transitions for theme switching - selective only */
+body {
+    @apply transition-colors duration-200;
+}
+
+/* Apply transitions to text and backgrounds only, not layout */
+p, a, h1, h2, h3, h4, h5, h6, button, input, textarea, select {
     @apply transition-colors duration-200;
 }
 
