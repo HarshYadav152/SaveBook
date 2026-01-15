@@ -130,7 +130,7 @@ export default function Notes() {
                 <div className="fixed inset-0 bg-black/40 dark:bg-black/60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
                     <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                         {/* Modal Header */}
-                        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
                             <div>
                                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                                     Edit Note
@@ -139,7 +139,7 @@ export default function Notes() {
                             </div>
                             <button
                                 onClick={() => setIsEditModalOpen(false)}
-                                className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                                className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg"
                             >
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -218,10 +218,10 @@ export default function Notes() {
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3 p-6 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3 p-6 border-t border-gray-200 dark:border-slate-700">
                             <button
                                 onClick={() => setIsEditModalOpen(false)}
-                                className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 font-medium w-full sm:w-auto"
+                                className="px-6 py-3 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-all duration-200 font-medium w-full sm:w-auto"
                             >
                                 Cancel
                             </button>
@@ -266,7 +266,7 @@ export default function Notes() {
                                     placeholder="Search notes..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none"
+                                    className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none"
                                 />
                             </div>
                         </div>
@@ -278,7 +278,7 @@ export default function Notes() {
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                                     selectedTag === 'all' 
                                         ? 'bg-blue-600 text-white' 
-                                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                                        : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
                                 }`}
                             >
                                 All
@@ -290,7 +290,7 @@ export default function Notes() {
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                                         selectedTag === tag.value 
                                             ? `${tag.color} text-white` 
-                                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                                            : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
                                     }`}
                                 >
                                     {tag.value}

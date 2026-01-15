@@ -138,8 +138,8 @@ export default function Navbar() {
                                 
                                 {/* Dropdown menu */}
                                 {dropdownOpen && (
-                                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
-                                        <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-slate-700">
+                                        <div className="px-4 py-2 border-b border-gray-200 dark:border-slate-700">
                                             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                                                 {user?.username || "User"}
                                             </p>
@@ -218,8 +218,8 @@ export default function Navbar() {
                                     
                                     {/* Dropdown menu for mobile */}
                                     {dropdownOpen && (
-                                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
-                                            <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                                        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-slate-700">
+                                            <div className="px-4 py-2 border-b border-gray-200 dark:border-slate-700">
                                                 <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                                                     {user?.username || "User"}
                                                 </p>
@@ -253,7 +253,7 @@ export default function Navbar() {
                                 
                                 <button
                                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                    className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-all duration-200"
+                                    className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-all duration-200"
                                 >
                                     <svg className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                         {isMenuOpen ? (
