@@ -63,7 +63,7 @@ export async function POST(request) {
 
     // Parse body
     const body = await request.json();
-    const { title, description, tag } = body;
+    const { title, description, tag, encryptedKey, keyIv, titleIv, contentIv } = body;
 
 
     // Ensure user exists
@@ -78,6 +78,10 @@ export async function POST(request) {
       title: title.trim(),
       description: description.trim(),
       tag: tag.trim(),
+      encryptedKey,
+      keyIv,
+      titleIv,
+      contentIv
     });
 
     return NextResponse.json(note, { status: 201 });
