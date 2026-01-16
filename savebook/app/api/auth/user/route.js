@@ -12,6 +12,7 @@ export async function GET(request) {
         const authToken = request.cookies.get('authToken');
         const tokenValue = authToken?.value;
 
+<<<<<<< HEAD
         if (!tokenValue) {
             return NextResponse.json(
                 { success: false, message: 'Unauthorized - No token provided' },
@@ -59,4 +60,39 @@ export async function GET(request) {
             { status: 500 }
         );
     }
+=======
+    await dbConnect();
+    
+    // Use tokenInfo.userId instead of tokenInfo.data._id
+    const user = await User.findById(tokenInfo.userId).select('-password');
+    
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      user: {
+        username: user.username,
+        profileImage: user.profileImage,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,        // newly added field
+        email: user.email,        // newly added field
+        gender: user.gender,      // newly added field
+        dob: user.dob,            // newly added field
+        bio: user.bio,
+        location: user.location
+      }
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, message: 'Server error' },
+      { status: 500 }
+    );
+  }
+>>>>>>> a61f6ef (Updated login page and update profile page, fix: removal of console logs, restored .env)
 }

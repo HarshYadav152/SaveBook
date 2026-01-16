@@ -4,13 +4,13 @@ import dbConnect from "@/lib/db/mongodb";
 
 export async function POST(request) {
   try {
-    const { username, password} = await request.json();
+    const { username, password } = await request.json();
     
-    //Validate required fields
-    if(!username || !password){
+    // Validate required fields
+    if (!username || !password) {
       return NextResponse.json(
         { success: false, message: "All fields are required" },
-        { status: 400}
+        { status: 400 }
       );
     }
 
@@ -23,18 +23,17 @@ export async function POST(request) {
     }
 
     // Check if user exists
-    let user = await User.findOne({ username });
+    const user = await User.findOne({ username });
     if (user) {
       return NextResponse.json(
-        { success: false, message: "Invalid input" },
+        { success: false, message: "User with this username already exists" },
         { status: 400 }
       );
     }
     
     // Try creating user
     try {
-      const newUser = await User.create({ username, password });
-      console.log("User created:", newUser._id);
+      await User.create({ username, password });
 
       return NextResponse.json(
         { success: true, message: "Account created successfully" },
@@ -49,7 +48,6 @@ export async function POST(request) {
         );
       }
 
-      console.error("User creation error:", err.message);
       return NextResponse.json(
         { success: false, message: err.message || "Failed to create user" },
         { status: 500 }

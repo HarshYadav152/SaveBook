@@ -22,34 +22,26 @@ export async function POST(request) {
   );
 }
 
-    const user = await User.findOne({ username });
-
-const isPasswordValid = user
-  ? await user.comparePassword(password)
-  : false;
-
-if (!user || !isPasswordValid) {
-  return NextResponse.json(
-    { success: false, message: "Invalid username or password" },
-    { status: 401 }
-  );
-}
-
-
-    //  Generate auth token
-    const { authToken } = await generateAuthToken(user._id.toString());
-
-    //  FIRST LOGIN: generate recovery codes
-    let recoveryCodes = null;
-    if (!user.recoveryCodes || user.recoveryCodes.length === 0) {
-      const generated = generateRecoveryCodes(8);
-
-      user.recoveryCodes = generated.hashedCodes;
-      await user.save();
-
-      // Plain codes only sent once
-      recoveryCodes = generated.plainCodes;
+    // Find user
+    const user = await User.findOne({ username }).select("+password");
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Invalid Username! Try Again!" },
+        { status: 401 }
+      );
     }
+
+    // Verify password
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { success: false, message: "Invalid Password! Try Again!" },
+        { status: 401 }
+      );
+    }
+
+    // Generate token and set cookie
+    const { authToken } = await generateAuthToken(user._id.toString());
 
     const response = NextResponse.json(
       {
@@ -66,12 +58,13 @@ if (!user || !isPasswordValid) {
           //  only present on first login
           recoveryCodes,
         },
-        message: "Login successful",
+        message: "Login successful"
       },
       { status: 200 }
     );
-
-    response.cookies.set("authToken", authToken, {
+    
+    // Set cookie only on success
+    response.cookies.set('authToken', authToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
@@ -81,7 +74,6 @@ if (!user || !isPasswordValid) {
 
     return response;
   } catch (error) {
-    console.error("Login error:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
       { status: 500 }

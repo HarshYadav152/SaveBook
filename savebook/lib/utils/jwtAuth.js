@@ -1,4 +1,8 @@
+<<<<<<< HEAD:savebook/lib/utils/jwtAuth.js
 import * as jose from 'jose';
+=======
+import * as jose from 'jose'
+>>>>>>> a61f6ef (Updated login page and update profile page, fix: removal of console logs, restored .env):savebook/lib/utils/JWT.js
 
 const JWT_SECRET = process.env.ACCESS_TOKEN_SECRET || 'your-secret-key-here';
 

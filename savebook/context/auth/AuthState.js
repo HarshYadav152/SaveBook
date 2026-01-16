@@ -46,18 +46,17 @@ const AuthProvider = ({ children }) => {
     };
 
     // Login function
-    const login = async (username, password) => {
-        try {
-            setLoading(true);
-            const response = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username, password }),
-                credentials: 'include' // Important: to store the cookie
-            });
+    const login = async (username, password, rememberMe) => {
+    try {
+        setLoading(true);
+        const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, rememberMe }),
+        credentials: "include", // keep cookie
+        });
 
+<<<<<<< HEAD
             const data = await response.json();
             
             if (data.success) {
@@ -78,7 +77,35 @@ const AuthProvider = ({ children }) => {
             };
         } finally {
             setLoading(false);
+=======
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+        // Only set authenticated on success
+        setUser(data.data.user);
+        setIsAuthenticated(true);
+        return { success: true, message: data.message };
+        } else {
+        // Do not set isAuthenticated here
+        setIsAuthenticated(false);
+        setUser(null);
+        setIsAuthenticated(false);
+        return {
+            success: false,
+            message: data.message || "Invalid credentials",
+        };
+>>>>>>> a61f6ef (Updated login page and update profile page, fix: removal of console logs, restored .env)
         }
+    } catch (error) {
+        console.error("Login error:", error);
+        setIsAuthenticated(false);
+        return {
+          success: false,
+          message: "An error occurred during login",
+        };
+    } finally {
+        setLoading(false);
+    }
     };
 
     // Register function
@@ -133,6 +160,19 @@ const AuthProvider = ({ children }) => {
         } catch (error) {
             console.error("Logout failed:", error);
         }
+    };
+
+    //function created for providing path for updateProfile
+    const updateProfile = async (updates) => {
+    const response = await fetch('/api/auth/updateProfile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+        credentials: 'include'
+    });
+    const data = await response.json();
+    if (data.success) setUser(data.user);
+    return data;
     };
 
     // Create the context value
