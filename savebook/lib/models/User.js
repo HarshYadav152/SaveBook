@@ -6,7 +6,7 @@ const UserSchema = new Schema({
     username: {
         type: String,
         required: true,
-        lowercase:true,
+        lowercase: true,
         unique: true
     },
     password: {
@@ -37,7 +37,12 @@ const UserSchema = new Schema({
         type: String,
         default: ''
     },
-
+    // --- NEW: Bookmarks Field ---
+    bookmarks: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Resource' // We assume your Resource model is named 'Resource'. 
+    }]
+    // ----------------------------
 });
 
 // Password hashing middleware

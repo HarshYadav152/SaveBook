@@ -1,12 +1,17 @@
+"use client";
 import noteContext from '@/context/noteContext';
 import React, { useContext, useState } from 'react'
 import toast from 'react-hot-toast';
+import BookmarkButton from '../common/BookmarkButton'; // Importing the button
 
 export default function NoteItem(props) {
     const context = useContext(noteContext);
-    const { deleteNote } = context;
+    const { deleteNote, user } = context; // Assuming user data is in context
     const { note, updateNote } = props;
     const [isDeleting, setIsDeleting] = useState(false);
+
+    // Check if this specific note is in the user's bookmarks array
+    const isInitiallyBookmarked = user?.bookmarks?.includes(note._id);
 
     const handleDelete = async () => { 
         setIsDeleting(true);
@@ -24,7 +29,6 @@ export default function NoteItem(props) {
         updateNote(note);
     }
 
-    // Enhanced tag colors with better dark mode variants
     const getTagColor = (tag) => {
         const tagColors = {
             'General': { bg: 'bg-blue-500', text: 'text-blue-100' },
@@ -39,80 +43,59 @@ export default function NoteItem(props) {
         return tagColors[tag] || { bg: 'bg-blue-500', text: 'text-blue-100' };
     };
 
-    // Format date with relative time - with error handling
     const formatDate = (dateString) => {
-    try {
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return 'Unknown date';
-
-        const now = new Date();
-
-        // Compare calendar dates in LOCAL timezone
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const noteDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-        const diffTime = today - noteDay;
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 0) return 'Today';
-        if (diffDays === 1) return 'Yesterday';
-        if (diffDays < 7) return `${diffDays} days ago`;
-        if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-
-        return date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
-        });
-    } catch (err) {
-        console.error("Date formatting error:", err);
-        return 'Unknown date';
-    }
-    };
-
-
-    // Calculate reading time - with error handling
-    const getReadingTime = (text) => {
         try {
-            if (!text) return '< 1 min';
-            
-            const wordsPerMinute = 200;
-            const wordCount = text.split(/\s+/).length || 0;
-            const readingTime = Math.ceil(wordCount / wordsPerMinute);
-            return readingTime < 1 ? '< 1 min' : `${readingTime} min read`;
-        } catch (error) {
-            console.error("Reading time calculation error:", error);
-            return '< 1 min';
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return 'Unknown date';
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const noteDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            const diffTime = today - noteDay;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays === 0) return 'Today';
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays} days ago`;
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        } catch (err) {
+            return 'Unknown date';
         }
     };
 
-    // Safely calculate description length and word count
+    const getReadingTime = (text) => {
+        if (!text) return '< 1 min';
+        const wordsPerMinute = 200;
+        const wordCount = text.split(/\s+/).length || 0;
+        const readingTime = Math.ceil(wordCount / wordsPerMinute);
+        return readingTime < 1 ? '< 1 min' : `${readingTime} min read`;
+    };
+
     const descriptionLength = note?.description?.length || 0;
     const wordCount = note?.description ? note.description.split(/\s+/).filter(Boolean).length : 0;
-    
-    // Safely get tag color
     const tagColor = getTagColor(note?.tag || 'General');
 
     return (
         <div className="group relative">
             <div className="relative bg-gray-900 rounded-2xl border border-gray-700 hover:border-gray-600 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:scale-[1.02]">
                 
-                {/* Header with Gradient */}
                 <div className="p-5 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-gray-900 relative">
                     <div className="flex items-start justify-between mb-2">
                         <h3 className="font-bold text-white text-lg leading-tight line-clamp-2 flex-1 pr-2">
                             {note?.title || 'Untitled Note'}
                         </h3>
                         
-                        {/* Tag moved to top right corner */}
-                        <div className="flex-shrink-0">
+                        <div className="flex items-center space-x-2 flex-shrink-0">
+                            {/* --- NEW: Bookmark Button --- */}
+                            <BookmarkButton 
+                                resourceId={note._id} 
+                                initialBookmarked={isInitiallyBookmarked} 
+                            />
+                            {/* --------------------------- */}
                             <span className={`${tagColor.bg} ${tagColor.text} px-2 py-1 rounded-md text-xs font-medium`}>
                                 {note?.tag || 'General'}
                             </span>
                         </div>
                     </div>
                     
-                    {/* Metadata Row */}
                     <div className="flex items-center justify-between text-xs text-gray-400">
                         <div className="flex items-center space-x-2">
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,16 +112,13 @@ export default function NoteItem(props) {
                     </div>
                 </div>
 
-                {/* Body with Enhanced Text Display */}
                 <div className="p-5 relative z-10">
                     <p className="text-gray-300 text-sm leading-relaxed line-clamp-4 min-h-[84px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-3 border border-gray-700 relative z-10">
-                        {note?.description || 'No description provided. Click edit to add content to this note.'}
+                        {note?.description || 'No description provided.'}
                     </p>
                 </div>
 
-                {/* Enhanced Footer */}
                 <div className="px-5 py-4 bg-gray-800/50 border-t border-gray-700 backdrop-blur-sm relative z-10">
-                    {/* Action Buttons with Enhanced Design */}
                     <div className="flex justify-between items-center mb-3">
                         <button
                             onClick={handleEdit}
@@ -170,40 +150,24 @@ export default function NoteItem(props) {
                                     </svg>
                                 )}
                             </div>
-                            <span className="text-sm font-medium">
-                                {isDeleting ? 'Deleting...' : 'Delete'}
-                            </span>
+                            <span className="text-sm font-medium">{isDeleting ? 'Deleting...' : 'Delete'}</span>
                         </button>
                     </div>
 
-                    {/* Enhanced Date and Stats Row */}
-                    <div className="flex items-center justify-between text-xs">
-                        <div className="flex items-center space-x-2 text-gray-400">
-                            <div className="flex items-center space-x-1 bg-gray-700/50 px-2 py-1 rounded-lg border border-gray-600">
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                <span>{note?.date ? formatDate(note.date) : 'Unknown'}</span>
-                            </div>
+                    <div className="flex items-center justify-between text-xs text-gray-400">
+                        <div className="flex items-center space-x-1 bg-gray-700/50 px-2 py-1 rounded-lg border border-gray-600">
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span>{note?.date ? formatDate(note.date) : 'Unknown'}</span>
                         </div>
-                        
-                        {/* Enhanced Character Count */}
-                        <div className="flex items-center space-x-2 text-gray-400">
-                            <div className="flex items-center space-x-1 bg-gray-700/50 px-2 py-1 rounded-lg border border-gray-600">
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                <span>{descriptionLength.toLocaleString()} chars</span>
-                            </div>
+                        <div className="flex items-center space-x-1 bg-gray-700/50 px-2 py-1 rounded-lg border border-gray-600">
+                            <span>{descriptionLength.toLocaleString()} chars</span>
                         </div>
                     </div>
                 </div>
-
-                {/* Enhanced Hover Effect Border */}
                 <div className="absolute inset-0 border-2 border-transparent group-hover:border-gray-600 rounded-2xl transition-all duration-300 pointer-events-none" />
             </div>
-
-            {/* Glow Effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300 pointer-events-none -z-10" />
         </div>
     );
