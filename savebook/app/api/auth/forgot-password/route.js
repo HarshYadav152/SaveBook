@@ -16,8 +16,8 @@ export async function POST(req) {
 
   const user = await User.findOne({ username });
 
-  // 🔐 Generic response (security best practice)
-  // Username exists or not — response same
+
+  // Username exists or not
   if (!user) {
     return NextResponse.json(
       {
