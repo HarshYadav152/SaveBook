@@ -37,6 +37,13 @@ const UserSchema = new Schema({
         type: String,
         default: ''
     },
+    recoveryCodes: [
+  {
+    code: { type: String }, // hashed
+    used: { type: Boolean, default: false }
+  }
+],
+
 
 });
 
