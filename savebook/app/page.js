@@ -136,7 +136,8 @@ export default function Home() {
                   <div className="flex gap-4 w-full sm:w-auto">
                     <Link 
                       href="/login"
-                    className="inline-flex items-center gap-2 px-6 py-4 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-400 dark:hover:border-slate-600 transition-all w-full sm:w-auto justify-center"
+                      className="inline-flex items-center gap-2 px-6 py-4 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-400 dark:hover:border-slate-600 transition-all w-full sm:w-auto justify-center"
+                    >
                       Login
                     </Link>
 
