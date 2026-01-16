@@ -24,7 +24,7 @@ export async function GET(request) {
 
     await dbConnect();
     
-    // FIX: Use tokenInfo.userId instead of tokenInfo.data._id
+    // Use tokenInfo.userId instead of tokenInfo.data._id
     const user = await User.findById(tokenInfo.userId).select('-password');
     
     if (!user) {
@@ -41,12 +41,15 @@ export async function GET(request) {
         profileImage: user.profileImage,
         firstName: user.firstName,
         lastName: user.lastName,
+        phone: user.phone,        // newly added field
+        email: user.email,        // newly added field
+        gender: user.gender,      // newly added field
+        dob: user.dob,            // newly added field
         bio: user.bio,
         location: user.location
       }
     });
   } catch (error) {
-    console.error('User auth check error:', error);
     return NextResponse.json(
       { success: false, message: 'Server error' },
       { status: 500 }

@@ -6,13 +6,13 @@ export async function POST(request) {
   await dbConnect();
   
   try {
-    const { username, password} = await request.json();
+    const { username, password } = await request.json();
     
-    //Validate required fields
-    if(!username || !password){
+    // Validate required fields
+    if (!username || !password) {
       return NextResponse.json(
         { success: false, message: "All fields are required" },
-        { status: 400}
+        { status: 400 }
       );
     }
 
@@ -25,18 +25,17 @@ export async function POST(request) {
     }
 
     // Check if user exists
-    let user = await User.findOne({ username });
+    const user = await User.findOne({ username });
     if (user) {
       return NextResponse.json(
-        { error: "User with this username already exists" },
+        { success: false, message: "User with this username already exists" },
         { status: 400 }
       );
     }
     
     // Try creating user
     try {
-      const newUser = await User.create({ username, password });
-      console.log("User created:", newUser._id);
+      await User.create({ username, password });
 
       return NextResponse.json(
         { success: true, message: "Account created successfully" },
@@ -51,16 +50,14 @@ export async function POST(request) {
         );
       }
 
-      console.error("User creation error:", err.message);
       return NextResponse.json(
         { success: false, message: err.message || "Failed to create user" },
         { status: 500 }
       );
     }
   } catch (error) {
-    console.error("Register Error: ", error.message);
     return NextResponse.json(
-      { error: "Server error" },
+      { success: false, message: "Server error" },
       { status: 500 }
     );
   }

@@ -13,7 +13,7 @@ export async function POST(request) {
     const user = await User.findOne({ username }).select("+password");
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Invalid username or password" },
+        { success: false, message: "Invalid Username! Try Again!" },
         { status: 401 }
       );
     }
@@ -22,15 +22,14 @@ export async function POST(request) {
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
       return NextResponse.json(
-        { success: false, message: "Invalid username or password" },
+        { success: false, message: "Invalid Password! Try Again!" },
         { status: 401 }
       );
     }
 
-    // Generate token - pass userId as string
+    // Generate token and set cookie
     const { authToken } = await generateAuthToken(user._id.toString());
 
-    // Create response
     const response = NextResponse.json(
       { 
         success: true,
@@ -44,12 +43,12 @@ export async function POST(request) {
             location: user.location
           }
         },
-        message: "Login successful" 
+        message: "Login successful"
       },
       { status: 200 }
     );
     
-    // Set cookie with 'lax' sameSite for better compatibility
+    // Set cookie only on success
     response.cookies.set('authToken', authToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -57,11 +56,9 @@ export async function POST(request) {
       maxAge: 60 * 60 * 24 * 7, // 1 week
       path: '/'
     });
-    
-    console.log('Cookie set successfully');
+
     return response;
   } catch (error) {
-    console.error("Login error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Internal server error" },
       { status: 500 }
