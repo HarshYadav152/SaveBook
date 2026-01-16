@@ -164,12 +164,14 @@ html.dark select:focus {
 }
 
 input::placeholder, textarea::placeholder {
-    color: #9ca3af;
+    color: #d1d5db;
+    opacity: 1;
 }
 
 html.dark input::placeholder,
 html.dark textarea::placeholder {
-    color: #6b7280;
+    color: #9ca3af;
+    opacity: 1;
 }
 
 /* ============================================
@@ -208,6 +210,15 @@ html.dark h4,
 html.dark h5,
 html.dark h6 {
     color: #f1f5f9;
+}
+
+/* Label styling for better visibility */
+label {
+    color: #374151;
+}
+
+html.dark label {
+    color: #e2e8f0;
 }
 
 /* ============================================
