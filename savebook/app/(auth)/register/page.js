@@ -13,6 +13,11 @@ const SignupForm = () => {
         password: '',
         confirmPassword: ''
     });
+    const [errors, setErrors] = useState({
+        username: '',
+        password: '',
+        confirmPassword: ''
+    });
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
 
@@ -32,18 +37,28 @@ const SignupForm = () => {
             return;
         }
         
-        if (!credentials.username || !credentials.password || !credentials.confirmPassword) {
-            toast.error('Please fill in all fields');
-            return;
+        // Validate and collect errors
+        const newErrors = {};
+        
+        if (!credentials.username.trim()) {
+            newErrors.username = 'Username is required';
         }
 
-        if (credentials.password !== credentials.confirmPassword) {
-            toast.error('Passwords do not match');
-            return;
+        if (!credentials.password) {
+            newErrors.password = 'Password is required';
+        } else if (credentials.password.length < 6) {
+            newErrors.password = 'Password must be at least 6 characters';
         }
 
-        if (credentials.password.length < 6) {
-            toast.error('Password must be at least 6 characters');
+        if (!credentials.confirmPassword) {
+            newErrors.confirmPassword = 'Please confirm your password';
+        } else if (credentials.password !== credentials.confirmPassword) {
+            newErrors.confirmPassword = 'Passwords do not match';
+        }
+
+        // If validation errors exist, show them and return
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
             return;
         }
 
@@ -65,7 +80,52 @@ const SignupForm = () => {
             }
         } catch (error) {
             console.error("Registration error:", error);
-            toast.error("Something went wrong");
+            
+            // Attempt to extract meaningful error message
+            let errorMessage = "Something went wrong. Please try again.";
+            
+            try {
+                // Check if response exists and extract message from JSON
+                if (error.response?.data) {
+                    const data = error.response.data;
+                    
+                    // Try to get message from JSON response
+                    if (typeof data === 'object' && data !== null) {
+                        if (data.message) {
+                            errorMessage = data.message;
+                        } else if (data.error) {
+                            errorMessage = data.error;
+                        }
+                    }
+                    // If data is a string (HTML), it means we got an error page
+                    else if (typeof data === 'string' && data.includes('<')) {
+                        // HTML response detected, use status code instead
+                        throw new Error('HTML_RESPONSE');
+                    }
+                }
+                
+                // Handle HTTP status codes if no JSON message was found
+                if (errorMessage.includes('Something went wrong')) {
+                    if (error.response?.status === 500) {
+                        errorMessage = "Server error. Please try again later.";
+                    } else if (error.response?.status === 400) {
+                        errorMessage = "Invalid registration details. Please check your input.";
+                    }
+                }
+            } catch (parseError) {
+                // If JSON parsing failed or HTML was detected, use status-based message
+                if (error.response?.status === 500) {
+                    errorMessage = "Server error. Please try again later.";
+                } else if (error.response?.status === 400) {
+                    errorMessage = "Invalid registration details. Please check your input.";
+                } else if (error.response?.status) {
+                    errorMessage = `Registration failed with error ${error.response.status}. Please try again.`;
+                } else if (error.message && !error.message.includes('<!DOCTYPE')) {
+                    errorMessage = error.message;
+                }
+            }
+            
+            toast.error(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -73,6 +133,8 @@ const SignupForm = () => {
 
     const onchange = (e) => {
         setCredentials({ ...credentials, [e.target.name]: e.target.value });
+        // Clear error for this field when user starts typing
+        setErrors({ ...errors, [e.target.name]: '' });
     };
 
     // Show loading state while checking authentication
@@ -94,10 +156,17 @@ const SignupForm = () => {
                     value={credentials.username}
                     onChange={onchange}
                     disabled={isLoading || isAuthenticated}
-                    className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 ${
+                        errors.username 
+                            ? 'border-red-500 bg-red-900/20 focus:ring-red-500' 
+                            : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
+                    }`}
                     placeholder="Choose a username"
                     required
                 />
+                {errors.username && (
+                    <p className="mt-1 text-sm text-red-400">{errors.username}</p>
+                )}
             </div>
 
             {/* Password Field */}
@@ -112,10 +181,20 @@ const SignupForm = () => {
                     value={credentials.password}
                     onChange={onchange}
                     disabled={isLoading || isAuthenticated}
-                    className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 ${
+                        errors.password 
+                            ? 'border-red-500 bg-red-900/20 focus:ring-red-500' 
+                            : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
+                    }`}
                     placeholder="Create a password"
                     required
                 />
+                {errors.password && (
+                    <p className="mt-1 text-sm text-red-400">{errors.password}</p>
+                )}
+                {!errors.password && (
+                    <p className="mt-1 text-xs text-gray-400">Password must be at least 6 characters long.</p>
+                )}
             </div>
 
             {/* Confirm Password Field */}
@@ -130,10 +209,17 @@ const SignupForm = () => {
                     value={credentials.confirmPassword}
                     onChange={onchange}
                     disabled={isLoading || isAuthenticated}
-                    className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 ${
+                        errors.confirmPassword 
+                            ? 'border-red-500 bg-red-900/20 focus:ring-red-500' 
+                            : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
+                    }`}
                     placeholder="Confirm your password"
                     required
                 />
+                {errors.confirmPassword && (
+                    <p className="mt-1 text-sm text-red-400">{errors.confirmPassword}</p>
+                )}
             </div>
 
             {/* Submit Button */}
@@ -148,7 +234,7 @@ const SignupForm = () => {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        Creating Account...
+                        Registering...
                     </>
                 ) : (
                     isAuthenticated ? 'Redirecting...' : 'Create Account'
