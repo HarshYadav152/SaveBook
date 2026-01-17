@@ -10,7 +10,6 @@ cloudinary.config({
 
 export async function POST(request) {
   try {
-    //Auth
     const token = request.cookies.get("authToken");
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -21,39 +20,32 @@ export async function POST(request) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    //FormData
     const formData = await request.formData();
-    const files = formData.getAll("image");
+    const file = formData.get("image"); 
 
-    if (!files.length) {
-      return NextResponse.json({ error: "No files uploaded" }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    const uploadPromises = files.map(async (file) => {
-      const buffer = Buffer.from(await file.arrayBuffer());
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-      return new Promise((resolve, reject) => {
-        cloudinary.uploader.upload_stream(
-          {
-            folder: "savebook/notes",
-            resource_type: "image",
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result.secure_url);
-          }
-        ).end(buffer);
-      });
+    const imageUrl = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        {
+          folder: "savebook/profile", 
+          resource_type: "image",
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result.secure_url);
+        }
+      ).end(buffer);
     });
 
-    const imageUrls = await Promise.all(uploadPromises);
-
-    return NextResponse.json({ imageUrls });
+    return NextResponse.json({ imageUrl });
   } catch (error) {
-    console.error("Upload error:", error);
-    return NextResponse.json(
-      { error: "Image upload failed" },
-      { status: 500 }
-    );
+    console.error("Profile upload error:", error);
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }
+
