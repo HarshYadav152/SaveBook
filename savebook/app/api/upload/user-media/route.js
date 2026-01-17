@@ -8,20 +8,19 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; 
+
 export async function POST(request) {
   try {
-    //Auth
     const token = request.cookies.get("authToken");
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
     const decoded = await verifyJwtToken(token.value);
     if (!decoded.success) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    // FormData
     const formData = await request.formData();
     const files = formData.getAll("image");
 
@@ -29,14 +28,24 @@ export async function POST(request) {
       return NextResponse.json({ error: "No files uploaded" }, { status: 400 });
     }
 
-    // Upload to Cloudinary
+    for (const file of files) {
+      if (file.size > MAX_FILE_SIZE) {
+        return NextResponse.json(
+          {
+            error: `File "${file.name}" exceeds 5 MB limit`,
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     const uploadPromises = files.map(async (file) => {
       const buffer = Buffer.from(await file.arrayBuffer());
 
       return new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
           {
-            folder: "savebook/user-media", 
+            folder: "savebook/user-media",
             resource_type: "image",
           },
           (error, result) => {

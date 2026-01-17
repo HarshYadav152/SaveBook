@@ -8,6 +8,9 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; 
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
 export async function POST(request) {
   try {
     const token = request.cookies.get("authToken");
@@ -25,6 +28,20 @@ export async function POST(request) {
 
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: "Profile image must be less than 5 MB" },
+        { status: 400 }
+      );
+    }
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return NextResponse.json(
+        { error: "Only JPG, PNG, and WebP images are allowed" },
+        { status: 400 }
+      );
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
@@ -48,4 +65,3 @@ export async function POST(request) {
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }
-
