@@ -4,6 +4,8 @@ const nextConfig = {
     // Completely disable ESLint during builds
     ignoreDuringBuilds: true,
   },
+    // Enable standalone output for Docker
+    output: 'standalone',
     async redirects() {
     return [
       {
