@@ -6,6 +6,8 @@ import toast from 'react-hot-toast';
 import Addnote from './AddNote';
 import NoteItem from './NoteItem';
 import { useAuth } from '@/context/auth/authContext';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 // Separate navigation handler component to use router with Suspense
 const NavigationHandler = ({ isAuthenticated, loading }) => {
@@ -25,6 +27,7 @@ export default function Notes() {
     const { isAuthenticated, loading } = useAuth();
     const context = useContext(noteContext);
     const { notes: contextNotes = [], getNotes, editNote } = context || {};
+    const [editPreview, setEditPreview] = useState(false);
     
     // Ensure notes is always an array
     const notes =
@@ -70,6 +73,7 @@ export default function Notes() {
             edescription: currentNote.description,
             etag: currentNote.tag
         });
+        setEditPreview(false);
         setIsEditModalOpen(true);
     }
 
@@ -166,20 +170,47 @@ export default function Notes() {
 
                             {/* Description Field */}
                             <div>
-                                <label htmlFor="edescription" className="block text-sm font-medium text-gray-300 mb-3">
-                                    Description
-                                </label>
-                                <textarea
-                                    name="edescription"
-                                    id="edescription"
-                                    rows="4"
-                                    value={note.edescription}
-                                    onChange={onchange}
-                                    className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-800 text-white placeholder-gray-500 resize-none transition-all duration-200 outline-none"
-                                    placeholder="Enter note description"
-                                    minLength={5}
-                                    required
-                                />
+                                <div className="flex items-center justify-between mb-3">
+                                    <label htmlFor="edescription" className="block text-sm font-medium text-gray-300">
+                                        Description
+                                    </label>
+                                    <div className="flex bg-gray-800 rounded-lg p-1 border border-gray-700">
+                                        <button
+                                            type="button"
+                                            onClick={() => setEditPreview(false)}
+                                            className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${!editPreview ? 'bg-gray-600 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'}`}
+                                        >
+                                            Write
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setEditPreview(true)}
+                                            className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${editPreview ? 'bg-gray-600 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'}`}
+                                        >
+                                            Preview
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {!editPreview ? (
+                                    <textarea
+                                        name="edescription"
+                                        id="edescription"
+                                        rows="4"
+                                        value={note.edescription}
+                                        onChange={onchange}
+                                        className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-800 text-white placeholder-gray-500 resize-none transition-all duration-200 outline-none font-mono text-sm"
+                                        placeholder="Enter note description (Markdown supported)"
+                                        minLength={5}
+                                        required
+                                    />
+                                ) : (
+                                    <div className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-gray-800 min-h-[120px] prose prose-sm prose-invert max-w-none overflow-y-auto">
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            {note.edescription}
+                                        </ReactMarkdown>
+                                    </div>
+                                )}
                                 <p className="text-xs text-gray-400 mt-2">
                                     {note.edescription.length}/5 characters
                                 </p>

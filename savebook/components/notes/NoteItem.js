@@ -1,6 +1,8 @@
 import noteContext from '@/context/noteContext';
 import React, { useContext, useState } from 'react'
 import toast from 'react-hot-toast';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function NoteItem(props) {
     const context = useContext(noteContext);
@@ -131,9 +133,15 @@ export default function NoteItem(props) {
 
                 {/* Body with Enhanced Text Display */}
                 <div className="p-5 relative z-10">
-                    <p className="text-gray-300 text-sm leading-relaxed line-clamp-4 min-h-[84px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-3 border border-gray-700 relative z-10">
-                        {note?.description || 'No description provided. Click edit to add content to this note.'}
-                    </p>
+                    <div className="text-gray-300 text-sm leading-relaxed line-clamp-4 min-h-[84px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-3 border border-gray-700 relative z-10 prose prose-sm prose-invert max-w-none">
+                        {note?.description ? (
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {note.description}
+                            </ReactMarkdown>
+                        ) : (
+                            'No description provided.'
+                        )}
+                    </div>
                 </div>
 
                 {/* Enhanced Footer */}
