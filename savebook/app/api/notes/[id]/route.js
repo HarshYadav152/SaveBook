@@ -57,80 +57,80 @@ export async function GET(request, { params }) {
 }
 
 // Update a note by ID
-export async function PUT(request, { params }) {
-  await dbConnect();
+// export async function PUT(request, { params }) {
+//   await dbConnect();
 
-  try {
-    const { id } = await params;
+//   try {
+//     const { id } = await params;
 
-    // Validate ID format
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { error: "Invalid note ID" },
-        { status: 400 }
-      );
-    }
+//     // Validate ID format
+//     if (!mongoose.Types.ObjectId.isValid(id)) {
+//       return NextResponse.json(
+//         { error: "Invalid note ID" },
+//         { status: 400 }
+//       );
+//     }
 
-    const token = request.cookies.get('authToken');
+//     const token = request.cookies.get('authToken');
 
-    if (!token) {
-      return NextResponse.json(
-        { error: "Unauthorized: No token provided" },
-        { status: 401 }
-      );
-    }
+//     if (!token) {
+//       return NextResponse.json(
+//         { error: "Unauthorized: No token provided" },
+//         { status: 401 }
+//       );
+//     }
 
-    const decoded = await verifyJwtToken(token.value);
+//     const decoded = await verifyJwtToken(token.value);
 
-    if (!decoded || !decoded.success) {
-      return NextResponse.json(
-        { error: "Unauthorized: Invalid token" },
-        { status: 401 }
-      );
-    }
+//     if (!decoded || !decoded.success) {
+//       return NextResponse.json(
+//         { error: "Unauthorized: Invalid token" },
+//         { status: 401 }
+//       );
+//     }
 
-    const { title, description, tag } = await request.json();
+//     const { title, description, tag } = await request.json();
 
-    // Create updated note object
-    const updatedNote = {};
-    if (title) updatedNote.title = title;
-    if (description) updatedNote.description = description;
-    if (tag) updatedNote.tag = tag;
+//     // Create updated note object
+//     const updatedNote = {};
+//     if (title) updatedNote.title = title;
+//     if (description) updatedNote.description = description;
+//     if (tag) updatedNote.tag = tag;
 
-    // Find note and verify ownership
-    let note = await Notes.findById(id);
+//     // Find note and verify ownership
+//     let note = await Notes.findById(id);
 
-    if (!note) {
-      return NextResponse.json(
-        { error: "Note not found" },
-        { status: 404 }
-      );
-    }
+//     if (!note) {
+//       return NextResponse.json(
+//         { error: "Note not found" },
+//         { status: 404 }
+//       );
+//     }
 
-    // Verify user owns this note
-    if (note.user.toString() !== decoded.userId) {
-      return NextResponse.json(
-        { error: "Not authorized" },
-        { status: 401 }
-      );
-    }
+//     // Verify user owns this note
+//     if (note.user.toString() !== decoded.userId) {
+//       return NextResponse.json(
+//         { error: "Not authorized" },
+//         { status: 401 }
+//       );
+//     }
 
-    // Update the note
-    note = await Notes.findByIdAndUpdate(
-      id,
-      { $set: updatedNote },
-      { new: true }
-    );
+//     // Update the note
+//     note = await Notes.findByIdAndUpdate(
+//       id,
+//       { $set: updatedNote },
+//       { new: true }
+//     );
 
-    return NextResponse.json(note);
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Server error" },
-      { status: 500 }
-    );
-  }
-}
+//     return NextResponse.json(note);
+//   } catch (error) {
+//     console.error(error);
+//     return NextResponse.json(
+//       { error: "Server error" },
+//       { status: 500 }
+//     );
+//   }
+// }
 
 // Delete a note by ID
 export async function DELETE(request, { params }) {
@@ -196,5 +196,54 @@ export async function DELETE(request, { params }) {
       { error: "Server error" },
       { status: 500 }
     );
+  }
+}
+export async function PUT(request, { params }) {
+  await dbConnect();
+
+  try {
+    const { id } = params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: "Invalid note ID" }, { status: 400 });
+    }
+
+    const token = request.cookies.get("authToken");
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const decoded = await verifyJwtToken(token.value);
+    if (!decoded.success) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
+
+    const { title, description, tag, images } = await request.json();
+
+    const updatedNote = {};
+    if (title) updatedNote.title = title;
+    if (description) updatedNote.description = description;
+    if (tag) updatedNote.tag = tag;
+    if (Array.isArray(images)) updatedNote.images = images;
+
+    const note = await Notes.findById(id);
+    if (!note) {
+      return NextResponse.json({ error: "Note not found" }, { status: 404 });
+    }
+
+    if (note.user.toString() !== decoded.userId) {
+      return NextResponse.json({ error: "Not authorized" }, { status: 401 });
+    }
+
+    const updated = await Notes.findByIdAndUpdate(
+      id,
+      { $set: updatedNote },
+      { new: true }
+    );
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
