@@ -104,7 +104,7 @@ const AuthProvider = ({ children }) => {
             } else {
                 return { 
                     success: false, 
-                    message: data.message || "Registration failed" 
+                    message: data.message || data.error || "Registration failed" 
                 };
             }
         } catch (error) {
