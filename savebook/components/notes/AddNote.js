@@ -128,12 +128,6 @@ export default function Addnote() {
         setAudioData(null);
     };
 
-
-
-
-
-
-
     const handleSaveNote = async (e) => {
         e.preventDefault();
         if (isSubmitting) return;
@@ -143,17 +137,16 @@ export default function Addnote() {
             // Upload images
             const imageUrls = images.length ? await uploadImages() : [];
 
-            // Upload audio if recording exists - REQUIRED before note creation
+            // Upload audio if recording exists
             let finalAudioData = null;
             if (audioBlob) {
-                setIsUploadingAudio(true);
                 try {
+                    setIsUploadingAudio(true);
                     finalAudioData = await uploadAudio(audioBlob);
                 } catch (audioError) {
                     console.error('Audio upload error:', audioError);
-                    toast.error(audioError.message || 'Audio upload failed. Please try again.');
-                    // Abort note creation - do NOT save note without audio
-                    return;
+                    toast.error('Failed to upload audio. Note saved without audio.');
+                    finalAudioData = null;
                 }
             }
 
