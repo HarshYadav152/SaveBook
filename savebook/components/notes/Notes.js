@@ -88,7 +88,7 @@ export default function Notes() {
         if (!files || files.length === 0) return [];
         const formData = new FormData();
         files.forEach(file => formData.append("image", file));
-        const res = await fetch("/api/upload", {
+        const res = await fetch("/api/upload/user-media", {
             method: "POST",
             credentials: "include",
             body: formData,
