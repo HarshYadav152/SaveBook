@@ -31,10 +31,6 @@ export async function GET(request) {
         profileImage: user.profileImage,
         firstName: user.firstName,
         lastName: user.lastName,
-        phone: user.phone,        // newly added field
-        email: user.email,        // newly added field
-        gender: user.gender,      // newly added field
-        dob: user.dob,            // newly added field
         bio: user.bio,
         location: user.location
       }

@@ -29,21 +29,6 @@ const UserSchema = new Schema({
         type: String,
         default: ''
     },
-    phone: {
-        type: String,
-        match: [/^[6-9]\d{9}$/, "Invalid phone number"]
-    },
-    email: {
-        type: String,
-        match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email address"]
-    },
-    gender: {
-        type: String,
-        default: ''
-    },
-    dob: {
-        type: Date
-    },
     bio: {
         type: String,
         default: ''
