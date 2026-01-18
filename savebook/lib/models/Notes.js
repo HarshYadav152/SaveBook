@@ -27,6 +27,14 @@ const NotesSchema = new Schema({
     default: [],
   },
 
+  audio: {
+    type: {
+      url: String,
+      duration: Number,
+    },
+    default: null,
+  },
+
   date: {
     type: Date,
     default: Date.now,
