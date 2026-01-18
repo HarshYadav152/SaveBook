@@ -1,294 +1,139 @@
 @import "tailwindcss";
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+@theme {
+    --color-border: hsl(var(--border));
+    --color-input: hsl(var(--input));
+    --color-ring: hsl(var(--ring));
+    --color-background: hsl(var(--background));
+    --color-foreground: hsl(var(--foreground));
+
+    --color-primary: hsl(var(--primary));
+    --color-primary-foreground: hsl(var(--primary-foreground));
+
+    --color-secondary: hsl(var(--secondary));
+    --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+    --color-destructive: hsl(var(--destructive));
+    --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+    --color-muted: hsl(var(--muted));
+    --color-muted-foreground: hsl(var(--muted-foreground));
+
+    --color-accent: hsl(var(--accent));
+    --color-accent-foreground: hsl(var(--accent-foreground));
+
+    --color-popover: hsl(var(--popover));
+    --color-popover-foreground: hsl(var(--popover-foreground));
+
+    --color-card: hsl(var(--card));
+    --color-card-foreground: hsl(var(--card-foreground));
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+
+    /* Compatibility aliases */
+    --color-bg-light: hsl(var(--background));
+    --color-bg-dark: hsl(var(--background));
 }
 
-html, body {
-    width: 100%;
-    height: 100%;
-    min-height: 100vh;
+
+:root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+
+    --radius: 0.5rem;
 }
 
-html {
-    scroll-behavior: smooth;
-    color-scheme: light;
+.dark {
+    --background: 222.2 47.4% 11.2%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 47.4% 11.2%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 47.4% 11.2%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
 }
 
-/* ============================================
-   LIGHT MODE (default)
-   ============================================ */
-html {
-    background-color: #ffffff;
-}
+@layer base {
+    * {
+        @apply border-border;
+    }
 
-html body {
-    background-color: #ffffff;
-    color: #1f2937;
-}
+    body {
+        @apply bg-background text-foreground;
+    }
 
-/* ============================================
-   DARK MODE
-   ============================================ */
-html.dark {
-    color-scheme: dark;
-    background-color: #0f172a;
-}
+    /* Retaining safe defaults but allowing potential overrides via classes */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-bold;
+    }
 
-html.dark body {
-    background-color: #0f172a;
-    color: #e2e8f0;
-}
+    /* Form elements reset to use theme vars by default but respecting utility overrides */
+    input,
+    textarea,
+    select {
+        @apply bg-background text-foreground border border-input rounded-lg transition-colors duration-200;
+    }
 
-/* ============================================
-   SMOOTH TRANSITIONS
-   ============================================ */
-body {
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
+    input:focus,
+    textarea:focus,
+    select:focus {
+        @apply outline-none border-ring ring-1 ring-ring;
+    }
 
-/* Apply transitions to specific elements only */
-p, a, span, h1, h2, h3, h4, h5, h6 {
-    transition: color 0.3s ease;
-}
-
-button, input, textarea, select {
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-
-/* Critical layout elements should NOT transition */
-nav, header, main, footer {
-    transition: none !important;
-}
-
-/* ============================================
-   SCROLLBAR STYLING
-   ============================================ */
-::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background-color: #f3f4f6;
-}
-
-html.dark ::-webkit-scrollbar-track {
-    background-color: #1e293b;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: #9ca3af;
-    border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background-color: #6b7280;
-}
-
-html.dark ::-webkit-scrollbar-thumb {
-    background-color: #475569;
-}
-
-html.dark ::-webkit-scrollbar-thumb:hover {
-    background-color: #64748b;
-}
-
-/* ============================================
-   TEXT SELECTION
-   ============================================ */
-::selection {
-    background-color: #3b82f6;
-    color: white;
-}
-
-html.dark ::selection {
-    background-color: #2563eb;
-    color: white;
-}
-
-/* ============================================
-   LINK STYLING
-   ============================================ */
-a {
-    color: #2563eb;
-    transition: color 0.3s ease;
-}
-
-a:hover {
-    color: #1d4ed8;
-}
-
-html.dark a {
-    color: #60a5fa;
-}
-
-html.dark a:hover {
-    color: #93c5fd;
-}
-
-/* ============================================
-   FORM ELEMENTS
-   ============================================ */
-input, textarea, select {
-    background-color: #ffffff;
-    color: #1f2937;
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-
-html.dark input,
-html.dark textarea,
-html.dark select {
-    background-color: #1e293b;
-    color: #e2e8f0;
-    border-color: #334155;
-}
-
-input:focus, textarea:focus, select:focus {
-    outline: none;
-    ring: 2px solid #3b82f6;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-html.dark input:focus,
-html.dark textarea:focus,
-html.dark select:focus {
-    ring: 2px solid #60a5fa;
-    border-color: #60a5fa;
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
-}
-
-input::placeholder, textarea::placeholder {
-    color: #d1d5db;
-    opacity: 1;
-}
-
-html.dark input::placeholder,
-html.dark textarea::placeholder {
-    color: #9ca3af;
-    opacity: 1;
-}
-
-/* ============================================
-   BUTTONS
-   ============================================ */
-button {
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* ============================================
-   TEXT STYLING
-   ============================================ */
-p {
-    color: #374151;
-    line-height: 1.625;
-}
-
-html.dark p {
-    color: #d1d5db;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    color: #1f2937;
-    font-weight: bold;
-}
-
-html.dark h1,
-html.dark h2,
-html.dark h3,
-html.dark h4,
-html.dark h5,
-html.dark h6 {
-    color: #f1f5f9;
-}
-
-/* Label styling for better visibility */
-label {
-    color: #374151;
-}
-
-html.dark label {
-    color: #e2e8f0;
-}
-
-/* ============================================
-   CODE BLOCKS
-   ============================================ */
-code {
-    background-color: #f3f4f6;
-    color: #111827;
-    padding: 0.125rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
-}
-
-html.dark code {
-    background-color: #1e293b;
-    color: #e2e8f0;
-}
-
-pre {
-    background-color: #111827;
-    color: #f3f4f6;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    overflow-x: auto;
-}
-
-html.dark pre {
-    background-color: #0f172a;
-    color: #d1d5db;
-}
-
-/* ============================================
-   CARD & CONTAINER STYLING
-   ============================================ */
-.card, [class*="card"] {
-    background-color: #ffffff;
-    color: #1f2937;
-    border: 1px solid #e5e7eb;
-}
-
-html.dark .card,
-html.dark [class*="card"] {
-    background-color: #1e293b;
-    color: #e2e8f0;
-    border-color: #334155;
-}
-
-/* ============================================
-   MODAL & OVERLAY STYLING
-   ============================================ */
-[class*="modal"], [class*="overlay"], [role="dialog"] {
-    background-color: #ffffff;
-    color: #1f2937;
-}
-
-html.dark [class*="modal"],
-html.dark [class*="overlay"],
-html.dark [role="dialog"] {
-    background-color: #1e293b;
-    color: #e2e8f0;
-}
-
-/* ============================================
-   ACCESSIBILITY - FOCUS STYLES
-   ============================================ */
-:focus-visible {
-    outline: 2px solid #3b82f6;
-    outline-offset: 2px;
-}
-
-html.dark :focus-visible {
-    outline-color: #60a5fa;
+    input::placeholder,
+    textarea::placeholder {
+        @apply text-muted-foreground opacity-100;
+    }
 }

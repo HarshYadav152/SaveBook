@@ -24,17 +24,17 @@ const LoginForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         // Prevent submission if already authenticated or loading
         if (isAuthenticated || isLoading) {
             return;
         }
-        
+
         setIsLoading(true);
-        
+
         try {
             const result = await login(credentials.username, credentials.password);
-            
+
             if (result.success) {
                 toast.success("Welcome back! 🎉");
                 // Don't call router.push here - let useEffect handle it
@@ -63,7 +63,7 @@ const LoginForm = () => {
         <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Username Field */}
             <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2">
+                <label htmlFor="username" className="block text-sm font-medium text-foreground mb-2">
                     Username
                 </label>
                 <div className="relative">
@@ -75,7 +75,7 @@ const LoginForm = () => {
                         value={credentials.username}
                         onChange={onchange}
                         disabled={isLoading}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
+                        className="w-full px-4 py-3 border border-input bg-background text-foreground placeholder-muted-foreground rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 outline-none disabled:opacity-50"
                         placeholder="Enter your username"
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -89,10 +89,10 @@ const LoginForm = () => {
             {/* Password Field */}
             <div>
                 <div className="flex items-center justify-between mb-2">
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-900 dark:text-gray-300">
+                    <label htmlFor="password" className="block text-sm font-medium text-foreground">
                         Password
                     </label>
-                    <a href="#" className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200">
+                    <a href="#" className="text-sm text-primary hover:text-primary/80 transition-colors duration-200">
                         Forgot password?
                     </a>
                 </div>
@@ -105,7 +105,7 @@ const LoginForm = () => {
                         value={credentials.password}
                         onChange={onchange}
                         disabled={isLoading}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
+                        className="w-full px-4 py-3 border border-input bg-background text-foreground placeholder-muted-foreground rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 outline-none disabled:opacity-50"
                         placeholder="Enter your password"
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -137,11 +137,11 @@ const LoginForm = () => {
 
             {/* Sign up link */}
             <div className="text-center">
-                <span className="text-sm text-gray-700 dark:text-gray-300">
+                <span className="text-sm text-muted-foreground">
                     Don't have an account?{' '}
-                    <Link 
-                        href="/register" 
-                        className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200"
+                    <Link
+                        href="/register"
+                        className="font-medium text-primary hover:text-primary/80 transition-colors duration-200"
                     >
                         Register
                     </Link>
@@ -205,7 +205,7 @@ const LoginPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-blue-900 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="max-w-md w-full space-y-8">
                 {/* Header */}
                 <div className="text-center">
@@ -214,16 +214,16 @@ const LoginPage = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                     </div>
-                    <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
+                    <h2 className="text-3xl font-extrabold text-foreground">
                         Welcome back
                     </h2>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                    <p className="mt-2 text-sm text-muted-foreground">
                         Sign in to your account
                     </p>
                 </div>
 
                 {/* Login Form */}
-                <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
+                <div className="bg-card p-8 rounded-2xl shadow-xl border border-border">
                     <LoginForm />
                 </div>
             </div>

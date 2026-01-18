@@ -68,27 +68,27 @@ export default function Home() {
             </h1>
 
             {/* Tagline */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-full mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50/50 dark:bg-blue-900/20 rounded-full mb-8">
               <Sparkles className="w-4 h-4 text-blue-500" />
               <span className="text-blue-600 dark:text-blue-400 font-medium">
-                {isAuthenticated && user 
-                  ? `Welcome back, ${user.username}!` 
+                {isAuthenticated && user
+                  ? `Welcome back, ${user.username}!`
                   : "Your Digital Notebook"}
               </span>
             </div>
 
             {/* Description */}
             <div className="space-y-6 mb-12">
-              <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 leading-relaxed">
-                <strong className="font-semibold text-gray-900 dark:text-white">
+              <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
+                <strong className="font-semibold text-foreground">
                   Empowering your thoughts with a seamless, distraction-free note-taking experience.
                 </strong>
               </p>
-              
-              <div className="max-w-3xl mx-auto text-left bg-gray-50 dark:bg-slate-800/50 rounded-2xl p-8 border border-gray-200 dark:border-slate-700">
-                <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
-                  SaveBook is a high-performance, modern web application designed for note-taking and knowledge management. 
-                  Built leveraging the latest <span className="font-semibold text-blue-600 dark:text-blue-400">Next.js</span> features, it provides a fast, 
+
+              <div className="max-w-3xl mx-auto text-left bg-muted/50 rounded-2xl p-8 border border-border">
+                <p className="text-muted-foreground text-lg leading-relaxed">
+                  SaveBook is a high-performance, modern web application designed for note-taking and knowledge management.
+                  Built leveraging the latest <span className="font-semibold text-blue-600 dark:text-blue-400">Next.js</span> features, it provides a fast,
                   intuitive, and clutter-free environment for organizing your digital life.
                 </p>
               </div>
@@ -98,14 +98,14 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-12">
               {loading ? (
                 // Loading state
-                <div className="flex items-center gap-2 px-8 py-4 bg-gray-200 dark:bg-slate-700 rounded-xl">
-                  <Loader2 className="w-6 h-6 animate-spin text-gray-600 dark:text-gray-400" />
-                  <span className="text-gray-600 dark:text-gray-400">Loading...</span>
+                <div className="flex items-center gap-2 px-8 py-4 bg-muted rounded-xl">
+                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                  <span className="text-muted-foreground">Loading...</span>
                 </div>
               ) : isAuthenticated ? (
                 // Authenticated user - Show "Go to Notes" button
                 <>
-                  <Link 
+                  <Link
                     href="/notes"
                     className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-blue-500/30 transition-all transform hover:scale-105 w-full sm:w-auto justify-center"
                   >
@@ -114,9 +114,9 @@ export default function Home() {
                     <ArrowRight className="w-5 h-5" />
                   </Link>
 
-                  <Link 
+                  <Link
                     href="/profile"
-                    className="inline-flex items-center gap-2 px-6 py-4 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-400 dark:hover:border-slate-600 transition-all w-full sm:w-auto justify-center"
+                    className="inline-flex items-center gap-2 px-6 py-4 bg-background border border-border text-foreground rounded-xl font-medium hover:bg-muted hover:border-muted-foreground/20 transition-all w-full sm:w-auto justify-center"
                   >
                     View Profile
                   </Link>
@@ -124,7 +124,7 @@ export default function Home() {
               ) : (
                 // Not authenticated - Show "Start Taking Notes", "Login", and "Sign Up"
                 <>
-                  <Link 
+                  <Link
                     href="/notes"
                     className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-blue-500/30 transition-all transform hover:scale-105 w-full sm:w-auto justify-center"
                   >
@@ -134,14 +134,14 @@ export default function Home() {
                   </Link>
 
                   <div className="flex gap-4 w-full sm:w-auto">
-                    <Link 
+                    <Link
                       href="/login"
-                      className="inline-flex items-center gap-2 px-6 py-4 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-gray-400 dark:hover:border-slate-600 transition-all w-full sm:w-auto justify-center"
+                      className="inline-flex items-center gap-2 px-6 py-4 bg-background border border-border text-foreground rounded-xl font-medium hover:bg-muted hover:border-muted-foreground/20 transition-all w-full sm:w-auto justify-center"
                     >
                       Login
                     </Link>
 
-                    <Link 
+                    <Link
                       href="/register"
                       className="inline-flex items-center gap-2 px-6 py-4 bg-emerald-500 dark:bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-600 dark:hover:bg-emerald-700 transition-all w-full sm:w-auto justify-center"
                     >

@@ -8,8 +8,8 @@ import Link from 'next/link';
 // Signup Form Component
 const SignupForm = () => {
     const { register, isAuthenticated } = useAuth();
-    const [credentials, setCredentials] = useState({ 
-        username: '', 
+    const [credentials, setCredentials] = useState({
+        username: '',
         password: '',
         confirmPassword: ''
     });
@@ -25,13 +25,13 @@ const SignupForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         // Prevent submission if already authenticated
         if (isAuthenticated) {
             router.push("/");
             return;
         }
-        
+
         if (!credentials.username || !credentials.password || !credentials.confirmPassword) {
             toast.error('Please fill in all fields');
             return;
@@ -48,14 +48,14 @@ const SignupForm = () => {
         }
 
         setIsLoading(true);
-        
+
         try {
             // Use the register method from AuthContext
             const result = await register(
                 credentials.username,
                 credentials.password
             );
-            
+
             if (result.success) {
                 toast.success("Account created successfully! 🎉");
                 router.push("/login")
@@ -84,7 +84,7 @@ const SignupForm = () => {
         <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Username Field */}
             <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2">
+                <label htmlFor="username" className="block text-sm font-medium text-foreground mb-2">
                     Username
                 </label>
                 <input
@@ -94,7 +94,7 @@ const SignupForm = () => {
                     value={credentials.username}
                     onChange={onchange}
                     disabled={isLoading || isAuthenticated}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
+                    className="w-full px-4 py-3 border border-input bg-background text-foreground placeholder-muted-foreground rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 outline-none disabled:opacity-50"
                     placeholder="Choose a username"
                     required
                 />
@@ -102,7 +102,7 @@ const SignupForm = () => {
 
             {/* Password Field */}
             <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
                     Password
                 </label>
                 <input
@@ -112,7 +112,7 @@ const SignupForm = () => {
                     value={credentials.password}
                     onChange={onchange}
                     disabled={isLoading || isAuthenticated}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
+                    className="w-full px-4 py-3 border border-input bg-background text-foreground placeholder-muted-foreground rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 outline-none disabled:opacity-50"
                     placeholder="Create a password"
                     required
                 />
@@ -120,7 +120,7 @@ const SignupForm = () => {
 
             {/* Confirm Password Field */}
             <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-2">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-2">
                     Confirm Password
                 </label>
                 <input
@@ -130,7 +130,7 @@ const SignupForm = () => {
                     value={credentials.confirmPassword}
                     onChange={onchange}
                     disabled={isLoading || isAuthenticated}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50"
+                    className="w-full px-4 py-3 border border-input bg-background text-foreground placeholder-muted-foreground rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 outline-none disabled:opacity-50"
                     placeholder="Confirm your password"
                     required
                 />
@@ -157,11 +157,11 @@ const SignupForm = () => {
 
             {/* Login link */}
             <div className="text-center">
-                <span className="text-sm text-gray-700 dark:text-gray-300">
+                <span className="text-sm text-muted-foreground">
                     Already have an account?{' '}
-                    <Link 
-                        href="/login" 
-                        className="font-medium text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors"
+                    <Link
+                        href="/login"
+                        className="font-medium text-green-600 hover:text-green-700 transition-colors"
                         onClick={(e) => {
                             if (isLoading || isAuthenticated) {
                                 e.preventDefault();
@@ -247,7 +247,7 @@ export default function Signup() {
     // }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-green-900 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="max-w-md w-full">
                 {/* Header */}
                 <div className="text-center mb-8">
@@ -256,16 +256,16 @@ export default function Signup() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                         </svg>
                     </div>
-                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-3xl font-bold text-foreground">
                         Create Account
                     </h2>
-                    <p className="mt-2 text-gray-600 dark:text-gray-300">
+                    <p className="mt-2 text-muted-foreground">
                         Join us and get started
                     </p>
                 </div>
 
                 {/* Signup Form */}
-                <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
+                <div className="bg-card p-8 rounded-2xl shadow-xl border border-border">
                     <SignupForm />
                 </div>
             </div>

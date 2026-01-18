@@ -20,22 +20,11 @@ const ThemeProvider = ({ children }) => {
 
     const applyTheme = (newTheme) => {
         const html = document.documentElement;
-        const body = document.body;
         
         if (newTheme === 'dark') {
-            // Dark mode colors - optimized for visibility
             html.classList.add('dark');
-            html.style.backgroundColor = '#0f172a'; // slate-900
-            body.style.backgroundColor = '#0f172a';
-            body.style.color = '#e2e8f0'; // slate-200 - better contrast
-            document.documentElement.style.colorScheme = 'dark';
         } else {
-            // Light mode colors - optimized for readability
             html.classList.remove('dark');
-            html.style.backgroundColor = '#ffffff'; // white
-            body.style.backgroundColor = '#ffffff';
-            body.style.color = '#1f2937'; // gray-800 - darker for better readability
-            document.documentElement.style.colorScheme = 'light';
         }
         
         // Store preference
