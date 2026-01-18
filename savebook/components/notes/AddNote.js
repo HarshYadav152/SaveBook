@@ -2,6 +2,8 @@
 import noteContext from '@/context/noteContext';
 import React, { useContext, useState } from 'react'
 import toast from 'react-hot-toast';
+import AudioRecorder from '@/components/AudioRecorder';
+import AudioPlayer from '@/components/AudioPlayer';
 
 // Define Note Templates
 const NOTE_TEMPLATES = {
@@ -16,7 +18,7 @@ export default function Addnote() {
 
     const [note, setNote] = useState({ title: "", description: "", tag: "" });
     const [isSubmitting, setIsSubmitting] = useState(false);
-        const defaultTags = [
+    const defaultTags = [
         "General",
         "Basic",
         "Finance",
@@ -28,6 +30,12 @@ export default function Addnote() {
     ];
     const [images, setImages] = useState([]);
     const [preview, setPreview] = useState([]);
+    
+    // Audio state management
+    const [audioBlob, setAudioBlob] = useState(null);
+    const [recordedAudioUrl, setRecordedAudioUrl] = useState(null);
+    const [audioData, setAudioData] = useState(null);
+    const [isUploadingAudio, setIsUploadingAudio] = useState(false);
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
@@ -55,6 +63,46 @@ export default function Addnote() {
         return Array.isArray(data.imageUrls) ? data.imageUrls : [];
     };
 
+    // Handle audio recording from AudioRecorder component
+    const handleAudioRecorded = (blob) => {
+        setAudioBlob(blob);
+        // Create temporary URL for preview
+        const url = URL.createObjectURL(blob);
+        setRecordedAudioUrl(url);
+    };
+
+    // Upload audio to API
+    const uploadAudio = async (blob) => {
+        const formData = new FormData();
+        formData.append('audio', blob, 'recording.webm');
+
+        const res = await fetch('/api/upload/audio', {
+            method: 'POST',
+            credentials: 'include',
+            body: formData,
+        });
+
+        if (!res.ok) {
+            throw new Error('Audio upload failed');
+        }
+
+        const data = await res.json();
+        return {
+            url: data.audioUrl,
+            duration: data.duration || 0,
+        };
+    };
+
+    // Clear audio recording
+    const clearAudioRecording = () => {
+        if (recordedAudioUrl) {
+            URL.revokeObjectURL(recordedAudioUrl);
+        }
+        setAudioBlob(null);
+        setRecordedAudioUrl(null);
+        setAudioData(null);
+    };
+
 
 
 
@@ -67,23 +115,42 @@ export default function Addnote() {
 
         setIsSubmitting(true);
         try {
+            // Upload images
             const imageUrls = images.length ? await uploadImages() : [];
 
+            // Upload audio if recording exists
+            let finalAudioData = null;
+            if (audioBlob) {
+                try {
+                    setIsUploadingAudio(true);
+                    finalAudioData = await uploadAudio(audioBlob);
+                } catch (audioError) {
+                    console.error('Audio upload error:', audioError);
+                    toast.error('Failed to upload audio. Note saved without audio.');
+                    finalAudioData = null;
+                }
+            }
+
+            // Save note with audio data (if available)
             await addNote(
-            note.title,
-            note.description,
-            note.tag,
-            imageUrls // CLOUDINARY URLs
+                note.title,
+                note.description,
+                note.tag,
+                imageUrls,
+                finalAudioData // Pass audio data (or null)
             );
 
             toast.success("Note has been saved");
             setNote({ title: "", description: "", tag: "" });
             setImages([]);
             setPreview([]);
+            clearAudioRecording();
         } catch (error) {
+            console.error('Error saving note:', error);
             toast.error("Failed to save note");
         } finally {
             setIsSubmitting(false);
+            setIsUploadingAudio(false);
         }
     };
 
@@ -230,6 +297,35 @@ export default function Addnote() {
                                 Minimum 5 characters required. Click template buttons to auto-fill with pre-formatted structures.
                             </p>
                         </div>
+                        {/* Audio Recording */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Attach Audio (Optional)
+                            </label>
+                            <AudioRecorder onRecordingComplete={handleAudioRecorded} />
+                            <span className="text-sm text-gray-500">
+                                {audioBlob ? "Audio recorded" : "No audio recorded"}
+                            </span>
+
+                            {/* Audio Preview */}
+                            {recordedAudioUrl && (
+                                <div className="mt-3">
+                                    <audio
+                                        controls
+                                        src={recordedAudioUrl}
+                                        className="w-full"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={clearAudioRecording}
+                                        className="text-xs px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md transition-colors mt-2"
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
                         {/* Image Upload */}
                         <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -314,17 +410,17 @@ export default function Addnote() {
                         {/* Submit Button */}
                         <button
                             type="submit"
-                            disabled={!isFormValid || isSubmitting}
+                            disabled={!isFormValid || isSubmitting || isUploadingAudio}
                             className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:transform-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
                         >
                             <span className="flex items-center justify-center">
-                                {isSubmitting ? (
+                                {isSubmitting || isUploadingAudio ? (
                                     <>
                                         <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        Adding Note...
+                                        {isUploadingAudio ? 'Uploading Audio...' : 'Adding Note...'}
                                     </>
                                 ) : (
                                     <>
