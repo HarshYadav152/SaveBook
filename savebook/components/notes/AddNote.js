@@ -41,7 +41,7 @@ export default function Addnote() {
         const formData = new FormData();
         images.forEach((file) => formData.append("image", file));
 
-        const res = await fetch("/api/upload", {
+        const res = await fetch("/api/upload/user-media", {
             method: "POST",
             credentials: "include",
             body: formData,
@@ -73,7 +73,7 @@ export default function Addnote() {
             note.title,
             note.description,
             note.tag,
-            imageUrls // ✅ CLOUDINARY URLs
+            imageUrls // CLOUDINARY URLs
             );
 
             toast.success("Note has been saved");
@@ -239,6 +239,7 @@ export default function Addnote() {
                         <input
                             type="file"
                             accept="image/*"
+                            capture="environment"
                             multiple
                             onChange={handleImageChange}
                             className="block w-full text-sm text-gray-500
