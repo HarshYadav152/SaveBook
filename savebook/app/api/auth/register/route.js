@@ -1,13 +1,13 @@
-import { NextResponse } from 'next/server';
-import User from '@/lib/models/User';
-import dbConnect from '@/lib/db/mongodb';
+import { NextResponse } from "next/server";
+import User from "@/lib/models/User";
+import dbConnect from "@/lib/db/mongodb";
 
 export async function POST(request) {
   await dbConnect();
-  
+
   try {
     const { username, password } = await request.json();
-    
+
     // Validate required fields
     if (!username || !password) {
       return NextResponse.json(
@@ -32,7 +32,7 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-    
+
     // Try creating user
     try {
       await User.create({ username, password });

@@ -34,6 +34,7 @@ export default function SignupPage() {
   // Handle input change
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
 
     if (e.target.name === "username") {
       if (e.target.value.length < 3) {
@@ -49,6 +50,7 @@ export default function SignupPage() {
     e.preventDefault();
     setErrors({});
     setSuccessMessage("");
+    setErrorMessage("");
 
     const newErrors = {};
     if (!credentials.username.trim()) {
@@ -72,19 +74,52 @@ export default function SignupPage() {
 
     setIsLoading(true);
     try {
-      const result = await register(credentials.username, credentials.password, credentials.confirmPassword);
+      const result = await register(
+        credentials.username,
+        credentials.password,
+        credentials.confirmPassword
+      );
 
       if (result?.success) {
         setSuccessMessage("Account created successfully! 🎉 Redirecting...");
-        setErrorMessage(""); //clear any previous error
+        setErrorMessage("");
         setTimeout(() => router.push("/login"), 1500);
       } else {
-        setSuccessMessage(""); // clear success
+        setSuccessMessage("");
         setErrorMessage(result?.message || "Registration failed");
       }
     } catch (error) {
-      setSuccessMessage("");
-      setErrorMessage("Something went wrong");
+      let msg = "Something went wrong. Please try again.";
+      try {
+        if (error.response?.data) {
+          const data = error.response.data;
+          if (typeof data === "object" && data !== null) {
+            if (data.message) msg = data.message;
+            else if (data.error) msg = data.error;
+          } else if (typeof data === "string" && data.includes("<")) {
+            throw new Error("HTML_RESPONSE");
+          }
+        }
+        if (msg.includes("Something went wrong")) {
+          if (error.response?.status === 500) {
+            msg = "Server error. Please try again later.";
+          } else if (error.response?.status === 400) {
+            msg = "Invalid registration details. Please check your input.";
+          }
+        }
+      } catch (parseError) {
+        if (error.response?.status === 500) {
+          msg = "Server error. Please try again later.";
+        } else if (error.response?.status === 400) {
+          msg = "Invalid registration details. Please check your input.";
+        } else if (error.response?.status) {
+          msg = `Registration failed with error ${error.response.status}. Please try again.`;
+        } else if (error.message && !error.message.includes("<!DOCTYPE")) {
+          msg = error.message;
+        }
+      }
+      setErrorMessage(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -122,6 +157,7 @@ export default function SignupPage() {
   }
 
   // Main form
+    // Main form
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-700">
@@ -146,10 +182,7 @@ export default function SignupPage() {
               placeholder="Choose a username"
               required
             />
-            {errors.username && (
-              <p className="text-red-500 text-sm mt-1">{errors.username}</p>
-            )}
-
+            {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
             {usernameMessage && !errors.username && (
               <p className="text-blue-400 text-sm mt-1">{usernameMessage}</p>
             )}

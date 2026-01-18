@@ -1,57 +1,67 @@
 import dbConnect from "@/lib/db/mongodb";
 import User from "@/lib/models/User";
-import { verifyJwtToken } from "@/lib/utils/JWT";
-import { NextResponse } from 'next/server';
+import { verifyJwtToken } from "@/lib/utils/jwtAuth";
+import { NextResponse } from "next/server";
 
 export async function GET(request) {
   try {
-    const token = request.cookies.get('authToken')?.value;
-    if (!token) {
-      return NextResponse.json(
-        { success: false, message: 'Not authenticated' },
-        { status: 401 }
-      );
-    }
-
-    const tokenInfo = await verifyJwtToken(token);
-    
-    if (!tokenInfo.success) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
+    // Connect to database
     await dbConnect();
-    
-    // Use tokenInfo.userId instead of tokenInfo.data._id
-    const user = await User.findById(tokenInfo.userId).select('-password');
-    
+
+    // Get token from cookies
+    const authToken = request.cookies.get("authToken");
+    const tokenValue = authToken?.value;
+
+    if (!tokenValue) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized - No token provided" },
+        { status: 401 }
+      );
+    }
+
+    // Verify token
+    const tokenInfo = await verifyJwtToken(tokenValue);
+
+    if (!tokenInfo || !tokenInfo.success) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized - Invalid token" },
+        { status: 401 }
+      );
+    }
+
+    // Find user by ID but exclude the password
+    const user = await User.findById(tokenInfo.userId).select("-password");
+
     if (!user) {
       return NextResponse.json(
-        { success: false, message: 'User not found' },
+        { success: false, message: "User not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      user: {
-        username: user.username,
-        profileImage: user.profileImage,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phone: user.phone,        // newly added field
-        email: user.email,        // newly added field
-        gender: user.gender,      // newly added field
-        dob: user.dob,            // newly added field
-        bio: user.bio,
-        location: user.location
-      }
-    });
-  } catch (error) {
+    // Return user data
     return NextResponse.json(
-      { success: false, message: 'Server error' },
+      {
+        success: true,
+        user: {
+          username: user.username,
+          profileImage: user.profileImage,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phone: user.phone, // include extra fields
+          email: user.email,
+          gender: user.gender,
+          dob: user.dob,
+          bio: user.bio,
+          location: user.location,
+        },
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return NextResponse.json(
+      { success: false, message: "Internal Server Error" },
       { status: 500 }
     );
   }

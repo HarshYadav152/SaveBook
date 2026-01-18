@@ -1,6 +1,6 @@
 import dbConnect from "@/lib/db/mongodb";
 import User from "@/lib/models/User";
-import { verifyJwtToken } from "@/lib/utils/JWT";
+import { verifyJwtToken } from "@/lib/utils/jwtAuth";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 
@@ -40,7 +40,7 @@ export async function PUT(request) {
       phone,
       email,
       gender,
-      dob
+      dob,
     } = await request.json();
 
     // Update user with validation
@@ -55,12 +55,12 @@ export async function PUT(request) {
         ...(phone !== undefined && { phone }),
         ...(email !== undefined && { email }),
         ...(gender !== undefined && { gender }),
-        ...(dob !== undefined && { dob })
+        ...(dob !== undefined && { dob }),
       },
       {
         new: true,
         select: "-password",
-        runValidators: true // enforce schema validation
+        runValidators: true, // enforce schema validation
       }
     );
 
@@ -86,8 +86,8 @@ export async function PUT(request) {
           phone: updatedUser.phone,
           email: updatedUser.email,
           gender: updatedUser.gender,
-          dob: updatedUser.dob
-        }
+          dob: updatedUser.dob,
+        },
       },
       { status: 200 }
     );

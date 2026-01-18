@@ -27,25 +27,24 @@ export default function Notes() {
     const { notes: contextNotes = [], getNotes, editNote } = context || {};
     
     // Ensure notes is always an array
-    const notes = Array.isArray(contextNotes) ? contextNotes : [];
-    
+    const notes =
+        isAuthenticated && Array.isArray(contextNotes)
+            ? contextNotes
+            : [];
+
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [note, setNote] = useState({ id: "", etitle: "", edescription: "", etag: "" });
+    const [existingImages, setExistingImages] = useState([]);
+    const [newImages, setNewImages] = useState([]);
+    const [preview, setPreview] = useState([]);
+    const [replaceImages, setReplaceImages] = useState(false);
+    const [previewImage, setPreviewImage] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTag, setSelectedTag] = useState('all');
-    
+
     useEffect(() => {
-        // Only fetch notes if authenticated and not loading
         if (isAuthenticated && !loading) {
-            async function fetch() {   
-                try {
-                    await getNotes();
-                } catch (error) {
-                    console.error("Error fetching notes:", error);
-                    toast.error("Failed to load notes");
-                }
-            }
-            fetch();
+            getNotes().catch(() => toast.error("Failed to load notes"));
         }
     }, [isAuthenticated, loading, getNotes]);
     
@@ -76,18 +75,77 @@ export default function Notes() {
             edescription: currentNote.description,
             etag: currentNote.tag
         });
+        setExistingImages(currentNote.images || []);
+        setNewImages([]);
+        setPreview([]);
+        setReplaceImages(false);
+        setPreviewImage(null);
         setIsEditModalOpen(true);
     }
 
-    const handleClick = async (e) => {
+    //Upload images to Cloudinary
+    const uploadImages = async (files) => {
+        if (!files || files.length === 0) return [];
+        const formData = new FormData();
+        files.forEach(file => formData.append("image", file));
+        const res = await fetch("/api/upload/user-media", {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+        });
+        if (!res.ok) {
+            throw new Error("Image upload failed");
+        }
+        const data = await res.json();
+        return Array.isArray(data.imageUrls) ? data.imageUrls : [];
+    };
+
+    const handleClick = async () => {
         try {
-            await editNote(note.id, note.etitle, note.edescription, note.etag);
+            let uploadedUrls = [];
+            if (newImages.length > 0) {
+                uploadedUrls = await uploadImages(newImages);
+            }
+            const finalImages = replaceImages
+                ? uploadedUrls              
+                : [...existingImages, ...uploadedUrls]; 
+            await editNote(
+                note.id,
+                note.etitle,
+                note.edescription,
+                note.etag,
+                finalImages
+            );
             setIsEditModalOpen(false);
+            setExistingImages([]);
+            setNewImages([]);
+            setPreview([]);
+            setReplaceImages(false);
+            setPreviewImage(null);
             toast.success("Note updated successfully! 🎉");
         } catch (error) {
+            console.error(error);
             toast.error("Failed to update note");
         }
-    }
+    };
+
+    // Add new images
+    const handleNewImageChange = (e) => {
+        const files = Array.from(e.target.files);
+        setNewImages(files);
+        setPreview(files.map(file => URL.createObjectURL(file)));
+    };
+
+    // Remove old image
+    const removeExistingImage = (index) => {
+        setExistingImages(prev => prev.filter((_, i) => i !== index));
+    };
+
+    // Remove newly selected image
+    const removePreviewImage = (index) => {
+        setNewImages(prev => prev.filter((_, i) => i !== index));
+        setPreview(prev => prev.filter((_, i) => i !== index));
+    };
 
     const onchange = (e) => {
         setNote({ ...note, [e.target.name]: e.target.value });
@@ -215,6 +273,117 @@ export default function Notes() {
                                     Choose a category for your note
                                 </p>
                             </div>
+
+                            {/* ===== Existing Images ===== */}
+                            {existingImages.length > 0 && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                                        Existing Images ({existingImages.length})
+                                    </label>
+                                    <div className="flex gap-3 flex-wrap p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                                        {existingImages.map((img, i) => (
+                                            <div key={i} className="relative group overflow-hidden rounded-xl border border-gray-700 bg-gray-800 cursor-pointer">
+                                                <img
+                                                    src={img}
+                                                    alt={`Existing image ${i + 1}`}
+                                                    loading="lazy"
+                                                    className="w-24 h-24 object-cover"
+                                                    onClick={() => setPreviewImage(img)}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeExistingImage(i)}
+                                                    className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white rounded-lg p-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                                    title="Remove image"
+                                                >
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                                {/* Preview Icon */}
+                                                <div className="absolute bottom-1 right-1 bg-blue-600 text-white rounded-lg p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* ===== Add New Images ===== */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-3">
+                                    Add New Images
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="file"
+                                        multiple
+                                        accept="image/*"
+                                        onChange={handleNewImageChange}
+                                        className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-800 text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer transition-all duration-200 outline-none"
+                                    />
+                                </div>
+                                
+                                {/* Replace Images Checkbox */}
+                                <div className="flex items-center gap-2 mt-3 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                                    <input
+                                        type="checkbox"
+                                        id="replaceImages"
+                                        checked={replaceImages}
+                                        onChange={(e) => setReplaceImages(e.target.checked)}
+                                        className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+                                    />
+                                    <label htmlFor="replaceImages" className="text-sm text-gray-300 cursor-pointer">
+                                        Replace existing images (instead of adding to them)
+                                    </label>
+                                </div>
+                                
+                                <p className="text-xs text-gray-400 mt-2">
+                                    Select one or more images to {replaceImages ? 'replace all existing images' : 'add to your note'}
+                                </p>
+                            </div>
+
+                            {/* ===== New Image Preview ===== */}
+                            {preview.length > 0 && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                                        New Images Preview ({preview.length})
+                                    </label>
+                                    <div className="flex gap-3 flex-wrap p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                                        {preview.map((src, i) => (
+                                            <div key={i} className="relative group overflow-hidden rounded-xl border border-gray-700 bg-gray-800 cursor-pointer">
+                                                <img
+                                                    src={src}
+                                                    alt={`New image ${i + 1}`}
+                                                    className="w-24 h-24 object-cover"
+                                                    onClick={() => setPreviewImage(src)}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removePreviewImage(i)}
+                                                    className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white rounded-lg p-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                                    title="Remove image"
+                                                >
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                                {/* Preview Icon */}
+                                                <div className="absolute bottom-1 right-1 bg-blue-600 text-white rounded-lg p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Modal Footer */}
@@ -236,6 +405,35 @@ export default function Notes() {
                                 Update Note
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Image Preview Modal */}
+            {previewImage && (
+                <div 
+                    className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-[60] backdrop-blur-sm"
+                    onClick={() => setPreviewImage(null)}
+                >
+                    <div className="relative max-w-7xl max-h-[90vh] w-full flex items-center justify-center">
+                        {/* Close Button */}
+                        <button
+                            onClick={() => setPreviewImage(null)}
+                            className="absolute top-4 right-4 bg-gray-900/80 hover:bg-gray-900 text-white rounded-full p-3 transition-all duration-200 z-10 border border-gray-700"
+                            title="Close preview"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        
+                        {/* Image */}
+                        <img
+                            src={previewImage}
+                            alt="Preview"
+                            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                            onClick={(e) => e.stopPropagation()}
+                        />
                     </div>
                 </div>
             )}

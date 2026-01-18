@@ -1,93 +1,66 @@
-import { NextResponse } from 'next/server';
-import { v2 as cloudinary } from 'cloudinary';
-import { verifyJwtToken } from '@/lib/utils/JWT';
+import { NextResponse } from "next/server";
+import { v2 as cloudinary } from "cloudinary";
+import { verifyJwtToken } from "@/lib/utils/jwtAuth";
 
-// Configure Cloudinary (you'll need to add these to your .env.local)
-if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  });
-}
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export async function POST(request) {
   try {
-    // Verify authentication
-    const authtoken = request.cookies.get("authToken");
-    
-    if (!authtoken) {
-      return NextResponse.json({ success: false, message: "Unauthorized - No token provided" }, { status: 401 });
+    const token = request.cookies.get("authToken");
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const decoded = verifyJwtToken(authtoken.value);
-    
-    if (!decoded || !decoded.success) {
-      return NextResponse.json({ success: false, message: "Unauthorized - Invalid token" }, { status: 401 });
+    const decoded = await verifyJwtToken(token.value);
+    if (!decoded.success) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    // For now, we'll handle form data (for image upload)
     const formData = await request.formData();
-    const file = formData.get('image');
+    const file = formData.get("image");
 
     if (!file) {
-      return NextResponse.json({ success: false, message: "No image file provided" }, { status: 400 });
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // Convert file to buffer
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: "Profile image must be less than 5 MB" },
+        { status: 400 }
+      );
+    }
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return NextResponse.json(
+        { error: "Only JPG, PNG, and WebP images are allowed" },
+        { status: 400 }
+      );
+    }
+
     const buffer = Buffer.from(await file.arrayBuffer());
-
-    // Check file size (max 5MB)
-    if (buffer.length > 5 * 1024 * 1024) {
-      return NextResponse.json({ success: false, message: "File size exceeds 5MB limit" }, { status: 400 });
-    }
-
-    // Check file type
-    const fileType = file.type;
-    if (!fileType.startsWith('image/')) {
-      return NextResponse.json({ success: false, message: "Invalid file type. Only images are allowed." }, { status: 400 });
-    }
-
-    // For now, if Cloudinary is not configured, we'll return a data URL
-    // In production, you should configure Cloudinary or use a different storage solution
-    if (!process.env.CLOUDINARY_CLOUD_NAME) {
-      // Convert to base64 data URL
-      const base64 = buffer.toString('base64');
-      const dataUrl = `data:${fileType};base64,${base64}`;
-      
-      return NextResponse.json({ 
-        success: true, 
-        imageUrl: dataUrl,
-        message: "Image uploaded successfully (as data URL since Cloudinary is not configured)"
-      });
-    }
-
-    // Upload to Cloudinary
-    const uploadResult = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { 
-          folder: 'savebook/profile_images',
-          resource_type: 'auto'
+    const imageUrl = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        {
+          folder: "savebook/profile",
+          resource_type: "image",
         },
         (error, result) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(result);
-          }
+          if (error) reject(error);
+          else resolve(result.secure_url);
         }
-      );
-      stream.end(buffer);
+      ).end(buffer);
     });
 
-    return NextResponse.json({ 
-      success: true, 
-      imageUrl: uploadResult.secure_url,
-      publicId: uploadResult.public_id
-    });
-
+    return NextResponse.json({ imageUrl });
   } catch (error) {
-    console.error("Image upload error:", error);
-    return NextResponse.json({ success: false, message: "Internal Server Error" }, { status: 500 });
+    console.error("Profile upload error:", error);
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }
