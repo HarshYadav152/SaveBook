@@ -156,7 +156,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-950">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
@@ -169,7 +169,7 @@ export default function ProfilePage() {
 
   if (loading || !isDataLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-950">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
@@ -195,9 +195,9 @@ export default function ProfilePage() {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 py-12">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 shadow-xl rounded-lg overflow-hidden">
           <div className="p-6">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Edit Profile</h1>
             
@@ -216,7 +216,7 @@ export default function ProfilePage() {
             {!isEditing ? (
               <div className="space-y-6">
                 {/* Profile Preview Card */}
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-6">
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Your Profile</h2>
                     <button 
@@ -314,7 +314,7 @@ export default function ProfilePage() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Username
                   </label>
-                  <div className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                  <div className="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300">
                     {user?.username || 'N/A'}
                   </div>
                 </div>
@@ -330,7 +330,7 @@ export default function ProfilePage() {
                       name="firstName"
                       value={formData.firstName || ''}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white"
                       placeholder="Enter first name"
                     />
                   </div>
@@ -345,7 +345,7 @@ export default function ProfilePage() {
                       name="lastName"
                       value={formData.lastName || ''}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white"
                       placeholder="Enter last name"
                     />
                   </div>
@@ -361,7 +361,7 @@ export default function ProfilePage() {
                     value={formData.bio || ''}
                     onChange={handleInputChange}
                     rows="3"
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white"
                     placeholder="Tell us about yourself"
                   ></textarea>
                 </div>
@@ -376,7 +376,7 @@ export default function ProfilePage() {
                     name="location"
                     value={formData.location || ''}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white"
                     placeholder="Enter your location"
                   />
                 </div>

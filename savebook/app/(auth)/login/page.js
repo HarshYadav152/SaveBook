@@ -220,7 +220,6 @@ const LoginForm = () => {
 
 /* =========================
    Skeleton
-========================= */
 const LoginFormSkeleton = () => (
   <div className="space-y-6 animate-pulse">
     <div className="h-12 bg-gray-700 rounded"></div>
@@ -231,7 +230,6 @@ const LoginFormSkeleton = () => (
 
 /* =========================
    Page Wrapper
-========================= */
 export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">

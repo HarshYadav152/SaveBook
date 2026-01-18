@@ -44,7 +44,7 @@ const NotFoundLoading = () => {
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-gray-900 text-gray-200">
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-white dark:bg-slate-950 text-gray-900 dark:text-gray-200">
       <Suspense fallback={<NotFoundLoading />}>
         <NotFoundContent />
       </Suspense>

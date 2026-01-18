@@ -7,6 +7,8 @@ import AuthProvider from "@/context/auth/AuthState";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import LoadingProvider from "@/components/providers/LoadingProvider";
+import ToasterProvider from "@/components/providers/ToasterProvider";
+import ThemeProvider from "@/context/theme/ThemeProvider";
 import { Suspense } from "react";
 import Head from "next/head";
 
@@ -95,6 +97,35 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        
+        {/* Theme initialization script - prevents flash of unstyled content */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('savebook-theme');
+                  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  const shouldBeDark = theme === 'dark' || (!theme && prefersDark);
+                  
+                  if (shouldBeDark) {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.style.backgroundColor = '#0f172a';
+                    document.documentElement.style.colorScheme = 'dark';
+                    document.body.style.backgroundColor = '#0f172a';
+                    document.body.style.color = '#e2e8f0';
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.style.backgroundColor = '#ffffff';
+                    document.documentElement.style.colorScheme = 'light';
+                    document.body.style.backgroundColor = '#ffffff';
+                    document.body.style.color = '#1f2937';
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
         
         {/* Structured Data (JSON-LD) */}
         <script

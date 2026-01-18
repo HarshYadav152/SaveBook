@@ -8,8 +8,8 @@ import Link from 'next/link';
 // Signup Form Component
 const SignupForm = () => {
     const { register, isAuthenticated } = useAuth();
-    const [credentials, setCredentials] = useState({ 
-        username: '', 
+    const [credentials, setCredentials] = useState({
+        username: '',
         password: '',
         confirmPassword: ''
     });
@@ -30,7 +30,7 @@ const SignupForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         // Prevent submission if already authenticated
         if (isAuthenticated) {
             router.push("/");
@@ -63,14 +63,14 @@ const SignupForm = () => {
         }
 
         setIsLoading(true);
-        
+
         try {
             // Use the register method from AuthContext
             const result = await register(
                 credentials.username,
                 credentials.password
             );
-            
+
             if (result.success) {
                 toast.success("Account created successfully! 🎉");
                 router.push("/login")
@@ -146,7 +146,7 @@ const SignupForm = () => {
         <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Username Field */}
             <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="username" className="block text-sm font-medium text-foreground mb-2">
                     Username
                 </label>
                 <input
@@ -171,7 +171,7 @@ const SignupForm = () => {
 
             {/* Password Field */}
             <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
                     Password
                 </label>
                 <input
@@ -199,7 +199,7 @@ const SignupForm = () => {
 
             {/* Confirm Password Field */}
             <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-2">
                     Confirm Password
                 </label>
                 <input
@@ -243,11 +243,11 @@ const SignupForm = () => {
 
             {/* Login link */}
             <div className="text-center">
-                <span className="text-sm text-gray-300">
+                <span className="text-sm text-muted-foreground">
                     Already have an account?{' '}
-                    <Link 
-                        href="/login" 
-                        className="font-medium text-green-400 hover:text-green-300"
+                    <Link
+                        href="/login"
+                        className="font-medium text-green-600 hover:text-green-700 transition-colors"
                         onClick={(e) => {
                             if (isLoading || isAuthenticated) {
                                 e.preventDefault();
@@ -268,20 +268,20 @@ const SignupFormSkeleton = () => {
         <div className="space-y-6">
             {/* Username Field Skeleton */}
             <div>
-                <div className="h-5 w-20 bg-gray-700 rounded mb-2 animate-pulse"></div>
-                <div className="h-12 bg-gray-700 rounded-lg animate-pulse"></div>
+                <div className="h-5 w-20 bg-gray-300 dark:bg-gray-700 rounded mb-2 animate-pulse"></div>
+                <div className="h-12 bg-gray-300 dark:bg-gray-700 rounded-lg animate-pulse"></div>
             </div>
 
             {/* Password Field Skeleton */}
             <div>
-                <div className="h-5 w-20 bg-gray-700 rounded mb-2 animate-pulse"></div>
-                <div className="h-12 bg-gray-700 rounded-lg animate-pulse"></div>
+                <div className="h-5 w-20 bg-gray-300 dark:bg-gray-700 rounded mb-2 animate-pulse"></div>
+                <div className="h-12 bg-gray-300 dark:bg-gray-700 rounded-lg animate-pulse"></div>
             </div>
 
             {/* Confirm Password Field Skeleton */}
             <div>
-                <div className="h-5 w-32 bg-gray-700 rounded mb-2 animate-pulse"></div>
-                <div className="h-12 bg-gray-700 rounded-lg animate-pulse"></div>
+                <div className="h-5 w-32 bg-gray-300 dark:bg-gray-700 rounded mb-2 animate-pulse"></div>
+                <div className="h-12 bg-gray-300 dark:bg-gray-700 rounded-lg animate-pulse"></div>
             </div>
 
             {/* Button Skeleton */}
@@ -302,17 +302,17 @@ export default function Signup() {
     // Show loading while checking initial auth state
     if (isAuthenticated === undefined) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center">
+            <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-blue-900 flex items-center justify-center">
                 <div className="max-w-md w-full">
                     {/* Header Skeleton */}
                     <div className="text-center mb-8">
                         <div className="mx-auto h-12 w-12 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center mb-4 animate-pulse"></div>
-                        <div className="h-8 w-48 bg-gray-700 rounded mx-auto mb-2 animate-pulse"></div>
-                        <div className="h-4 w-32 bg-gray-700 rounded mx-auto animate-pulse"></div>
+                        <div className="h-8 w-48 bg-gray-300 dark:bg-gray-700 rounded mx-auto mb-2 animate-pulse"></div>
+                        <div className="h-4 w-32 bg-gray-300 dark:bg-gray-700 rounded mx-auto animate-pulse"></div>
                     </div>
 
                     {/* Form Skeleton */}
-                    <div className="bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-700">
+                    <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
                         <SignupFormSkeleton />
                     </div>
                 </div>
@@ -333,7 +333,7 @@ export default function Signup() {
     // }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="max-w-md w-full">
                 {/* Header */}
                 <div className="text-center mb-8">
@@ -342,16 +342,16 @@ export default function Signup() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                         </svg>
                     </div>
-                    <h2 className="text-3xl font-bold text-white">
+                    <h2 className="text-3xl font-bold text-foreground">
                         Create Account
                     </h2>
-                    <p className="mt-2 text-gray-300">
+                    <p className="mt-2 text-muted-foreground">
                         Join us and get started
                     </p>
                 </div>
 
                 {/* Signup Form */}
-                <div className="bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-700">
+                <div className="bg-card p-8 rounded-2xl shadow-xl border border-border">
                     <SignupForm />
                 </div>
             </div>
