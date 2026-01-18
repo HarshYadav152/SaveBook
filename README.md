@@ -43,6 +43,9 @@ npm run dev
 > [!TIP]
 > Once the server starts, open [http://localhost:3000](http://localhost:3000) in your browser to see the app in action!
 
+> [!NOTE]
+> **Using Docker?** For a containerized setup with MongoDB included, see our [Docker Setup Guide](savebook/DOCKER_SETUP.md).
+
 ---
 
 ## 📁 Project Structure
