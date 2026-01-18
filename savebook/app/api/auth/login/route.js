@@ -1,16 +1,17 @@
-import dbConnect from '@/lib/db/mongodb';
-import User from '@/lib/models/User';
+import { NextResponse } from "next/server";
+import dbConnect from "@/lib/db/mongodb";
+import User from "@/lib/models/User";
 import { generateAuthToken } from "@/lib/utils/jwtAuth";
-import { NextResponse } from 'next/server';
+import { generateRecoveryCodes } from "@/lib/utils/recoveryCodes";
 
 export async function POST(request) {
   try {
     await dbConnect();
+    
 
     const { username, password } = await request.json();
 
-    // Find user
-    const user = await User.findOne({ username }).select("+password");
+    const user = await User.findOne({ username });
     if (!user) {
       return NextResponse.json(
         { success: false, message: "Invalid username or password" },
@@ -18,7 +19,6 @@ export async function POST(request) {
       );
     }
 
-    // Verify password
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
       return NextResponse.json(
@@ -27,10 +27,21 @@ export async function POST(request) {
       );
     }
 
-    // Generate token - pass userId as string
+    //  Generate auth token
     const { authToken } = await generateAuthToken(user._id.toString());
 
-    // Create response
+    //  FIRST LOGIN: generate recovery codes
+    let recoveryCodes = null;
+    if (!user.recoveryCodes || user.recoveryCodes.length === 0) {
+      const generated = generateRecoveryCodes(8);
+
+      user.recoveryCodes = generated.hashedCodes;
+      await user.save();
+
+      // Plain codes only sent once
+      recoveryCodes = generated.plainCodes;
+    }
+
     const response = NextResponse.json(
       {
         success: true,
@@ -41,29 +52,29 @@ export async function POST(request) {
             firstName: user.firstName,
             lastName: user.lastName,
             bio: user.bio,
-            location: user.location
-          }
+            location: user.location,
+          },
+          //  only present on first login
+          recoveryCodes,
         },
-        message: "Login successful"
+        message: "Login successful",
       },
       { status: 200 }
     );
 
-    // Set cookie with 'lax' sameSite for better compatibility
-    response.cookies.set('authToken', authToken, {
+    response.cookies.set("authToken", authToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-      path: '/'
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
     });
 
-    console.log('Cookie set successfully');
     return response;
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(
-      { success: false, message: error.message || "Internal server error" },
+      { success: false, message: "Internal server error" },
       { status: 500 }
     );
   }

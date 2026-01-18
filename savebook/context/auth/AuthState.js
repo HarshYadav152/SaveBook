@@ -63,7 +63,7 @@ const AuthProvider = ({ children }) => {
             if (data.success) {
                 setUser(data.data.user);
                 setIsAuthenticated(true);
-                return { success: true, message: data.message };
+                return { success: true, message: data.message,recoveryCodes: data.data?.recoveryCodes || null };
             } else {
                 return { 
                     success: false, 
@@ -104,7 +104,7 @@ const AuthProvider = ({ children }) => {
             } else {
                 return { 
                     success: false, 
-                    message: data.message || "Registration failed" 
+                    message: data.message || data.error || "Registration failed" 
                 };
             }
         } catch (error) {
