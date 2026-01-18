@@ -55,7 +55,7 @@ const NoteState = (props) => {
   }, []);
 
   // Add note
-  const addNote = useCallback(async (title, description, tag,images = []) => {
+  const addNote = useCallback(async (title, description, tag, images = [], audio = null) => {
     try {
       const response = await fetch(`/api/notes`, {
         method: 'POST',
@@ -63,7 +63,7 @@ const NoteState = (props) => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ title, description, tag, images, })
+        body: JSON.stringify({ title, description, tag, images, audio })
       });
       const note = await response.json();
       // Optimistic update - add to existing notes instead of refetching
@@ -98,7 +98,7 @@ const NoteState = (props) => {
 
   // Edit note 
  const editNote = useCallback(
-  async (id, title, description, tag, images = []) => {
+  async (id, title, description, tag, images = [], audio = null) => {
     try {
       const response = await fetch(`/api/notes/${id}`, {
         method: "PUT",
@@ -106,7 +106,7 @@ const NoteState = (props) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, description, tag, images }),
+        body: JSON.stringify({ title, description, tag, images, audio }),
       });
 
       if (!response.ok) {

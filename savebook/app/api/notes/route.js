@@ -60,7 +60,7 @@ export async function POST(request) {
 
     // Parse body
     const body = await request.json();
-    const { title, description, tag, images } = body;
+    const { title, description, tag, images, audio } = body;
 
     if (!title || !description) {
       return NextResponse.json(
@@ -82,6 +82,7 @@ export async function POST(request) {
       description: description.trim(),
       tag: tag?.trim() || "General",
       images: Array.isArray(images) ? images : [],
+      audio: audio && audio.url ? { url: audio.url, duration: audio.duration || 0 } : null,
     });
 
     return NextResponse.json(note, { status: 201 });

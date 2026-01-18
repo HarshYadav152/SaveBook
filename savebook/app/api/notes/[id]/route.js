@@ -127,13 +127,14 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    const { title, description, tag, images } = await request.json();
+    const { title, description, tag, images, audio } = await request.json();
 
     const updatedNote = {};
     if (title) updatedNote.title = title;
     if (description) updatedNote.description = description;
     if (tag) updatedNote.tag = tag;
     if (Array.isArray(images)) updatedNote.images = images;
+    if (audio !== undefined) updatedNote.audio = audio && audio.url ? { url: audio.url, duration: audio.duration || 0 } : null;
 
     const note = await Notes.findById(id);
     if (!note) {
