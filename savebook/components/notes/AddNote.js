@@ -31,22 +31,70 @@ export default function Addnote() {
         "Work",
         "Ideas"
     ];
+    const [images, setImages] = useState([]);
+    const [preview, setPreview] = useState([]);
+
+    const handleImageChange = (e) => {
+        const files = Array.from(e.target.files);
+
+        setImages(files);
+        setPreview(files.map(file => URL.createObjectURL(file)));
+    };
+
+
+    const uploadImages = async () => {
+        const formData = new FormData();
+        images.forEach((file) => formData.append("image", file));
+
+        const res = await fetch("/api/upload/user-media", {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+        });
+
+        if (!res.ok) {
+            throw new Error("Image upload failed");
+        }
+
+        const data = await res.json();
+        return Array.isArray(data.imageUrls) ? data.imageUrls : [];
+    };
+
+
+
+
+
+
+
     const handleSaveNote = async (e) => {
         e.preventDefault();
-
         if (isSubmitting) return;
 
         setIsSubmitting(true);
         try {
-            await addNote(note.title, note.description, note.tag);
+            const imageUrls = images.length ? await uploadImages() : [];
+
+            await addNote(
+            note.title,
+            note.description,
+            note.tag,
+            imageUrls // CLOUDINARY URLs
+            );
+
             toast.success("Note has been saved");
-            setNote({ title: '', description: '', tag: '' });
+            setNote({ title: "", description: "", tag: "" });
+            setImages([]);
+            setPreview([]);
         } catch (error) {
             toast.error("Failed to save note");
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
+
+
+
+
 
     const onchange = (e) => {
         setNote({ ...note, [e.target.name]: e.target.value });
@@ -198,6 +246,56 @@ export default function Addnote() {
                                 Minimum 5 characters required. Click template buttons to auto-fill with pre-formatted structures.
                             </p>
                         </div>
+                        {/* Image Upload */}
+                        <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Attach Images
+                        </label>
+
+                        <input
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            multiple
+                            onChange={handleImageChange}
+                            className="block w-full text-sm text-gray-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-lg file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100"
+                        />
+
+                        {preview.length > 0 && (
+                            <div className="flex gap-3 mt-3 flex-wrap">
+                            {preview.map((src, index) => (
+                                <img
+                                key={index}
+                                src={src}
+                                alt="preview"
+                                className="w-24 h-24 object-cover rounded-lg border"
+                                />
+                            ))}
+                            </div>
+                        )}
+                        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                         {/* Tag Field */}
                         <div>
@@ -321,3 +419,6 @@ export default function Addnote() {
         </div>
     )
 }
+
+
+

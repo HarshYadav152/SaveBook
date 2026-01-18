@@ -1,5 +1,6 @@
 import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
+import ScrollToTop from "@/components/common/ScrollToTop";
 import { Toaster } from "react-hot-toast";
 import NoteState from "@/context/NoteState";
 import AuthProvider from "@/context/auth/AuthState";
@@ -149,6 +150,7 @@ export default function RootLayout({ children }) {
             </LoadingProvider>
           </Suspense>
         </AuthProvider>
+         <ScrollToTop />
       </body>
     </html>
   );
