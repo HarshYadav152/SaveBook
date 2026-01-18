@@ -88,27 +88,7 @@ export default function Addnote() {
         });
 
         if (!res.ok) {
-            // Log full error response for debugging
-            let errorMessage = `HTTP ${res.status}`;
-            const contentType = res.headers.get('content-type');
-            
-            try {
-                // Try to parse as JSON first
-                if (contentType?.includes('application/json')) {
-                    const errorData = await res.json();
-                    errorMessage = errorData.error || errorData.message || errorMessage;
-                } else {
-                    // Fallback to text
-                    const errorText = await res.text();
-                    errorMessage = errorText.slice(0, 200) || errorMessage;
-                }
-            } catch (parseError) {
-                // If parsing fails, use status code
-                console.error('Failed to parse error response:', parseError);
-            }
-            
-            console.error('Audio upload error:', { status: res.status, error: errorMessage });
-            throw new Error(`Audio upload failed: ${errorMessage}`);
+            throw new Error('Audio upload failed');
         }
 
         const data = await res.json();
@@ -128,12 +108,6 @@ export default function Addnote() {
         setAudioData(null);
     };
 
-
-
-
-
-
-
     const handleSaveNote = async (e) => {
         e.preventDefault();
         if (isSubmitting) return;
@@ -143,17 +117,16 @@ export default function Addnote() {
             // Upload images
             const imageUrls = images.length ? await uploadImages() : [];
 
-            // Upload audio if recording exists - REQUIRED before note creation
+            // Upload audio if recording exists
             let finalAudioData = null;
             if (audioBlob) {
-                setIsUploadingAudio(true);
                 try {
+                    setIsUploadingAudio(true);
                     finalAudioData = await uploadAudio(audioBlob);
                 } catch (audioError) {
                     console.error('Audio upload error:', audioError);
-                    toast.error(audioError.message || 'Audio upload failed. Please try again.');
-                    // Abort note creation - do NOT save note without audio
-                    return;
+                    toast.error('Failed to upload audio. Note saved without audio.');
+                    finalAudioData = null;
                 }
             }
 
@@ -170,10 +143,10 @@ export default function Addnote() {
             setNote({ title: "", description: "", tag: "" });
             setImages([]);
             setPreview([]);
-            clearAudioRecording(); // Only clear after successful save
+            clearAudioRecording();
         } catch (error) {
             console.error('Error saving note:', error);
-            toast.error(error.message || "Failed to save note. Please try again.");
+            toast.error("Failed to save note");
         } finally {
             setIsSubmitting(false);
             setIsUploadingAudio(false);
