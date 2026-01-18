@@ -13,11 +13,7 @@ export default function ProfilePage() {
     firstName: "",
     lastName: "",
     bio: "",
-    location: "",
-    phone: "",
-    email: "",
-    gender: "",
-    dob: ""
+    location: ""
   });
 
   const [imagePreview, setImagePreview] = useState("");
@@ -25,11 +21,6 @@ export default function ProfilePage() {
   const [error, setError] = useState("");
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [errors, setErrors] = useState({});
-
-  // Validators
-  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const validatePhone = (phone) => /^[6-9]\d{9}$/.test(phone); // Indian 10-digit
 
   useEffect(() => {
     if (user) {
@@ -38,11 +29,7 @@ export default function ProfilePage() {
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         bio: user.bio || "",
-        location: user.location || "",
-        phone: user.phone || "",
-        email: user.email || "",
-        gender: user.gender || "",
-        dob: user.dob ? user.dob.substring(0, 10) : ""
+        location: user.location || ""
       });
       setImagePreview(user.profileImage || "");
       setIsDataLoaded(true);
@@ -52,36 +39,6 @@ export default function ProfilePage() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // Live validation
-    if (name === "email") {
-      setErrors((prev) => ({
-        ...prev,
-        email: value ? (validateEmail(value) ? "" : "Invalid email address") : ""
-      }));
-    }
-    if (name === "phone") {
-      setErrors((prev) => ({
-        ...prev,
-        phone: value ? (validatePhone(value) ? "" : "Invalid phone number") : ""
-      }));
-    }
-  };
-
-  const handleBlur = (e) => {
-    const { name, value } = e.target;
-    if (name === "email") {
-      setErrors((prev) => ({
-        ...prev,
-        email: value ? (validateEmail(value) ? "" : "Invalid email address") : ""
-      }));
-    }
-    if (name === "phone") {
-      setErrors((prev) => ({
-        ...prev,
-        phone: value ? (validatePhone(value) ? "" : "Invalid phone number") : ""
-      }));
-    }
   };
 
   const handleImageChange = async (e) => {
@@ -116,7 +73,7 @@ export default function ProfilePage() {
         } else {
           setError(result.message || "Failed to upload image");
         }
-      } catch (err) {
+      } catch {
         setError("An error occurred while uploading the image");
       }
     }
@@ -126,12 +83,6 @@ export default function ProfilePage() {
     e.preventDefault();
     setMessage("");
     setError("");
-
-    // Final validation gate
-    if (errors.email || errors.phone) {
-      setError("Please fix validation errors before submitting.");
-      return;
-    }
 
     try {
       const response = await fetch("/api/auth/update-profile", {
@@ -149,11 +100,7 @@ export default function ProfilePage() {
           firstName: data.user.firstName,
           lastName: data.user.lastName,
           bio: data.user.bio,
-          location: data.user.location,
-          phone: data.user.phone,
-          email: data.user.email,
-          gender: data.user.gender,
-          dob: data.user.dob ? data.user.dob.substring(0, 10) : ""
+          location: data.user.location
         });
         setImagePreview(data.user.profileImage);
 
@@ -166,7 +113,7 @@ export default function ProfilePage() {
       } else {
         setError(data.message || "Failed to update profile");
       }
-    } catch (err) {
+    } catch {
       setError("An error occurred while updating profile");
     }
   };
@@ -184,8 +131,6 @@ export default function ProfilePage() {
     return null;
   }
 
-  const handleEditClick = () => setIsEditing(true);
-
   const handleCancelEdit = () => {
     setIsEditing(false);
     if (user) {
@@ -194,14 +139,9 @@ export default function ProfilePage() {
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         bio: user.bio || "",
-        location: user.location || "",
-        phone: user.phone || "",
-        email: user.email || "",
-        gender: user.gender || "",
-        dob: user.dob ? user.dob.substring(0, 10) : ""
+        location: user.location || ""
       });
       setImagePreview(user.profileImage || "");
-      setErrors({});
       setError("");
       setMessage("");
     }
@@ -255,22 +195,6 @@ export default function ProfilePage() {
                   <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
                     <strong>Full Name</strong>
                     <p>{user.firstName || "N/A"} {user.lastName || ""}</p>
-                  </div>
-                  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
-                    <strong>Email</strong>
-                    <p>{user.email || "N/A"}</p>
-                  </div>
-                  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
-                    <strong>Phone</strong>
-                    <p>{user.phone || "N/A"}</p>
-                  </div>
-                  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
-                    <strong>Gender</strong>
-                    <p>{user.gender || "N/A"}</p>
-                  </div>
-                  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
-                    <strong>Date of Birth</strong>
-                    <p>{user.dob ? new Date(user.dob).toLocaleDateString() : "N/A"}</p>
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
                     <strong>Location</strong>
@@ -384,108 +308,40 @@ export default function ProfilePage() {
                   ></textarea>
                 </div>
 
-                {/* Contact info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      onBlur={handleBlur}
-                      className={`w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:text-white ${errors.email ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
-                      placeholder="Email"
-                    />
-                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Phone
-                    </label>
-                    <input
-                      type="text"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      onBlur={handleBlur}
-                      className={`w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:text-white ${errors.phone ? "border-red-500" : "border-gray-300 dark:border-gray-600"}`}
-                      placeholder="Phone"
-                    />
-                    {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
-                  </div>
-                </div>
-
-                {/* Gender, DOB, Location */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Gender
-                    </label>
-                    <select
-                      name="gender"
-                      value={formData.gender}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white"
-                    >
-                      <option value="">Select gender</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Date of Birth
-                    </label>
-                    <input
-                      type="date"
-                      name="dob"
-                      value={formData.dob}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Location
-                    </label>
-                    <input
-                      type="text"
-                      id="location"
-                      name="location"
-                      value={formData.location || ""}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                      placeholder="Enter your location"
-                    />
-                  </div>
+                {/* Location */}
+                <div>
+                  <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    id="location"
+                    name="location"
+                    value={formData.location || ""}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                    placeholder="Enter location"
+                  />
                 </div>
 
                 {/* Actions */}
-                <div className="flex justify-end space-x-4 pt-4">
+                <div className="flex justify-end space-x-4">
                   <button
                     type="button"
                     onClick={handleCancelEdit}
-                    className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
                   >
-                    Update Profile
+                    Save Changes
                   </button>
                 </div>
               </form>
-            ) : (
-              <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-              </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

@@ -39,7 +39,18 @@ export async function GET(request) {
       );
     }
 
-    // Return user data
+    return NextResponse.json({
+      success: true,
+      user: {
+        username: user.username,
+        profileImage: user.profileImage,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        bio: user.bio,
+        location: user.location
+      }
+    });
+  } catch (error) {
     return NextResponse.json(
       {
         success: true,

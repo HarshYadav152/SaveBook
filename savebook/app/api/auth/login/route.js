@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
-import dbConnect from "@/lib/db/mongodb";
-import User from "@/lib/models/User";
-import { generateAuthToken } from "@/lib/utils/jwtAuth";
-import { generateRecoveryCodes } from "@/lib/utils/recoveryCodes";
+import dbConnect from '@/lib/db/mongodb';
+import User from '@/lib/models/User';
+import { generateAuthToken } from "@/lib/utils/JWT";   // make sure filename is lowercase 'jwt.js'
+import { NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';   // add bcrypt for password comparison
 
 export async function POST(request) {
   try {
@@ -10,18 +10,15 @@ export async function POST(request) {
 
     const { username, password } = await request.json();
 
-    const user = await User.findOne({ username });
-    if (!user) {
-      return NextResponse.json(
-        { success: false, message: "Invalid Username! Try Again!" },
-        { status: 401 }
-      );
-    }
+    // Find user and include password field
+    const user = await User.findOne({ username }).select("+password");
 
-    const isPasswordValid = await user.comparePassword(password);
-    if (!isPasswordValid) {
+    // Compare password securely
+    const isPasswordValid = user ? await bcrypt.compare(password, user.password) : false;
+
+    if (!user || !isPasswordValid) {
       return NextResponse.json(
-        { success: false, message: "Invalid Password! Try Again!" },
+        { error: 'Invalid username or password' },
         { status: 401 }
       );
     }

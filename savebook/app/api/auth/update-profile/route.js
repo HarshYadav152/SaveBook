@@ -30,17 +30,13 @@ export async function PUT(request) {
     // Get user ID from token
     const userId = new mongoose.Types.ObjectId(decoded.userId);
 
-    // Get updated user data from request
+    // Get updated user data from request (only safe fields)
     const {
       profileImage,
       firstName,
       lastName,
       bio,
-      location,
-      phone,
-      email,
-      gender,
-      dob,
+      location
     } = await request.json();
 
     // Update user with validation
@@ -51,11 +47,7 @@ export async function PUT(request) {
         ...(firstName !== undefined && { firstName }),
         ...(lastName !== undefined && { lastName }),
         ...(bio !== undefined && { bio }),
-        ...(location !== undefined && { location }),
-        ...(phone !== undefined && { phone }),
-        ...(email !== undefined && { email }),
-        ...(gender !== undefined && { gender }),
-        ...(dob !== undefined && { dob }),
+        ...(location !== undefined && { location })
       },
       {
         new: true,
@@ -71,7 +63,7 @@ export async function PUT(request) {
       );
     }
 
-    // Return success response with updated user data
+    // Return success response with updated user data (only safe fields)
     return NextResponse.json(
       {
         success: true,
@@ -82,12 +74,8 @@ export async function PUT(request) {
           firstName: updatedUser.firstName,
           lastName: updatedUser.lastName,
           bio: updatedUser.bio,
-          location: updatedUser.location,
-          phone: updatedUser.phone,
-          email: updatedUser.email,
-          gender: updatedUser.gender,
-          dob: updatedUser.dob,
-        },
+          location: updatedUser.location
+        }
       },
       { status: 200 }
     );

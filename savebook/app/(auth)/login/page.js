@@ -86,11 +86,12 @@ const LoginForm = () => {
           router.push("/notes");
         }
       } else {
-        const msg = result.message || "Invalid credentials";
-        setErrorMessage(msg);
-        toast.error(msg);
+        setSuccessMessage("");
+        // Always show generic error message from backend
+        setErrorMessage("Invalid username or password");
       }
-    } catch {
+    } catch (error) {
+      setSuccessMessage("");
       setErrorMessage("Something went wrong. Please try again.");
       toast.error("Something went wrong");
     } finally {
