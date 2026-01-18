@@ -1,6 +1,6 @@
 import dbConnect from "@/lib/db/mongodb";
 import User from "@/lib/models/User";
-import { verifyJwtToken } from "@/lib/utils/jwt";
+import { verifyJwtToken } from "@/lib/utils/JWT";
 import { NextResponse } from 'next/server';
 
 export async function GET(request) {

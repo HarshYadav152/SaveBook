@@ -3,7 +3,7 @@ import dbConnect from "@/lib/db/mongodb";
 import Notes from "@/lib/models/Notes";
 import User from "@/lib/models/User";
 import mongoose from "mongoose";
-import { verifyJwtToken } from "@/lib/utils/jwt";
+import { verifyJwtToken } from "@/lib/utils/JWT";
 
 export async function GET(request) {
   await dbConnect();

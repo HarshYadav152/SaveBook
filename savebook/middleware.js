@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { verifyJwtToken } from './lib/utils/jwt';
+import { verifyJwtToken } from './lib/utils/JWT';
 
 export default async function middleware(request) {
   const protectedPaths = ['/api/notes', '/notes'];
