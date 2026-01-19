@@ -1,5 +1,6 @@
 import noteContext from '@/context/noteContext';
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useMemo } from 'react'
+import LinkPreviewCard from './LinkPreviewCard';
 import toast from 'react-hot-toast';
 
 export default function NoteItem(props) {
@@ -9,7 +10,7 @@ export default function NoteItem(props) {
     const [isDeleting, setIsDeleting] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
 
-    const handleDelete = async () => { 
+    const handleDelete = async () => {
         setIsDeleting(true);
         try {
             await deleteNote(note._id);
@@ -21,7 +22,7 @@ export default function NoteItem(props) {
         }
     }
 
-    const handleEdit = () => {  
+    const handleEdit = () => {
         updateNote(note);
     }
 
@@ -42,33 +43,33 @@ export default function NoteItem(props) {
 
     // Format date with relative time -with error handling
     const formatDate = (dateString) => {
-    try {
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return 'Unknown date';
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return 'Unknown date';
 
-        const now = new Date();
+            const now = new Date();
 
-        // Compare calendar dates in LOCAL timezone
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const noteDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            // Compare calendar dates in LOCAL timezone
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const noteDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-        const diffTime = today - noteDay;
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const diffTime = today - noteDay;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-        if (diffDays === 0) return 'Today';
-        if (diffDays === 1) return 'Yesterday';
-        if (diffDays < 7) return `${diffDays} days ago`;
-        if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+            if (diffDays === 0) return 'Today';
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays} days ago`;
+            if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
 
-        return date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
-        });
-    } catch (err) {
-        console.error("Date formatting error:", err);
-        return 'Unknown date';
-    }
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+            });
+        } catch (err) {
+            console.error("Date formatting error:", err);
+            return 'Unknown date';
+        }
     };
 
 
@@ -76,7 +77,7 @@ export default function NoteItem(props) {
     const getReadingTime = (text) => {
         try {
             if (!text) return '< 1 min';
-            
+
             const wordsPerMinute = 200;
             const wordCount = text.split(/\s+/).length || 0;
             const readingTime = Math.ceil(wordCount / wordsPerMinute);
@@ -90,22 +91,29 @@ export default function NoteItem(props) {
     // Safely calculate description length and word count
     const descriptionLength = note?.description?.length || 0;
     const wordCount = note?.description ? note.description.split(/\s+/).filter(Boolean).length : 0;
-    
+
     // Safely get tag color
     const tagColor = getTagColor(note?.tag || 'General');
+
+    // Extract URLs from description
+    const noteUrls = useMemo(() => {
+        if (!note?.description) return [];
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return note.description.match(urlRegex) || [];
+    }, [note?.description]);
 
     return (
         <>
             <div className="group relative">
                 <div className="relative bg-gray-900 rounded-2xl border border-gray-700 hover:border-gray-600 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:scale-[1.02]">
-                    
+
                     {/* Header with Gradient */}
                     <div className="p-5 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-gray-900 relative">
                         <div className="flex items-start justify-between mb-2">
                             <h3 className="font-bold text-white text-lg leading-tight line-clamp-2 flex-1 pr-2">
                                 {note?.title || 'Untitled Note'}
                             </h3>
-                            
+
                             {/* Tag moved to top right corner */}
                             <div className="flex-shrink-0">
                                 <span className={`${tagColor.bg} ${tagColor.text} px-2 py-1 rounded-md text-xs font-medium`}>
@@ -113,7 +121,7 @@ export default function NoteItem(props) {
                                 </span>
                             </div>
                         </div>
-                        
+
                         {/* Metadata Row */}
                         <div className="flex items-center justify-between text-xs text-gray-400">
                             <div className="flex items-center space-x-2">
@@ -133,8 +141,27 @@ export default function NoteItem(props) {
 
                     {/* Body  */}
                     <div className="p-5 relative z-10">
-                        <p className="text-gray-300 text-sm leading-relaxed line-clamp-4 min-h-[84px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-3 border border-gray-700 relative z-10">
-                            {note?.description || 'No description provided. Click edit to add content to this note.'}
+                        <p className="text-gray-300 text-sm leading-relaxed line-clamp-4 min-h-[84px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-3 border border-gray-700 relative z-10 whitespace-pre-wrap">
+                            {note?.description ? (
+                                note.description.split(/(https?:\/\/[^\s]+)/g).map((part, i) => (
+                                    part.match(/https?:\/\/[^\s]+/) ? (
+                                        <a
+                                            key={i}
+                                            href={part}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-400 hover:text-blue-300 hover:underline transition-colors z-20 relative font-medium"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {part}
+                                        </a>
+                                    ) : (
+                                        <span key={i}>{part}</span>
+                                    )
+                                ))
+                            ) : (
+                                'No description provided. Click edit to add content to this note.'
+                            )}
                         </p>
 
                         {/* Note  */}
@@ -163,6 +190,12 @@ export default function NoteItem(props) {
                                 ))}
                             </div>
                         )}
+                        {/* Link Previews */}
+                        {noteUrls.map((url, index) => (
+                            <div key={index} className="relative z-20" onClick={(e) => e.stopPropagation()}>
+                                <LinkPreviewCard url={url} />
+                            </div>
+                        ))}
                     </div>
 
                     {/* Enhanced Footer */}
@@ -215,7 +248,7 @@ export default function NoteItem(props) {
                                     <span>{note?.date ? formatDate(note.date) : 'Unknown'}</span>
                                 </div>
                             </div>
-                            
+
                             {/* Character Count */}
                             <div className="flex items-center space-x-2 text-gray-400">
                                 <div className="flex items-center space-x-1 bg-gray-700/50 px-2 py-1 rounded-lg border border-gray-600">
@@ -238,7 +271,7 @@ export default function NoteItem(props) {
 
             {/* Image Preview      */}
             {previewImage && (
-                <div 
+                <div
                     className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
                     onClick={() => setPreviewImage(null)}
                 >
@@ -253,7 +286,7 @@ export default function NoteItem(props) {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
-                        
+
                         {/* Image */}
                         <img
                             src={previewImage}
