@@ -33,11 +33,50 @@ export async function GET(request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // Get pagination parameters from query
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page')) || 1;
+    const limit = parseInt(searchParams.get('limit')) || 10;
+
+    // Validate pagination parameters
+    if (page < 1 || limit < 1 || limit > 100) {
+      return NextResponse.json(
+        { error: "Invalid pagination parameters" },
+        { status: 400 }
+      );
+    }
+
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination metadata
+    const totalNotes = await Notes.countDocuments({
+      user: new mongoose.Types.ObjectId(decoded.userId),
+    });
+
+    // Get paginated notes, sorted by creation date (newest first)
     const notes = await Notes.find({
       user: new mongoose.Types.ObjectId(decoded.userId),
-    }).lean();
+    })
+    .sort({ date: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();
 
-    return NextResponse.json(notes);
+    const totalPages = Math.ceil(totalNotes / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    return NextResponse.json({
+      notes,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalNotes,
+        limit,
+        hasNextPage,
+        hasPrevPage
+      }
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

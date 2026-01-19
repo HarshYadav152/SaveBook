@@ -24,7 +24,7 @@ const NavigationHandler = ({ isAuthenticated, loading }) => {
 export default function Notes() {
     const { isAuthenticated, loading } = useAuth();
     const context = useContext(noteContext);
-    const { notes: contextNotes = [], getNotes, editNote } = context || {};
+    const { notes: contextNotes = [], getNotes, editNote, pagination, loading: notesLoading } = context;
     
     // Ensure notes is always an array
     const notes =
@@ -44,7 +44,7 @@ export default function Notes() {
 
     useEffect(() => {
         if (isAuthenticated && !loading) {
-            getNotes().catch(() => toast.error("Failed to load notes"));
+            getNotes(1, 10).catch(() => toast.error("Failed to load notes"));
         }
     }, [isAuthenticated, loading, getNotes]);
     
@@ -67,6 +67,13 @@ export default function Notes() {
         const matchesTag = selectedTag === 'all' || note.tag === selectedTag;
         return matchesSearch && matchesTag;
     });
+
+    // Load more notes
+    const loadMoreNotes = () => {
+        if (pagination.hasNextPage && !notesLoading) {
+            getNotes(pagination.currentPage + 1, pagination.limit, true);
+        }
+    };
 
     const updateNote = (currentNote) => {
         setNote({
@@ -498,7 +505,8 @@ export default function Notes() {
 
                         {/* Stats */}
                         <div className="text-sm text-gray-400">
-                            {filteredNotes.length} {filteredNotes.length === 1 ? 'note' : 'notes'}
+                            {filteredNotes.length} {filteredNotes.length === 1 ? 'note' : 'notes'} shown
+                            {pagination.totalNotes > filteredNotes.length && ` (${pagination.totalNotes} total)`}
                         </div>
                     </div>
                 </div>
@@ -536,26 +544,51 @@ export default function Notes() {
                     )}
                 </div>
 
+                {/* Load More Button */}
+                {pagination.hasNextPage && filteredNotes.length > 0 && (
+                    <div className="flex justify-center mb-8">
+                        <button
+                            onClick={loadMoreNotes}
+                            disabled={notesLoading}
+                            className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 font-medium flex items-center space-x-2"
+                        >
+                            {notesLoading ? (
+                                <>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                    <span>Loading...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <span>Load More Notes</span>
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                                    </svg>
+                                </>
+                            )}
+                        </button>
+                    </div>
+                )}
+
                 {/* Enhanced Stats */}
-                {filteredNotes.length > 0 && (
+                {pagination.totalNotes > 0 && (
                     <div className="bg-gray-900 rounded-2xl border border-gray-700 p-6">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="text-center">
-                                <div className="text-3xl font-bold text-white mb-2">{filteredNotes.length}</div>
+                                <div className="text-3xl font-bold text-white mb-2">{pagination.totalNotes}</div>
                                 <div className="text-gray-400 text-sm">Total Notes</div>
                             </div>
                             <div className="text-center">
                                 <div className="text-3xl font-bold text-white mb-2">
-                                    {new Set(filteredNotes.map(note => note.tag)).size}
+                                    {new Set(notes.map(note => note.tag)).size}
                                 </div>
                                 <div className="text-gray-400 text-sm">Categories</div>
                             </div>
                             <div className="text-center">
                                 <div className="text-3xl font-bold text-white mb-2">
-                                    {filteredNotes.reduce((total, note) => total + (note.description?.length || 0), 0).toLocaleString()}
+                                    {notes.reduce((total, note) => total + (note.description?.length || 0), 0).toLocaleString()}
                                 </div>
                                 <div className="text-gray-400 text-sm">
-                                    {filteredNotes.reduce((total, note) => total + (note.description?.length || 0), 0) === 1
+                                    {notes.reduce((total, note) => total + (note.description?.length || 0), 0) === 1
                                         ? "1 Character"
                                         : "Total Characters"}
                                 </div>

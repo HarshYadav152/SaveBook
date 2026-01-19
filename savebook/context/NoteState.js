@@ -5,6 +5,15 @@ import noteContext from './noteContext'
 const NoteState = (props) => {
   const notesInitial = [];
   const [notes, setNotes] = useState(notesInitial)
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalNotes: 0,
+    limit: 10,
+    hasNextPage: false,
+    hasPrevPage: false
+  })
+  const [loading, setLoading] = useState(false)
 
   // Helper function to handle fetch responses
   const handleResponse = async (response) => {
@@ -37,20 +46,35 @@ const NoteState = (props) => {
     return response.json();
   };
 
-  // Fetch all notes with useCallback
-  const getNotes = useCallback(async () => {
+  // Fetch notes with pagination
+  const getNotes = useCallback(async (page = 1, limit = 10, append = false) => {
     try {
-      const response = await fetch(`/api/notes`, {
+      setLoading(true);
+      const response = await fetch(`/api/notes?page=${page}&limit=${limit}`, {
         method: 'GET',
         credentials: "include",
         headers: {
           'Content-Type': 'application/json'
         }
       });
-      const parsedText = await response.json();
-      setNotes(parsedText)
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (append) {
+        setNotes(prevNotes => [...prevNotes, ...data.notes]);
+      } else {
+        setNotes(data.notes);
+      }
+      
+      setPagination(data.pagination);
     } catch (error) {
       console.error('Error fetching notes:', error);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -140,7 +164,9 @@ const NoteState = (props) => {
         addNote, 
         deleteNote, 
         editNote, 
-        getNotes 
+        getNotes,
+        pagination,
+        loading: loading
       }}>
       {props.children}
     </noteContext.Provider>
