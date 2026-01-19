@@ -53,7 +53,14 @@ export default function LoadingProvider({ children }) {
     const handleLinkClick = (e) => {
       const link = e.target.closest('a');
       if (link && link.href.startsWith(window.location.origin)) {
-        startLoading();
+        // Only start loading if the link goes to a different page
+        const targetUrl = new URL(link.href);
+        const currentPath = window.location.pathname + window.location.search;
+        const targetPath = targetUrl.pathname + targetUrl.search;
+        
+        if (currentPath !== targetPath) {
+          startLoading();
+        }
       }
     };
 

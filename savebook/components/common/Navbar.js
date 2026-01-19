@@ -327,6 +327,15 @@ export default function Navbar() {
                                 >
                                     Edit Profile
                                 </Link>
+                                <button
+                              onClick={handleLogout}
+                                  className="block w-full px-4 py-2 bg-red-100 dark:bg-red-900/30
+                                              text-red-600 dark:text-red-400 text-base font-medium
+                                             rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50
+                                                             transition-all duration-200 text-center"> 
+                                        Logout
+                                        </button>
+
                             </div>
                         ) : (
                             <div className="space-y-3">
@@ -344,6 +353,7 @@ export default function Navbar() {
                                 >
                                     Sign Up
                                 </Link>
+                                
                             </div>
                         )}
                     </div>

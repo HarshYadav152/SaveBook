@@ -7,6 +7,7 @@ export default function NoteItem(props) {
     const { deleteNote } = context;
     const { note, updateNote } = props;
     const [isDeleting, setIsDeleting] = useState(false);
+    const [previewImage, setPreviewImage] = useState(null);
 
     const handleDelete = async () => { 
         setIsDeleting(true);
@@ -39,7 +40,7 @@ export default function NoteItem(props) {
         return tagColors[tag] || { bg: 'bg-blue-500', text: 'text-blue-100' };
     };
 
-    // Format date with relative time - with error handling
+    // Format date with relative time -with error handling
     const formatDate = (dateString) => {
     try {
         const date = new Date(dateString);
@@ -120,14 +121,23 @@ export default function NoteItem(props) {
                             </svg>
                             <span>{getReadingTime(note?.description)}</span>
                         </div>
-                        <div className="flex items-center space-x-2">
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <span>{wordCount} words</span>
+                        
+                        {/* Metadata Row */}
+                        <div className="flex items-center justify-between text-xs text-gray-400">
+                            <div className="flex items-center space-x-2">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>{getReadingTime(note?.description)}</span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span>{wordCount} words</span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
                 {/* Body with Enhanced Text Display */}
                 <div className="p-5 relative z-10">
@@ -150,8 +160,8 @@ export default function NoteItem(props) {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                             </div>
-                            <span className="text-sm font-medium">Edit</span>
-                        </button>
+                        )}
+                    </div>
 
                         <button
                             onClick={handleDelete}
@@ -166,15 +176,11 @@ export default function NoteItem(props) {
                                     </svg>
                                 ) : (
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
-                                )}
-                            </div>
-                            <span className="text-sm font-medium">
-                                {isDeleting ? 'Deleting...' : 'Delete'}
-                            </span>
-                        </button>
-                    </div>
+                                </div>
+                                <span className="text-sm font-medium">Edit</span>
+                            </button>
 
                     {/* Enhanced Date and Stats Row */}
                     <div className="flex items-center justify-between text-xs">
@@ -197,14 +203,43 @@ export default function NoteItem(props) {
                             </div>
                         </div>
                     </div>
+
+                    {/*  */}
+                    <div className="absolute inset-0 border-2 border-transparent group-hover:border-gray-600 rounded-2xl transition-all duration-300 pointer-events-none" />
                 </div>
 
                 {/* Enhanced Hover Effect Border */}
                 <div className="absolute inset-0 border-2 border-transparent group-hover:border-gray-400 dark:group-hover:border-slate-600 rounded-2xl transition-all duration-300 pointer-events-none" />
             </div>
 
-            {/* Glow Effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300 pointer-events-none -z-10" />
-        </div>
+            {/* Image Preview      */}
+            {previewImage && (
+                <div 
+                    className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
+                    onClick={() => setPreviewImage(null)}
+                >
+                    <div className="relative max-w-7xl max-h-[90vh] w-full flex items-center justify-center">
+                        {/* Close Button */}
+                        <button
+                            onClick={() => setPreviewImage(null)}
+                            className="absolute top-4 right-4 bg-gray-900/80 hover:bg-gray-900 text-white rounded-full p-3 transition-all duration-200 z-10 border border-gray-700"
+                            title="Close preview"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        
+                        {/* Image */}
+                        <img
+                            src={previewImage}
+                            alt="Preview"
+                            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                    </div>
+                </div>
+            )}
+        </>
     );
 }

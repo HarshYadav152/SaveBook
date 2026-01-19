@@ -157,6 +157,7 @@ export default function RootLayout({ children }) {
             </Suspense>
           </ThemeProvider>
         </AuthProvider>
+         <ScrollToTop />
       </body>
     </html>
   );

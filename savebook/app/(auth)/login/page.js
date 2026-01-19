@@ -65,10 +65,88 @@ const LoginForm = () => {
             setIsLoading(false);
         }
     }
+  }, [isAuthenticated, loading, hasRedirected, showRecoveryModal, router]);
 
-    const onchange = (e) => {
-        setCredentials({ ...credentials, [e.target.name]: e.target.value });
+  /* -------------------------
+     Submit
+  ------------------------- */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (isLoading || isAuthenticated) return;
+
+    setIsLoading(true);
+
+    try {
+      const result = await login(
+        credentials.username,
+        credentials.password
+      );
+
+      if (result.success) {
+        toast.success("Welcome back! 🎉");
+
+        // First login show recovery codes
+        if (result.recoveryCodes && result.recoveryCodes.length > 0) {
+          setRecoveryCodes(result.recoveryCodes);
+          setShowRecoveryModal(true);
+        }
+      } else {
+        toast.error(result.message || "Invalid credentials");
+      }
+    } catch (err) {
+      toast.error("Something went wrong");
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  /* -------------------------
+     Helpers
+  ------------------------- */
+  const onchange = (e) =>
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(recoveryCodes.join("\n"));
+    toast.success("Recovery codes copied");
+  };
+
+  const handleDownload = () => {
+    const blob = new Blob([recoveryCodes.join("\n")], {
+      type: "text/plain",
+    });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "savebook-recovery-codes.txt";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
+  if (loading) return <LoginFormSkeleton />;
+
+  return (
+    <>
+      {/* ========== LOGIN FORM ========== */}
+      <form className="space-y-6" onSubmit={handleSubmit}>
+        {/* Username */}
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Username
+          </label>
+          <input
+            type="text"
+            name="username"
+            value={credentials.username}
+            onChange={onchange}
+            required
+            disabled={isLoading}
+            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white"
+            placeholder="Enter username"
+          />
+        </div>
 
     const handleCopy = async () => {
         await navigator.clipboard.writeText(recoveryCodes.join("\n"));
@@ -260,7 +338,9 @@ const LoginFormSkeleton = () => {
                 <div className="h-5 w-48 bg-muted rounded animate-pulse"></div>
             </div>
         </div>
-    );
+      )}
+    </>
+  );
 };
 
 // Main component
@@ -317,7 +397,7 @@ const LoginPage = () => {
                 </div>
             </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 }
-
-export default LoginPage;
