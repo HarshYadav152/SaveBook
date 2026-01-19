@@ -1,3 +1,340 @@
+## [2026-01-19]
+
+### ✨ Features
+-  add image upload support for notes and user media (8cab3d7) - @avdhut400
+-  add image upload support for notes (fbf9438) - @avdhut400
+
+### 🐛 Bug Fixes
+-  improve register page validation and error handling (5f451a0) - @Diksha Dabhole
+-  replace browser popup with in-app modal (0662c42) - @saburi004
+-  When a user clicks a link that points to the same page, the page loader starts and never stops. (3b0ff64) - @Karela King
+
+### 📝 Documentation
+-  auto update changelog (27786d4) - @HarshYadav152
+-  auto update changelog (45e18fe) - @HarshYadav152
+-  auto update changelog (b7af96d) - @vinayboss9669
+-  auto update changelog (f777e40) - @vinayboss9669
+-  auto update changelog (c727431) - @HarshYadav152
+-  auto update changelog (74f1b44) - @HarshYadav152
+
+### 📦 Other Changes
+- Add weblinks with preview in notes (19fc09d) - @Suvam Chatterjee
+- Add user-media upload route and improve profile upload with size & type validation (088149c) - @avdhut400
+- Add user-media upload route and improve profile upload with size & type validation (c4cfa6d) - @avdhut400
+- route (7edcf39) - @avdhut400
+- await (fab37c8) - @Avdhut Magar
+- Add scroll to top button (4545a0a) - @Harishchandra Gandhare
+- WIP: my changes before syncing upstream (8687fe5) - @avdhut400
+- Add copy and download options for recovery codes (251992d) - @avdhut400
+- Add copy and download options for recovery codes (3606a54) - @avdhut400
+
+
+## [2026-01-18]
+
+### ✨ Features
+-  add image upload support for notes and user media (8cab3d7) - @avdhut400
+-  add image upload support for notes (fbf9438) - @avdhut400
+
+### 🐛 Bug Fixes
+-  improve register page validation and error handling (5f451a0) - @Diksha Dabhole
+-  replace browser popup with in-app modal (0662c42) - @saburi004
+-  When a user clicks a link that points to the same page, the page loader starts and never stops. (3b0ff64) - @Karela King
+
+### 📝 Documentation
+-  auto update changelog (45e18fe) - @HarshYadav152
+-  auto update changelog (b7af96d) - @vinayboss9669
+-  auto update changelog (f777e40) - @vinayboss9669
+-  auto update changelog (c727431) - @HarshYadav152
+-  auto update changelog (74f1b44) - @HarshYadav152
+
+### 📦 Other Changes
+- Add user-media upload route and improve profile upload with size & type validation (088149c) - @avdhut400
+- Add user-media upload route and improve profile upload with size & type validation (c4cfa6d) - @avdhut400
+- route (7edcf39) - @avdhut400
+- await (fab37c8) - @Avdhut Magar
+- Add scroll to top button (4545a0a) - @Harishchandra Gandhare
+- WIP: my changes before syncing upstream (8687fe5) - @avdhut400
+- Add copy and download options for recovery codes (251992d) - @avdhut400
+- Add copy and download options for recovery codes (3606a54) - @avdhut400
+- Remove Mongo url (0784db3) - @avdhut400
+- WIP: recovery code password reset (08e3dcc) - @avdhut400
+
+
+## [2026-01-18]
+
+### ✨ Features
+-  add image upload support for notes and user media (8cab3d7) - @avdhut400
+-  add image upload support for notes (fbf9438) - @avdhut400
+
+### 🐛 Bug Fixes
+-  improve register page validation and error handling (5f451a0) - @Diksha Dabhole
+-  When a user clicks a link that points to the same page, the page loader starts and never stops. (3b0ff64) - @Karela King
+
+### 📝 Documentation
+-  auto update changelog (b7af96d) - @vinayboss9669
+-  auto update changelog (f777e40) - @vinayboss9669
+-  auto update changelog (c727431) - @HarshYadav152
+-  auto update changelog (74f1b44) - @HarshYadav152
+-  auto update changelog (581ae21) - @vinayboss9669
+
+### 🔧 Chore
+-  restore env example file (c53be06) - @tanmay019ai
+
+### 📦 Other Changes
+- Add user-media upload route and improve profile upload with size & type validation (088149c) - @avdhut400
+- Add user-media upload route and improve profile upload with size & type validation (c4cfa6d) - @avdhut400
+- route (7edcf39) - @avdhut400
+- await (fab37c8) - @Avdhut Magar
+- Add scroll to top button (4545a0a) - @Harishchandra Gandhare
+- WIP: my changes before syncing upstream (8687fe5) - @avdhut400
+- Add copy and download options for recovery codes (251992d) - @avdhut400
+- Add copy and download options for recovery codes (3606a54) - @avdhut400
+- Remove Mongo url (0784db3) - @avdhut400
+- WIP: recovery code password reset (08e3dcc) - @avdhut400
+
+
+## [2026-01-17]
+
+### 🐛 Bug Fixes
+-  improve register page validation and error handling (5f451a0) - @Diksha Dabhole
+-  When a user clicks a link that points to the same page, the page loader starts and never stops. (3b0ff64) - @Karela King
+-  add logout option to mobile navigation menu (3b4512a) - @tanmay019ai
+
+### 📝 Documentation
+-  auto update changelog (f777e40) - @vinayboss9669
+-  auto update changelog (c727431) - @HarshYadav152
+-  auto update changelog (74f1b44) - @HarshYadav152
+-  auto update changelog (581ae21) - @vinayboss9669
+-  auto update changelog (7e2ad8a) - @vinayboss9669
+-  auto update changelog (17d2cce) - @vinayboss9669
+-  auto update changelog (384ca31) - @HarshYadav152
+
+### 🔧 Chore
+-  restore env example file (c53be06) - @tanmay019ai
+
+### 📦 Other Changes
+- Add scroll to top button (4545a0a) - @Harishchandra Gandhare
+- WIP: my changes before syncing upstream (8687fe5) - @avdhut400
+- Add copy and download options for recovery codes (251992d) - @avdhut400
+- Add copy and download options for recovery codes (3606a54) - @avdhut400
+- Remove Mongo url (0784db3) - @avdhut400
+- WIP: recovery code password reset (08e3dcc) - @avdhut400
+- Fix issue 19: prevent notes from leaking across users (22d607f) - @Hina
+- Fix: Add missing await to verifyJwtToken in upload route (2e05089) - @Your Name
+- Fix: Critical security vulnerability - Improper Token Validation (71d5b6d) - @Your Name
+
+
+## [2026-01-17]
+
+### 🐛 Bug Fixes
+-  When a user clicks a link that points to the same page, the page loader starts and never stops. (3b0ff64) - @Karela King
+-  add logout option to mobile navigation menu (3b4512a) - @tanmay019ai
+
+### 📝 Documentation
+-  auto update changelog (c727431) - @HarshYadav152
+-  auto update changelog (74f1b44) - @HarshYadav152
+-  auto update changelog (581ae21) - @vinayboss9669
+-  auto update changelog (7e2ad8a) - @vinayboss9669
+-  auto update changelog (17d2cce) - @vinayboss9669
+-  auto update changelog (384ca31) - @HarshYadav152
+-  auto update changelog (9a91d5b) - @JackSparrow-BlackPearl
+
+### 🔧 Chore
+-  restore env example file (c53be06) - @tanmay019ai
+
+### 📦 Other Changes
+- Add scroll to top button (4545a0a) - @Harishchandra Gandhare
+- WIP: my changes before syncing upstream (8687fe5) - @avdhut400
+- Add copy and download options for recovery codes (251992d) - @avdhut400
+- Add copy and download options for recovery codes (3606a54) - @avdhut400
+- Remove Mongo url (0784db3) - @avdhut400
+- WIP: recovery code password reset (08e3dcc) - @avdhut400
+- Fix issue 19: prevent notes from leaking across users (22d607f) - @Hina
+- Fix: Add missing await to verifyJwtToken in upload route (2e05089) - @Your Name
+- Fix: Critical security vulnerability - Improper Token Validation (71d5b6d) - @Your Name
+-  implement in-page alert for contact form submission and update styles (665a776) - @Abhijeet-980
+
+
+## [2026-01-17]
+
+### 🐛 Bug Fixes
+-  When a user clicks a link that points to the same page, the page loader starts and never stops. (3b0ff64) - @Karela King
+-  add logout option to mobile navigation menu (3b4512a) - @tanmay019ai
+
+### 📝 Documentation
+-  auto update changelog (74f1b44) - @HarshYadav152
+-  auto update changelog (581ae21) - @vinayboss9669
+-  auto update changelog (7e2ad8a) - @vinayboss9669
+-  auto update changelog (17d2cce) - @vinayboss9669
+-  auto update changelog (384ca31) - @HarshYadav152
+-  auto update changelog (9a91d5b) - @JackSparrow-BlackPearl
+
+### 🔧 Chore
+-  restore env example file (c53be06) - @tanmay019ai
+
+### 📦 Other Changes
+- WIP: my changes before syncing upstream (8687fe5) - @avdhut400
+- Add copy and download options for recovery codes (251992d) - @avdhut400
+- Add copy and download options for recovery codes (3606a54) - @avdhut400
+- Remove Mongo url (0784db3) - @avdhut400
+- WIP: recovery code password reset (08e3dcc) - @avdhut400
+- Fix issue 19: prevent notes from leaking across users (22d607f) - @Hina
+- Fix: Add missing await to verifyJwtToken in upload route (2e05089) - @Your Name
+- Fix: Critical security vulnerability - Improper Token Validation (71d5b6d) - @Your Name
+-  implement in-page alert for contact form submission and update styles (665a776) - @Abhijeet-980
+- one remaining import path update (68c36a9) - @Harsh Yadav
+- rename jwt utility and update imports (a32fd33) - @Harsh Yadav
+
+
+## [2026-01-16]
+
+### 🐛 Bug Fixes
+-  When a user clicks a link that points to the same page, the page loader starts and never stops. (3b0ff64) - @Karela King
+-  add logout option to mobile navigation menu (3b4512a) - @tanmay019ai
+
+### 📝 Documentation
+-  auto update changelog (581ae21) - @vinayboss9669
+-  auto update changelog (7e2ad8a) - @vinayboss9669
+-  auto update changelog (17d2cce) - @vinayboss9669
+-  auto update changelog (384ca31) - @HarshYadav152
+-  auto update changelog (9a91d5b) - @JackSparrow-BlackPearl
+
+### 🔧 Chore
+-  restore env example file (c53be06) - @tanmay019ai
+
+### 📦 Other Changes
+- Fix issue 19: prevent notes from leaking across users (22d607f) - @Hina
+- Fix: Add missing await to verifyJwtToken in upload route (2e05089) - @Your Name
+- Fix: Critical security vulnerability - Improper Token Validation (71d5b6d) - @Your Name
+-  implement in-page alert for contact form submission and update styles (665a776) - @Abhijeet-980
+- one remaining import path update (68c36a9) - @Harsh Yadav
+- rename jwt utility and update imports (a32fd33) - @Harsh Yadav
+- remove middleware (703f015) - @Harsh Yadav
+- change import path (bdd2185) - @Harsh Yadav
+- rename JWT to jwt and rename function name (3f841f1) - @Harsh Yadav
+- revise context and fix import error (5b2114d) - @Harsh Yadav
+- notes array null fix (26b0d2f) - @Harsh Yadav
+- add register /endpoint (983b302) - @Harsh Yadav
+
+
+## [2026-01-15]
+
+### 🐛 Bug Fixes
+-  add logout option to mobile navigation menu (3b4512a) - @tanmay019ai
+
+### 📝 Documentation
+-  auto update changelog (7e2ad8a) - @vinayboss9669
+-  auto update changelog (17d2cce) - @vinayboss9669
+-  auto update changelog (384ca31) - @HarshYadav152
+-  auto update changelog (9a91d5b) - @JackSparrow-BlackPearl
+
+### 🔧 Chore
+-  restore env example file (c53be06) - @tanmay019ai
+
+### 📦 Other Changes
+- Fix issue 19: prevent notes from leaking across users (22d607f) - @Hina
+- Fix: Add missing await to verifyJwtToken in upload route (2e05089) - @Your Name
+- Fix: Critical security vulnerability - Improper Token Validation (71d5b6d) - @Your Name
+-  implement in-page alert for contact form submission and update styles (665a776) - @Abhijeet-980
+- one remaining import path update (68c36a9) - @Harsh Yadav
+- rename jwt utility and update imports (a32fd33) - @Harsh Yadav
+- remove middleware (703f015) - @Harsh Yadav
+- change import path (bdd2185) - @Harsh Yadav
+- rename JWT to jwt and rename function name (3f841f1) - @Harsh Yadav
+- revise context and fix import error (5b2114d) - @Harsh Yadav
+- notes array null fix (26b0d2f) - @Harsh Yadav
+- add register /endpoint (983b302) - @Harsh Yadav
+- remove console logs and fix some bugs (e44cf16) - @Harsh Yadav
+- remove console logs and minor bug fix (38c7e8d) - @Harsh Yadav
+
+
+## [2026-01-15]
+
+### ✨ Features
+-  update support email address on Contact Us page (088f4d0) - @Abhijeet-980
+
+### 📝 Documentation
+-  auto update changelog (17d2cce) - @vinayboss9669
+-  auto update changelog (384ca31) - @HarshYadav152
+-  auto update changelog (9a91d5b) - @JackSparrow-BlackPearl
+
+### 📦 Other Changes
+- Fix issue 19: prevent notes from leaking across users (22d607f) - @Hina
+- Fix: Add missing await to verifyJwtToken in upload route (2e05089) - @Your Name
+- Fix: Critical security vulnerability - Improper Token Validation (71d5b6d) - @Your Name
+-  implement in-page alert for contact form submission and update styles (665a776) - @Abhijeet-980
+- one remaining import path update (68c36a9) - @Harsh Yadav
+- rename jwt utility and update imports (a32fd33) - @Harsh Yadav
+- remove middleware (703f015) - @Harsh Yadav
+- change import path (bdd2185) - @Harsh Yadav
+- rename JWT to jwt and rename function name (3f841f1) - @Harsh Yadav
+- revise context and fix import error (5b2114d) - @Harsh Yadav
+- notes array null fix (26b0d2f) - @Harsh Yadav
+- add register /endpoint (983b302) - @Harsh Yadav
+- remove console logs and fix some bugs (e44cf16) - @Harsh Yadav
+- remove console logs and minor bug fix (38c7e8d) - @Harsh Yadav
+- update savebook name (f98a91a) - @Harsh Yadav
+- update savebook name (8d53843) - @Harsh Yadav
+
+
+## [2026-01-14]
+
+### ✨ Features
+-  update support email address on Contact Us page (088f4d0) - @Abhijeet-980
+-  add Contact link to Footer component (07b87c8) - @Abhijeet-980
+-  add Contact Us page (0e5d855) - @Abhijeet-980
+
+### 📝 Documentation
+-  auto update changelog (384ca31) - @HarshYadav152
+-  auto update changelog (9a91d5b) - @JackSparrow-BlackPearl
+
+### 📦 Other Changes
+- Fix: Add missing await to verifyJwtToken in upload route (2e05089) - @Your Name
+- Fix: Critical security vulnerability - Improper Token Validation (71d5b6d) - @Your Name
+-  implement in-page alert for contact form submission and update styles (665a776) - @Abhijeet-980
+- one remaining import path update (68c36a9) - @Harsh Yadav
+- rename jwt utility and update imports (a32fd33) - @Harsh Yadav
+- remove middleware (703f015) - @Harsh Yadav
+- change import path (bdd2185) - @Harsh Yadav
+- rename JWT to jwt and rename function name (3f841f1) - @Harsh Yadav
+- revise context and fix import error (5b2114d) - @Harsh Yadav
+- notes array null fix (26b0d2f) - @Harsh Yadav
+- add register /endpoint (983b302) - @Harsh Yadav
+- remove console logs and fix some bugs (e44cf16) - @Harsh Yadav
+- remove console logs and minor bug fix (38c7e8d) - @Harsh Yadav
+- update savebook name (f98a91a) - @Harsh Yadav
+- update savebook name (8d53843) - @Harsh Yadav
+
+
+## [2026-01-13]
+
+### ✨ Features
+-  update support email address on Contact Us page (088f4d0) - @Abhijeet-980
+-  add Contact link to Footer component (07b87c8) - @Abhijeet-980
+-  add Contact Us page (0e5d855) - @Abhijeet-980
+
+### 📝 Documentation
+-  auto update changelog (9a91d5b) - @JackSparrow-BlackPearl
+-  auto update changelog (612f8c7) - @vinayboss9669
+-  auto update changelog (b54b674) - @HarshYadav152
+
+### 📦 Other Changes
+-  implement in-page alert for contact form submission and update styles (665a776) - @Abhijeet-980
+- one remaining import path update (68c36a9) - @Harsh Yadav
+- rename jwt utility and update imports (a32fd33) - @Harsh Yadav
+- remove middleware (703f015) - @Harsh Yadav
+- change import path (bdd2185) - @Harsh Yadav
+- rename JWT to jwt and rename function name (3f841f1) - @Harsh Yadav
+- revise context and fix import error (5b2114d) - @Harsh Yadav
+- notes array null fix (26b0d2f) - @Harsh Yadav
+- add register /endpoint (983b302) - @Harsh Yadav
+- remove console logs and fix some bugs (e44cf16) - @Harsh Yadav
+- remove console logs and minor bug fix (38c7e8d) - @Harsh Yadav
+- update savebook name (f98a91a) - @Harsh Yadav
+- update savebook name (8d53843) - @Harsh Yadav
+- Work on e2ee notes auth routes (e1e5ad2) - @Bhoomika S
+
+
 ## [2026-01-12]
 
 ### 📝 Documentation
