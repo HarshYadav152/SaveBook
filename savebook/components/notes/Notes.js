@@ -384,6 +384,30 @@ export default function Notes() {
                                     </div>
                                 </div>
                             )}
+
+                            {/* ===== Existing Audio ===== */}
+                            {note.audio && note.audio.url && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                                        Current Audio
+                                    </label>
+                                    <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                                        <audio
+                                            controls
+                                            src={note.audio.url}
+                                            className="w-full"
+                                            style={{ maxHeight: '32px' }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setNote({ ...note, audio: null })}
+                                            className="text-xs text-red-400 hover:text-red-300 mt-2"
+                                        >
+                                            Remove audio
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Modal Footer */}
