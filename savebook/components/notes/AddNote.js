@@ -4,6 +4,7 @@ import React, { useContext, useState } from 'react'
 import toast from 'react-hot-toast';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import Modal from '../common/Modal';
 
 // Define Note Templates
 const NOTE_TEMPLATES = {
@@ -19,10 +20,53 @@ export default function Addnote() {
     const [note, setNote] = useState({ title: "", description: "", tag: "" });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [previewMode, setPreviewMode] = useState(false);
-
+    // Modal State
+    const [showModal, setShowModal] = useState(false);
+    const [pendingTemplate, setPendingTemplate] = useState(null);
     const defaultTags = [
-        "General", "Basic", "Finance", "Grocery", "Office", "Personal", "Work", "Ideas"
+        "General",
+        "Basic",
+        "Finance",
+        "Grocery",
+        "Office",
+        "Personal",
+        "Work",
+        "Ideas"
     ];
+    const [images, setImages] = useState([]);
+    const [preview, setPreview] = useState([]);
+
+    const handleImageChange = (e) => {
+        const files = Array.from(e.target.files);
+
+        setImages(files);
+        setPreview(files.map(file => URL.createObjectURL(file)));
+    };
+
+
+    const uploadImages = async () => {
+        const formData = new FormData();
+        images.forEach((file) => formData.append("image", file));
+
+        const res = await fetch("/api/upload/user-media", {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+        });
+
+        if (!res.ok) {
+            throw new Error("Image upload failed");
+        }
+
+        const data = await res.json();
+        return Array.isArray(data.imageUrls) ? data.imageUrls : [];
+    };
+
+
+
+
+
+
 
     const handleSaveNote = async (e) => {
         e.preventDefault();
@@ -30,16 +74,30 @@ export default function Addnote() {
 
         setIsSubmitting(true);
         try {
-            await addNote(note.title, note.description, note.tag);
+            const imageUrls = images.length ? await uploadImages() : [];
+
+            await addNote(
+            note.title,
+            note.description,
+            note.tag,
+            imageUrls // CLOUDINARY URLs
+            );
+
             toast.success("Note has been saved");
-            setNote({ title: '', description: '', tag: '' });
+            setNote({ title: "", description: "", tag: "" });
+            setImages([]);
+            setPreview([]);
             setPreviewMode(false);
         } catch (error) {
             toast.error("Failed to save note");
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
+
+
+
+
 
     const onchange = (e) => {
         setNote({ ...note, [e.target.name]: e.target.value });
@@ -58,9 +116,25 @@ export default function Addnote() {
                 setNote({ ...note, description: template });
                 toast.success(`${templateKey.charAt(0).toUpperCase() + templateKey.slice(1)} template applied!`);
             }
+
+            // If description has content, trigger modal
+            setPendingTemplate({ key: templateKey, content: template });
+            setShowModal(true);
         }
     }
 
+    const confirmTemplateChange = () => {
+        if (pendingTemplate) {
+            setNote({ ...note, description: pendingTemplate.content });
+            toast.success(`${pendingTemplate.key.charAt(0).toUpperCase() + pendingTemplate.key.slice(1)} template applied!`);
+            handleCloseModal();
+        }
+    }
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setPendingTemplate(null);
+    }
     // Collect unique tags from existing notes
     const userTags = Array.from(
         new Set(
@@ -69,10 +143,10 @@ export default function Addnote() {
                 .filter(tag => tag && tag.trim() !== "")
         )
     );
-    
+
     const allTags = Array.from(new Set([...defaultTags, ...userTags]));
     const isFormValid = note.title.length >= 5 && note.description.length >= 5 && note.tag.length >= 2;
-    
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-18 p-2">
             <div className="max-w-4xl mx-auto">
@@ -207,6 +281,56 @@ export default function Addnote() {
                                 <span>Markdown Supported <svg className="inline w-3 h-3" viewBox="0 0 16 16" fill="currentColor"><path fillRule="evenodd" d="M14.85 3H1.15C.52 3 0 3.52 0 4.15v7.69C0 12.48.52 13 1.15 13h13.69c.64 0 1.15-.52 1.15-1.15v-7.7C16 3.52 15.48 3 14.85 3zM9 11H7V8L5.5 9.92 4 8v3H2V5h2l1.5 2L7 5h2v6zm2.99.5L9.5 8H11V5h2v3h1.5l-2.51 3.5z" clipRule="evenodd"/></svg></span>
                             </p>
                         </div>
+                        {/* Image Upload */}
+                        <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Attach Images
+                        </label>
+
+                        <input
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            multiple
+                            onChange={handleImageChange}
+                            className="block w-full text-sm text-gray-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-lg file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-blue-50 file:text-blue-700
+                            hover:file:bg-blue-100"
+                        />
+
+                        {preview.length > 0 && (
+                            <div className="flex gap-3 mt-3 flex-wrap">
+                            {preview.map((src, index) => (
+                                <img
+                                key={index}
+                                src={src}
+                                alt="preview"
+                                className="w-24 h-24 object-cover rounded-lg border"
+                                />
+                            ))}
+                            </div>
+                        )}
+                        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                         {/* Tag Field */}
                         <div>
@@ -267,6 +391,42 @@ export default function Addnote() {
                     </ul>
                 </div>
             </div>
+            {/* Confirmation Modal */}
+            <Modal
+                isOpen={showModal}
+                onClose={handleCloseModal}
+                title="Replace Content?"
+                footer={
+                    <>
+                        <button
+                            onClick={handleCloseModal}
+                            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={confirmTemplateChange}
+                            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors shadow-sm"
+                        >
+                            Confirm Replacement
+                        </button>
+                    </>
+                }
+            >
+                <div className="space-y-3">
+                    <p>
+                        Are you sure you want to replace your current note content with the
+                        <span className="font-semibold text-blue-600 dark:text-blue-400"> {pendingTemplate?.key} </span>
+                        template?
+                    </p>
+                    <p className="text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg border border-red-100 dark:border-red-800">
+                        ⚠️ This action cannot be undone. Your current description will be overwritten.
+                    </p>
+                </div>
+            </Modal>
         </div>
     )
 }
+
+
+

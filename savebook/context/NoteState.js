@@ -42,6 +42,7 @@ const NoteState = (props) => {
     try {
       const response = await fetch(`/api/notes`, {
         method: 'GET',
+        credentials: "include",
         headers: {
           'Content-Type': 'application/json'
         }
@@ -54,14 +55,15 @@ const NoteState = (props) => {
   }, []);
 
   // Add note
-  const addNote = useCallback(async (title, description, tag) => {
+  const addNote = useCallback(async (title, description, tag,images = []) => {
     try {
       const response = await fetch(`/api/notes`, {
         method: 'POST',
+        credentials: "include",
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ title, description, tag })
+        body: JSON.stringify({ title, description, tag, images, })
       });
       const note = await response.json();
       // Optimistic update - add to existing notes instead of refetching
@@ -78,6 +80,7 @@ const NoteState = (props) => {
     try {
       const response = await fetch(`/api/notes/${id}`, {
         method: 'DELETE',
+        credentials: "include",
         headers: {
           'Content-Type': 'application/json'
         }
@@ -94,36 +97,40 @@ const NoteState = (props) => {
   }, [notes, getNotes]);
 
   // Edit note 
-  const editNote = useCallback(async (id, title, description, tag) => {
+ const editNote = useCallback(
+  async (id, title, description, tag, images = []) => {
     try {
       const response = await fetch(`/api/notes/${id}`, {
-        method: 'PUT',
+        method: "PUT",
+        credentials: "include",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, description, tag })
+        body: JSON.stringify({ title, description, tag, images }),
       });
-      await response.json();
 
-      // Optimistic update
-      let newNotes = JSON.parse(JSON.stringify(notes));
-      for (let index = 0; index < newNotes.length; index++) {
-        const element = newNotes[index];
-        if (element._id === id) {
-          newNotes[index].title = title;
-          newNotes[index].description = description;
-          newNotes[index].tag = tag;
-          break;
-        }
+      if (!response.ok) {
+        throw new Error("Failed to update note");
       }
-      setNotes(newNotes);
+
+      const updatedNote = await response.json();
+
+      
+      setNotes((prev) =>
+        prev.map((note) =>
+          note._id === id ? updatedNote : note
+        )
+      );
     } catch (error) {
-      console.error('Error updating note:', error);
-      toast.error(`Failed to update note: ${error.message}`);
-      getNotes();
+      console.error("Error updating note:", error);
+      toast.error("Failed to update note");
+      getNotes(); // fallback
       throw error;
     }
-  }, [notes, getNotes]);
+  },
+  [getNotes]
+);
+
 
   return (
     <noteContext.Provider 
@@ -140,3 +147,5 @@ const NoteState = (props) => {
   )
 }
 export default NoteState;
+
+
