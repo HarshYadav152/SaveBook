@@ -1,26 +1,37 @@
-"use client"
+"use client";
 import { useAuth } from '@/context/auth/authContext';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 
-// Login Form Component
+/* =========================
+   Login Form
+========================= */
 const LoginForm = () => {
     const { login, isAuthenticated, loading } = useAuth();
-    const [credentials, setCredentials] = useState({ username: '', password: '' });
+    const router = useRouter();
+
+    const [credentials, setCredentials] = useState({
+        username: '',
+        password: ''
+    });
+
     const [isLoading, setIsLoading] = useState(false);
     const [hasRedirected, setHasRedirected] = useState(false);
-    const router = useRouter();
+
+    // Recovery Codes State
+    const [recoveryCodes, setRecoveryCodes] = useState(null);
+    const [showRecoveryModal, setShowRecoveryModal] = useState(false);
 
     // Handle redirection based on authentication status
     useEffect(() => {
-        // Only redirect if authenticated, not loading, and hasn't already redirected
-        if (isAuthenticated && !loading && !hasRedirected) {
+        // Only redirect if authenticated, not loading, hasn't already redirected, and not showing modal
+        if (isAuthenticated && !loading && !hasRedirected && !showRecoveryModal) {
             setHasRedirected(true);
             router.push("/notes");
         }
-    }, [isAuthenticated, loading, hasRedirected, router]);
+    }, [isAuthenticated, loading, hasRedirected, showRecoveryModal, router]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -37,8 +48,13 @@ const LoginForm = () => {
 
             if (result.success) {
                 toast.success("Welcome back! 🎉");
-                // Don't call router.push here - let useEffect handle it
-                // The AuthState will update isAuthenticated which triggers the redirect
+
+                // First login show recovery codes if present
+                if (result.recoveryCodes && result.recoveryCodes.length > 0) {
+                    setRecoveryCodes(result.recoveryCodes);
+                    setShowRecoveryModal(true);
+                }
+                // Otherwise redirection happens in useEffect
             } else {
                 toast.error(result.message || "Invalid credentials. Please try again.");
             }
@@ -54,100 +70,173 @@ const LoginForm = () => {
         setCredentials({ ...credentials, [e.target.name]: e.target.value });
     }
 
+    const handleCopy = async () => {
+        await navigator.clipboard.writeText(recoveryCodes.join("\n"));
+        toast.success("Recovery codes copied");
+    };
+
+    const handleDownload = () => {
+        const blob = new Blob([recoveryCodes.join("\n")], {
+            type: "text/plain",
+        });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "savebook-recovery-codes.txt";
+        a.click();
+
+        URL.revokeObjectURL(url);
+    };
+
     // Show loading state while checking authentication
     if (loading) {
         return <LoginFormSkeleton />;
     }
 
     return (
-        <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Username Field */}
-            <div>
-                <label htmlFor="username" className="block text-sm font-medium text-foreground mb-2">
-                    Username
-                </label>
-                <div className="relative">
-                    <input
-                        type="text"
-                        name="username"
-                        id="username"
-                        required
-                        value={credentials.username}
-                        onChange={onchange}
-                        disabled={isLoading}
-                        className="w-full px-4 py-3 border border-input bg-background text-foreground placeholder-muted-foreground rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 outline-none disabled:opacity-50"
-                        placeholder="Enter your username"
-                    />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                        <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            {/* Password Field */}
-            <div>
-                <div className="flex items-center justify-between mb-2">
-                    <label htmlFor="password" className="block text-sm font-medium text-foreground">
-                        Password
+        <>
+            <form className="space-y-6" onSubmit={handleSubmit}>
+                {/* Username Field */}
+                <div>
+                    <label htmlFor="username" className="block text-sm font-medium text-foreground mb-2">
+                        Username
                     </label>
-                    <a href="#" className="text-sm text-primary hover:text-primary/80 transition-colors duration-200">
-                        Forgot password?
-                    </a>
-                </div>
-                <div className="relative">
-                    <input
-                        type="password"
-                        name="password"
-                        id="password"
-                        required
-                        value={credentials.password}
-                        onChange={onchange}
-                        disabled={isLoading}
-                        className="w-full px-4 py-3 border border-input bg-background text-foreground placeholder-muted-foreground rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 outline-none disabled:opacity-50"
-                        placeholder="Enter your password"
-                    />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                        <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                        </svg>
+                    <div className="relative">
+                        <input
+                            type="text"
+                            name="username"
+                            id="username"
+                            required
+                            value={credentials.username}
+                            onChange={onchange}
+                            disabled={isLoading}
+                            className="w-full px-4 py-3 border border-input bg-background text-foreground placeholder-muted-foreground rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 outline-none disabled:opacity-50"
+                            placeholder="Enter your username"
+                        />
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <svg className="h-5 w-5 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                            </svg>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Submit Button */}
-            <button
-                type="submit"
-                disabled={isLoading || isAuthenticated}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
-            >
-                {isLoading ? (
-                    <>
-                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Signing in...
-                    </>
-                ) : (
-                    isAuthenticated ? 'Redirecting...' : 'Sign in'
-                )}
-            </button>
+                {/* Password Field */}
+                <div>
+                    <div className="flex items-center justify-between mb-2">
+                        <label htmlFor="password" className="block text-sm font-medium text-foreground">
+                            Password
+                        </label>
+                        <Link href="/forgot-password" className="text-sm text-primary hover:text-primary/80 transition-colors duration-200">
+                            Forgot password?
+                        </Link>
+                    </div>
+                    <div className="relative">
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            required
+                            value={credentials.password}
+                            onChange={onchange}
+                            disabled={isLoading}
+                            className="w-full px-4 py-3 border border-input bg-background text-foreground placeholder-muted-foreground rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 outline-none disabled:opacity-50"
+                            placeholder="Enter your password"
+                        />
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <svg className="h-5 w-5 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
 
-            {/* Sign up link */}
-            <div className="text-center">
-                <span className="text-sm text-muted-foreground">
-                    Don't have an account?{' '}
-                    <Link
-                        href="/register"
-                        className="font-medium text-primary hover:text-primary/80 transition-colors duration-200"
-                    >
-                        Register
-                    </Link>
-                </span>
-            </div>
-        </form>
+                {/* Submit Button */}
+                <button
+                    type="submit"
+                    disabled={isLoading || isAuthenticated}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-primary transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
+                >
+                    {isLoading ? (
+                        <>
+                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Signing in...
+                        </>
+                    ) : (
+                        isAuthenticated ? 'Redirecting...' : 'Sign in'
+                    )}
+                </button>
+
+                {/* Sign up link */}
+                <div className="text-center">
+                    <span className="text-sm text-muted-foreground">
+                        Don't have an account?{' '}
+                        <Link
+                            href="/register"
+                            className="font-medium text-primary hover:text-primary/80 transition-colors duration-200"
+                        >
+                            Register
+                        </Link>
+                    </span>
+                </div>
+            </form>
+
+            {/* ========== RECOVERY CODES MODAL ========== */}
+            {showRecoveryModal && recoveryCodes && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+                    <div className="bg-card border border-border rounded-xl p-6 w-full max-w-md shadow-lg">
+                        <h3 className="text-xl font-semibold text-foreground mb-3">
+                            Save your recovery codes
+                        </h3>
+
+                        <p className="text-sm text-muted-foreground mb-4">
+                            These codes will be shown only once.
+                            Save them securely.
+                        </p>
+
+                        <div className="grid grid-cols-2 gap-2 mb-4">
+                            {recoveryCodes.map((code, index) => (
+                                <div
+                                    key={index}
+                                    className="bg-muted border border-border rounded px-3 py-2 text-center text-foreground font-mono"
+                                >
+                                    {code}
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Copy + Download */}
+                        <div className="flex gap-3 mb-4">
+                            <button
+                                type="button"
+                                onClick={handleCopy}
+                                className="flex-1 bg-secondary hover:bg-secondary/80 text-secondary-foreground py-2 rounded transition-colors"
+                            >
+                                Copy
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleDownload}
+                                className="flex-1 bg-secondary hover:bg-secondary/80 text-secondary-foreground py-2 rounded transition-colors"
+                            >
+                                Download
+                            </button>
+                        </div>
+
+                        <button
+                            onClick={() => setShowRecoveryModal(false)}
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2 rounded-lg transition-colors"
+                        >
+                            I have saved these codes
+                        </button>
+                    </div>
+                </div>
+            )}
+        </>
     );
 };
 
@@ -156,19 +245,19 @@ const LoginFormSkeleton = () => {
     return (
         <div className="space-y-6">
             <div>
-                <div className="h-5 w-20 bg-gray-300 dark:bg-gray-700 rounded mb-2 animate-pulse"></div>
-                <div className="h-12 bg-gray-300 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                <div className="h-5 w-20 bg-muted rounded mb-2 animate-pulse"></div>
+                <div className="h-12 bg-muted rounded-lg animate-pulse"></div>
             </div>
             <div>
                 <div className="flex justify-between mb-2">
-                    <div className="h-5 w-20 bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                    <div className="h-5 w-32 bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                    <div className="h-5 w-20 bg-muted rounded animate-pulse"></div>
+                    <div className="h-5 w-32 bg-muted rounded animate-pulse"></div>
                 </div>
-                <div className="h-12 bg-gray-300 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                <div className="h-12 bg-muted rounded-lg animate-pulse"></div>
             </div>
-            <div className="h-12 bg-gradient-to-r from-blue-600/30 to-purple-700/30 rounded-lg animate-pulse"></div>
+            <div className="h-12 bg-muted rounded-lg animate-pulse"></div>
             <div className="flex justify-center">
-                <div className="h-5 w-48 bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-5 w-48 bg-muted rounded animate-pulse"></div>
             </div>
         </div>
     );
@@ -189,14 +278,14 @@ const LoginPage = () => {
     // Show loading while checking initial auth state
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-blue-900 flex items-center justify-center p-4">
+            <div className="min-h-screen bg-background flex items-center justify-center p-4">
                 <div className="max-w-md w-full space-y-8">
                     <div className="text-center">
                         <div className="mx-auto h-12 w-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4 animate-pulse"></div>
-                        <div className="h-8 w-48 bg-gray-300 dark:bg-gray-700 rounded mx-auto mb-2 animate-pulse"></div>
-                        <div className="h-4 w-32 bg-gray-300 dark:bg-gray-700 rounded mx-auto animate-pulse"></div>
+                        <div className="h-8 w-48 bg-muted rounded mx-auto mb-2 animate-pulse"></div>
+                        <div className="h-4 w-32 bg-muted rounded mx-auto animate-pulse"></div>
                     </div>
-                    <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
+                    <div className="bg-card p-8 rounded-2xl shadow-xl border border-border">
                         <LoginFormSkeleton />
                     </div>
                 </div>

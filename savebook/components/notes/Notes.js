@@ -10,14 +10,14 @@ import { useAuth } from '@/context/auth/authContext';
 // Separate navigation handler component to use router with Suspense
 const NavigationHandler = ({ isAuthenticated, loading }) => {
     const router = useRouter();
-    
+
     useEffect(() => {
         // Only redirect if loading is complete and user is not authenticated
         if (!loading && !isAuthenticated) {
             router.push("/login");
         }
     }, [isAuthenticated, loading, router]);
-    
+
     return null;
 };
 
@@ -25,7 +25,7 @@ export default function Notes() {
     const { isAuthenticated, loading } = useAuth();
     const context = useContext(noteContext);
     const { notes: contextNotes = [], getNotes, editNote } = context || {};
-    
+
     // Ensure notes is always an array
     const notes =
         isAuthenticated && Array.isArray(contextNotes)
@@ -42,7 +42,7 @@ export default function Notes() {
             getNotes().catch(() => toast.error("Failed to load notes"));
         }
     }, [isAuthenticated, loading, getNotes]);
-    
+
     // Enhanced tag options with colors
     const tagOptions = [
         { id: 1, value: "General", color: "bg-blue-500" },
@@ -57,8 +57,8 @@ export default function Notes() {
 
     // Filter notes based on search and tag
     const filteredNotes = notes.filter(note => {
-        const matchesSearch = note.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                            note.description?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = note.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            note.description?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesTag = selectedTag === 'all' || note.tag === selectedTag;
         return matchesSearch && matchesTag;
     });
@@ -92,7 +92,7 @@ export default function Notes() {
     // Show loading spinner while checking authentication
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950">
+            <div className="min-h-screen flex items-center justify-center bg-background">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-4"></div>
                     <p className="text-gray-600 dark:text-gray-400 text-lg">Loading...</p>
@@ -116,7 +116,7 @@ export default function Notes() {
             <Suspense fallback={null}>
                 <NavigationHandler isAuthenticated={isAuthenticated} loading={loading} />
             </Suspense>
-            
+
             <Addnote />
 
             {/* Edit Note Modal */}
@@ -235,7 +235,7 @@ export default function Notes() {
             )}
 
             {/* Notes Section */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white dark:bg-slate-950">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-background">
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 dark:from-blue-400 to-purple-600 dark:to-purple-400 bg-clip-text text-transparent mb-4">
@@ -269,11 +269,10 @@ export default function Notes() {
                         <div className="flex flex-wrap gap-2">
                             <button
                                 onClick={() => setSelectedTag('all')}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                    selectedTag === 'all' 
-                                        ? 'bg-blue-600 text-white' 
-                                        : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
-                                }`}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${selectedTag === 'all'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
+                                    }`}
                             >
                                 All
                             </button>
@@ -281,11 +280,10 @@ export default function Notes() {
                                 <button
                                     key={tag.id}
                                     onClick={() => setSelectedTag(tag.value)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                        selectedTag === tag.value 
-                                            ? `${tag.color} text-white` 
-                                            : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
-                                    }`}
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${selectedTag === tag.value
+                                        ? `${tag.color} text-white`
+                                        : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
+                                        }`}
                                 >
                                     {tag.value}
                                 </button>
@@ -312,7 +310,7 @@ export default function Notes() {
                                 {searchTerm || selectedTag !== 'all' ? 'No matching notes found' : 'No notes yet'}
                             </h3>
                             <p className="text-gray-500 max-w-md mx-auto">
-                                {searchTerm || selectedTag !== 'all' 
+                                {searchTerm || selectedTag !== 'all'
                                     ? 'Try adjusting your search or filter criteria'
                                     : 'Create your first note to get started!'
                                 }

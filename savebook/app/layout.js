@@ -95,7 +95,7 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        
+
         {/* Theme initialization script - prevents flash of unstyled content */}
         <script
           dangerouslySetInnerHTML={{
@@ -124,7 +124,7 @@ export default function RootLayout({ children }) {
             `,
           }}
         />
-        
+
         {/* Structured Data (JSON-LD) */}
         <script
           type="application/ld+json"
@@ -143,20 +143,20 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.variable} ${robotoMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          <AuthProvider>
+        <AuthProvider>
+          <ThemeProvider>
             <Suspense fallback={<div />}>
               <LoadingProvider>
                 <ToasterProvider />
                 <Navbar />
                 <NoteState>
-                    {children}
+                  {children}
                 </NoteState>
                 <Footer />
               </LoadingProvider>
             </Suspense>
-          </AuthProvider>
-        </ThemeProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
