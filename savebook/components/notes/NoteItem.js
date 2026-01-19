@@ -200,24 +200,6 @@ export default function NoteItem(props) {
                                 <LinkPreviewCard url={url} />
                             </div>
                         ))}
-
-                        {/* Audio */}
-                        {note?.audio && note.audio.url && (
-                            <div className="mt-4 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                                <p className="text-xs text-gray-400 mb-2 flex items-center gap-2">
-                                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
-                                    </svg>
-                                    Audio Recording
-                                </p>
-                                <audio
-                                    controls
-                                    src={note.audio.url}
-                                    className="w-full"
-                                    style={{ maxHeight: '32px' }}
-                                />
-                            </div>
-                        )}
                     </div>
 
                     {/* Enhanced Footer */}
