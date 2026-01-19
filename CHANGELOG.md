@@ -1,3 +1,34 @@
+## [2026-01-19]
+
+### ✨ Features
+-  add image upload support for notes and user media (8cab3d7) - @avdhut400
+-  add image upload support for notes (fbf9438) - @avdhut400
+
+### 🐛 Bug Fixes
+-  improve register page validation and error handling (5f451a0) - @Diksha Dabhole
+-  replace browser popup with in-app modal (0662c42) - @saburi004
+-  When a user clicks a link that points to the same page, the page loader starts and never stops. (3b0ff64) - @Karela King
+
+### 📝 Documentation
+-  auto update changelog (27786d4) - @HarshYadav152
+-  auto update changelog (45e18fe) - @HarshYadav152
+-  auto update changelog (b7af96d) - @vinayboss9669
+-  auto update changelog (f777e40) - @vinayboss9669
+-  auto update changelog (c727431) - @HarshYadav152
+-  auto update changelog (74f1b44) - @HarshYadav152
+
+### 📦 Other Changes
+- Add weblinks with preview in notes (19fc09d) - @Suvam Chatterjee
+- Add user-media upload route and improve profile upload with size & type validation (088149c) - @avdhut400
+- Add user-media upload route and improve profile upload with size & type validation (c4cfa6d) - @avdhut400
+- route (7edcf39) - @avdhut400
+- await (fab37c8) - @Avdhut Magar
+- Add scroll to top button (4545a0a) - @Harishchandra Gandhare
+- WIP: my changes before syncing upstream (8687fe5) - @avdhut400
+- Add copy and download options for recovery codes (251992d) - @avdhut400
+- Add copy and download options for recovery codes (3606a54) - @avdhut400
+
+
 ## [2026-01-18]
 
 ### ✨ Features
