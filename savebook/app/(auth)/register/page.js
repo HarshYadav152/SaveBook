@@ -78,15 +78,15 @@ const SignupForm = () => {
             }
         } catch (error) {
             console.error("Registration error:", error);
-            
+
             // Attempt to extract meaningful error message
             let errorMessage = "Something went wrong. Please try again.";
-            
+
             try {
                 // Check if response exists and extract message from JSON
                 if (error.response?.data) {
                     const data = error.response.data;
-                    
+
                     // Try to get message from JSON response
                     if (typeof data === 'object' && data !== null) {
                         if (data.message) {
@@ -101,7 +101,7 @@ const SignupForm = () => {
                         throw new Error('HTML_RESPONSE');
                     }
                 }
-                
+
                 // Handle HTTP status codes if no JSON message was found
                 if (errorMessage.includes('Something went wrong')) {
                     if (error.response?.status === 500) {
@@ -122,7 +122,7 @@ const SignupForm = () => {
                     errorMessage = error.message;
                 }
             }
-            
+
             toast.error(errorMessage);
         } finally {
             setIsLoading(false);
