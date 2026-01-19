@@ -374,6 +374,7 @@ export default function Addnote() {
                                             </div>
                                         )}
                                     </div>
+                                </div>
 
                                 {/* Upload Section */}
                                 <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 flex flex-col min-h-64">
