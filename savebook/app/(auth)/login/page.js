@@ -6,6 +6,8 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
+import { Eye, EyeOff } from "lucide-react";
+
 /* =========================
    Login Form
 ========================= */
@@ -20,6 +22,7 @@ const LoginForm = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [hasRedirected, setHasRedirected] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   //  Recovery Codes
   const [recoveryCodes, setRecoveryCodes] = useState(null);
@@ -134,16 +137,26 @@ const LoginForm = () => {
               Forgot password?
             </Link>
           </div>
-          <input
-            type="password"
-            name="password"
-            value={credentials.password}
-            onChange={onchange}
-            required
-            disabled={isLoading}
-            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white"
-            placeholder="Enter password"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={credentials.password}
+              onChange={onchange}
+              required
+              disabled={isLoading}
+              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white pr-10 focus:ring-2 focus:ring-blue-500 outline-none"
+              placeholder="Enter password"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 focus:outline-none"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
         </div>
 
         {/* Submit */}
@@ -172,7 +185,7 @@ const LoginForm = () => {
             </h3>
 
             <p className="text-sm text-gray-300 mb-4">
-              These codes will be shown only once.  
+              These codes will be shown only once.
               Save them securely.
             </p>
 

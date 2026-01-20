@@ -3,3 +3,9 @@
 body{
     background-color:#101828;
 }
+
+/* Hide default browser password reveal button */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
