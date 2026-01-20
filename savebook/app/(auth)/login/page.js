@@ -23,7 +23,9 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasRedirected, setHasRedirected] = useState(false);
-  // Recovery Codes
+  const [showPassword, setShowPassword] = useState(false);
+
+  //  Recovery Codes
   const [recoveryCodes, setRecoveryCodes] = useState(null);
   const [showRecoveryModal, setShowRecoveryModal] = useState(false);
 
