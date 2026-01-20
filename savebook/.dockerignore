@@ -4,7 +4,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
@@ -32,9 +31,6 @@ build
 
 # Debug
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
 # Local env files
 .env.local
 .env.development.local
