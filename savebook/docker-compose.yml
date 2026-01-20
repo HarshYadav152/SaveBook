@@ -2,7 +2,6 @@ services:
   # MongoDB Database
   mongodb:
     image: mongo:6.0
-    image: mongo:7.0-jammy
     container_name: savebook-mongodb
     restart: unless-stopped
     environment:
