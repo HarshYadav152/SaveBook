@@ -17,9 +17,10 @@ const LoginForm = () => {
   const [errors, setErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [hasRedirected, setHasRedirected] = useState(false);
-  // Recovery Codes
+  const [showPassword, setShowPassword] = useState(false);
+
+  //  Recovery Codes
   const [recoveryCodes, setRecoveryCodes] = useState(null);
   const [showRecoveryModal, setShowRecoveryModal] = useState(false);
 
