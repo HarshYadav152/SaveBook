@@ -5,11 +5,13 @@ import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 
+import { Eye, EyeOff } from 'lucide-react';
+
 // Signup Form Component
 const SignupForm = () => {
     const { register, isAuthenticated } = useAuth();
-    const [credentials, setCredentials] = useState({ 
-        username: '', 
+    const [credentials, setCredentials] = useState({
+        username: '',
         password: '',
         confirmPassword: ''
     });
@@ -19,6 +21,8 @@ const SignupForm = () => {
         confirmPassword: ''
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const router = useRouter();
 
     // Handle redirection based on authentication status
@@ -30,16 +34,16 @@ const SignupForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         // Prevent submission if already authenticated
         if (isAuthenticated) {
             router.push("/");
             return;
         }
-        
+
         // Validate and collect errors
         const newErrors = {};
-        
+
         if (!credentials.username.trim()) {
             newErrors.username = 'Username is required';
         }
@@ -63,14 +67,14 @@ const SignupForm = () => {
         }
 
         setIsLoading(true);
-        
+
         try {
             // Use the register method from AuthContext
             const result = await register(
                 credentials.username,
                 credentials.password
             );
-            
+
             if (result.success) {
                 toast.success("Account created successfully! 🎉");
                 router.push("/login")
@@ -80,15 +84,15 @@ const SignupForm = () => {
             }
         } catch (error) {
             console.error("Registration error:", error);
-            
+
             // Attempt to extract meaningful error message
             let errorMessage = "Something went wrong. Please try again.";
-            
+
             try {
                 // Check if response exists and extract message from JSON
                 if (error.response?.data) {
                     const data = error.response.data;
-                    
+
                     // Try to get message from JSON response
                     if (typeof data === 'object' && data !== null) {
                         if (data.message) {
@@ -103,7 +107,7 @@ const SignupForm = () => {
                         throw new Error('HTML_RESPONSE');
                     }
                 }
-                
+
                 // Handle HTTP status codes if no JSON message was found
                 if (errorMessage.includes('Something went wrong')) {
                     if (error.response?.status === 500) {
@@ -124,7 +128,7 @@ const SignupForm = () => {
                     errorMessage = error.message;
                 }
             }
-            
+
             toast.error(errorMessage);
         } finally {
             setIsLoading(false);
@@ -156,11 +160,10 @@ const SignupForm = () => {
                     value={credentials.username}
                     onChange={onchange}
                     disabled={isLoading || isAuthenticated}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 ${
-                        errors.username 
-                            ? 'border-red-500 bg-red-900/20 focus:ring-red-500' 
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 ${errors.username
+                            ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
                             : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
-                    }`}
+                        }`}
                     placeholder="Choose a username"
                     required
                 />
@@ -174,21 +177,30 @@ const SignupForm = () => {
                 <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
                     Password
                 </label>
-                <input
-                    type="password"
-                    name="password"
-                    id="password"
-                    value={credentials.password}
-                    onChange={onchange}
-                    disabled={isLoading || isAuthenticated}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 ${
-                        errors.password 
-                            ? 'border-red-500 bg-red-900/20 focus:ring-red-500' 
-                            : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
-                    }`}
-                    placeholder="Create a password"
-                    required
-                />
+                <div className="relative">
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        id="password"
+                        value={credentials.password}
+                        onChange={onchange}
+                        disabled={isLoading || isAuthenticated}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 pr-10 ${errors.password
+                                ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
+                                : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
+                            }`}
+                        placeholder="Create a password"
+                        required
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 focus:outline-none"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                </div>
                 {errors.password && (
                     <p className="mt-1 text-sm text-red-400">{errors.password}</p>
                 )}
@@ -202,21 +214,30 @@ const SignupForm = () => {
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
                     Confirm Password
                 </label>
-                <input
-                    type="password"
-                    name="confirmPassword"
-                    id="confirmPassword"
-                    value={credentials.confirmPassword}
-                    onChange={onchange}
-                    disabled={isLoading || isAuthenticated}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 ${
-                        errors.confirmPassword 
-                            ? 'border-red-500 bg-red-900/20 focus:ring-red-500' 
-                            : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
-                    }`}
-                    placeholder="Confirm your password"
-                    required
-                />
+                <div className="relative">
+                    <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        name="confirmPassword"
+                        id="confirmPassword"
+                        value={credentials.confirmPassword}
+                        onChange={onchange}
+                        disabled={isLoading || isAuthenticated}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 pr-10 ${errors.confirmPassword
+                                ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
+                                : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
+                            }`}
+                        placeholder="Confirm your password"
+                        required
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 focus:outline-none"
+                        aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                    >
+                        {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                </div>
                 {errors.confirmPassword && (
                     <p className="mt-1 text-sm text-red-400">{errors.confirmPassword}</p>
                 )}
@@ -245,8 +266,8 @@ const SignupForm = () => {
             <div className="text-center">
                 <span className="text-sm text-gray-300">
                     Already have an account?{' '}
-                    <Link 
-                        href="/login" 
+                    <Link
+                        href="/login"
                         className="font-medium text-green-400 hover:text-green-300"
                         onClick={(e) => {
                             if (isLoading || isAuthenticated) {
