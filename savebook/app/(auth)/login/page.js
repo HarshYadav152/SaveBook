@@ -6,6 +6,8 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
+import { Eye, EyeOff } from "lucide-react";
+
 /* =========================
    Login Form
 ========================= */
@@ -21,7 +23,6 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasRedirected, setHasRedirected] = useState(false);
-
   // Recovery Codes
   const [recoveryCodes, setRecoveryCodes] = useState(null);
   const [showRecoveryModal, setShowRecoveryModal] = useState(false);
@@ -140,26 +141,22 @@ const LoginForm = () => {
             <input
               type={showPassword ? "text" : "password"}
               name="password"
-              id="password"
               value={credentials.password}
-              onChange={onChange}
-              disabled={isLoading}
-              className={`w-full px-4 py-3 border ${
-                errors.password ? "border-red-500" : "border-gray-600"
-              } bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 pr-10`}
-              placeholder="Enter your password"
+              onChange={onchange}
               required
+              disabled={isLoading}
+              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white pr-10 focus:ring-2 focus:ring-blue-500 outline-none"
+              placeholder="Enter password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-3 text-gray-400 hover:text-gray-200"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 focus:outline-none"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              {showPassword ? "🙈" : "👁️"}
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
-          {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
         </div>
 
         {/* Remember Me */}
@@ -214,7 +211,8 @@ const LoginForm = () => {
           <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-md">
             <h3 className="text-xl font-semibold text-white mb-3">Save your recovery codes</h3>
             <p className="text-sm text-gray-300 mb-4">
-              These codes will be shown only once. Save them securely.
+              These codes will be shown only once.
+              Save them securely.
             </p>
 
             <div className="grid grid-cols-2 gap-2 mb-4">
