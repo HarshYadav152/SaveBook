@@ -53,7 +53,7 @@ services:
     networks:
       - savebook-network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/auth/user"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/auth/user', res => { if (res.statusCode !== 200) process.exit(1); }).on('error', () => process.exit(1));"]
       interval: 30s
       timeout: 10s
       retries: 3
