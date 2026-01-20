@@ -12,8 +12,22 @@ export default async function SignupPage() {
   const { register, isAuthenticated } = useAuth();
   const router = useRouter();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const [credentials, setCredentials] = useState({
+    username: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [errors, setErrors] = useState({
+    username: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [usernameMessage, setUsernameMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
         // Prevent submission if already authenticated
         if (isAuthenticated) {
@@ -28,98 +42,9 @@ export default async function SignupPage() {
             newErrors.username = 'Username is required';
         }
 
-        if (!credentials.password) {
-            newErrors.password = 'Password is required';
-        } else if (credentials.password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
-        }
-
-        if (!credentials.confirmPassword) {
-            newErrors.confirmPassword = 'Please confirm your password';
-        } else if (credentials.password !== credentials.confirmPassword) {
-            newErrors.confirmPassword = 'Passwords do not match';
-        }
-
-        // If validation errors exist, show them and return
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-            return;
-        }
-
-        setIsLoading(true);
-
-        try {
-            // Use the register method from AuthContext
-            const result = await register(
-                credentials.username,
-                credentials.password
-            );
-
-            if (result.success) {
-                toast.success("Account created successfully! 🎉");
-                router.push("/login")
-                // The useEffect will handle the redirect
-            } else {
-                toast.error(result.message || "Registration failed");
-            }
-        } catch (error) {
-            console.error("Registration error:", error);
-
-            // Attempt to extract meaningful error message
-            let errorMessage = "Something went wrong. Please try again.";
-
-            try {
-                // Check if response exists and extract message from JSON
-                if (error.response?.data) {
-                    const data = error.response.data;
-
-                    // Try to get message from JSON response
-                    if (typeof data === 'object' && data !== null) {
-                        if (data.message) {
-                            errorMessage = data.message;
-                        } else if (data.error) {
-                            errorMessage = data.error;
-                        }
-                    }
-                    // If data is a string (HTML), it means we got an error page
-                    else if (typeof data === 'string' && data.includes('<')) {
-                        // HTML response detected, use status code instead
-                        throw new Error('HTML_RESPONSE');
-                    }
-                }
-
-                // Handle HTTP status codes if no JSON message was found
-                if (errorMessage.includes('Something went wrong')) {
-                    if (error.response?.status === 500) {
-                        errorMessage = "Server error. Please try again later.";
-                    } else if (error.response?.status === 400) {
-                        errorMessage = "Invalid registration details. Please check your input.";
-                    }
-                }
-            } catch (parseError) {
-                // If JSON parsing failed or HTML was detected, use status-based message
-                if (error.response?.status === 500) {
-                    errorMessage = "Server error. Please try again later.";
-                } else if (error.response?.status === 400) {
-                    errorMessage = "Invalid registration details. Please check your input.";
-                } else if (error.response?.status) {
-                    errorMessage = `Registration failed with error ${error.response.status}. Please try again.`;
-                } else if (error.message && !error.message.includes('<!DOCTYPE')) {
-                    errorMessage = error.message;
-                }
-            }
-
-            toast.error(errorMessage);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const onchange = (e) => {
-        setCredentials({ ...credentials, [e.target.name]: e.target.value });
-        // Clear error for this field when user starts typing
-        setErrors({ ...errors, [e.target.name]: '' });
-    };
+  // Handle form submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     const newErrors = {};
     if (!credentials.username.trim()) {
@@ -147,15 +72,17 @@ export default async function SignupPage() {
 
       if (result?.success) {
         setSuccessMessage("Account created successfully! 🎉 Redirecting...");
-        setErrorMessage(""); //clear any previous error
+        setErrorMessage("");
+        toast.success("Account created successfully! 🎉");
         setTimeout(() => router.push("/login"), 1500);
       } else {
         setSuccessMessage(""); // clear success
         setErrorMessage(result?.message || "Registration failed");
+        toast.error(result?.message || "Registration failed");
       }
     } catch (error) {
-      setSuccessMessage("");
-      setErrorMessage("Something went wrong");
+      console.error("Registration error:", error);
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -290,9 +217,6 @@ export default async function SignupPage() {
 
           {/* Password */}
           <div className="relative">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-              Password
-            </label>
             <input
               type={showPassword ? "text" : "password"}
               name="password"
@@ -300,16 +224,18 @@ export default async function SignupPage() {
               value={credentials.password}
               onChange={onChange}
               disabled={isLoading || isAuthenticated}
-              className={`w-full px-4 py-3 border ${
-                errors.password ? "border-red-500" : "border-gray-600"
-              } bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10`}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 pr-10 ${
+                errors.password
+                  ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
+                  : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
+              }`}
               placeholder="Create a password"
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-9 text-gray-400 hover:text-gray-200"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 focus:outline-none"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
                 {isLoading ? (
@@ -325,27 +251,68 @@ export default async function SignupPage() {
                 )}
               {showPassword ? "🙈" : "👁️"}
             </button>
-            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
           </div>
-
-            {/* Login link */}
-            <div className="text-center">
-                <span className="text-sm text-gray-300">
-                    Already have an account?{' '}
-                    <Link
-                        href="/login"
-                        className="font-medium text-green-400 hover:text-green-300"
-                        onClick={(e) => {
-                            if (isLoading || isAuthenticated) {
-                                e.preventDefault();
-                            }
-                        }}
-                    >
-                        Login
-                    </Link>
-                </span>
-            </div>
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-400">{errors.password}</p>
+          )}
+          {!errors.password && (
+            <p className="mt-1 text-xs text-gray-400">Password must be at least 6 characters long.</p>
+          )}
         </form>
+
+        {/* Confirm Password Field */}
+        <div>
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
+            Confirm Password
+          </label>
+          <div className="relative">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              name="confirmPassword"
+              id="confirmPassword"
+              value={credentials.confirmPassword}
+              onChange={onChange}
+              disabled={isLoading || isAuthenticated}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 pr-10 ${
+                errors.confirmPassword
+                  ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
+                  : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
+              }`}
+              placeholder="Confirm your password"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 focus:outline-none"
+              aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+            >
+              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+          {errors.confirmPassword && (
+            <p className="mt-1 text-sm text-red-400">{errors.confirmPassword}</p>
+          )}
+        </div>
+
+        {/* Login link */}
+        <div className="text-center">
+          <span className="text-sm text-gray-300">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="font-medium text-green-400 hover:text-green-300"
+              onClick={(e) => {
+                if (isLoading || isAuthenticated) {
+                  e.preventDefault();
+                }
+              }}
+            >
+              Login
+            </Link>
+          </span>
+        </div>
       </form>
+    </form>
   );
 }
