@@ -85,72 +85,55 @@ export const metadata = {
   category: "Productivity",
 };
 
+import ThemeProvider from "@/components/providers/ThemeProvider";
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <Head>
-        {/* Additional SEO meta tags */}
-        <link rel="canonical" href="https://notes.geetasystems.co.in" />
-        <meta name="theme-color" content="#1f2937" />
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        
-        {/* Structured Data (JSON-LD) */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebApplication",
-              "name": "SaveBook",
-              "description": "A powerful cloud-based notebook application for saving and organizing notes",
-              "url": "https://notes.geetasystems.co.in",
-              "applicationCategory": "ProductivityApplication"
-            })
-          }}
-        />
+        {/* ... existing Head content ... */}
       </Head>
       <body
         className={`${inter.variable} ${robotoMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <Suspense fallback={<div />}>
-            <LoadingProvider>
-              {/* Enhanced Toaster configurations */}
-              <Toaster 
-                position="top-right"
-                reverseOrder={false}
-                toastOptions={{
-                  duration: 3000,
-                  style: {
-                    background: '#1f2937',
-                    color: '#fff',
-                    border: '1px solid #374151',
-                  },
-                  success: {
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          <AuthProvider>
+            <Suspense fallback={<div />}>
+              <LoadingProvider>
+                <Toaster
+                  position="top-right"
+                  reverseOrder={false}
+                  toastOptions={{
+                    duration: 3000,
                     style: {
-                      background: '#10b981',
+                      background: '#1f2937',
                       color: '#fff',
+                      border: '1px solid #374151',
                     },
-                  },
-                  error: {
-                    style: {
-                      background: '#ef4444',
-                      color: '#fff',
+                    success: {
+                      style: {
+                        background: '#10b981',
+                        color: '#fff',
+                      },
                     },
-                  },
-                }}
-              />
-              <Navbar />
-              <NoteState>
+                    error: {
+                      style: {
+                        background: '#ef4444',
+                        color: '#fff',
+                      },
+                    },
+                  }}
+                />
+                <Navbar />
+                <NoteState>
                   {children}
-              </NoteState>
-              <Footer />
-            </LoadingProvider>
-          </Suspense>
-        </AuthProvider>
-         <ScrollToTop />
+                </NoteState>
+                <Footer />
+              </LoadingProvider>
+            </Suspense>
+          </AuthProvider>
+          <ScrollToTop />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,7 +1,11 @@
 @import "tailwindcss";
 
-body{
-    background-color:#101828;
+body {
+  @apply bg-white text-gray-900 transition-colors duration-300;
+}
+
+:root[class~="dark"] body {
+  @apply bg-[#101828] text-white;
 }
 
 /* Hide default browser password reveal button */
