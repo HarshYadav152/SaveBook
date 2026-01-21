@@ -5,10 +5,15 @@ body{
     background-color:#101828;
 }
 
+<<<<<<< HEAD
+=======
+/* Hide default browser password reveal button */
+>>>>>>> e7a7736fafb3abcac616a025c5bc0d82b24e4dff
 input::-ms-reveal,
 input::-ms-clear {
   display: none;
 }
+<<<<<<< HEAD
 
 :root {
   --background: #ffffff;
@@ -19,3 +24,5 @@ input::-ms-clear {
   --background: #0a0a0a;
   --foreground: #ededed;
 }
+=======
+>>>>>>> e7a7736fafb3abcac616a025c5bc0d82b24e4dff

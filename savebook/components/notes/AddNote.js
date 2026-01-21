@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Modal from '../common/Modal';
+import AudioRecorder from '@/components/AudioRecorder';
+import AudioPlayer from '@/components/AudioPlayer';
 
 // Define Note Templates
 const NOTE_TEMPLATES = {
@@ -35,6 +37,12 @@ export default function Addnote() {
     ];
     const [images, setImages] = useState([]);
     const [preview, setPreview] = useState([]);
+    
+    // Audio state management
+    const [audioBlob, setAudioBlob] = useState(null);
+    const [recordedAudioUrl, setRecordedAudioUrl] = useState(null);
+    const [audioData, setAudioData] = useState(null);
+    const [isUploadingAudio, setIsUploadingAudio] = useState(false);
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
@@ -62,6 +70,66 @@ export default function Addnote() {
         return Array.isArray(data.imageUrls) ? data.imageUrls : [];
     };
 
+    // Handle audio recording from AudioRecorder component
+    const handleAudioRecorded = (blob) => {
+        setAudioBlob(blob);
+        // Create temporary URL for preview
+        const url = URL.createObjectURL(blob);
+        setRecordedAudioUrl(url);
+    };
+
+    // Upload audio to API
+    const uploadAudio = async (blob) => {
+        const formData = new FormData();
+        formData.append('audio', blob, 'recording.webm');
+
+        const res = await fetch('/api/upload/audio', {
+            method: 'POST',
+            credentials: 'include',
+            body: formData,
+        });
+
+        if (!res.ok) {
+            // Log full error response for debugging
+            let errorMessage = `HTTP ${res.status}`;
+            const contentType = res.headers.get('content-type');
+            
+            try {
+                // Try to parse as JSON first
+                if (contentType?.includes('application/json')) {
+                    const errorData = await res.json();
+                    errorMessage = errorData.error || errorData.message || errorMessage;
+                } else {
+                    // Fallback to text
+                    const errorText = await res.text();
+                    errorMessage = errorText.slice(0, 200) || errorMessage;
+                }
+            } catch (parseError) {
+                // If parsing fails, use status code
+                console.error('Failed to parse error response:', parseError);
+            }
+            
+            console.error('Audio upload error:', { status: res.status, error: errorMessage });
+            throw new Error(`Audio upload failed: ${errorMessage}`);
+        }
+
+        const data = await res.json();
+        return {
+            url: data.audioUrl,
+            duration: data.duration || 0,
+        };
+    };
+
+    // Clear audio recording
+    const clearAudioRecording = () => {
+        if (recordedAudioUrl) {
+            URL.revokeObjectURL(recordedAudioUrl);
+        }
+        setAudioBlob(null);
+        setRecordedAudioUrl(null);
+        setAudioData(null);
+    };
+
 
 
 
@@ -74,13 +142,30 @@ export default function Addnote() {
 
         setIsSubmitting(true);
         try {
+            // Upload images
             const imageUrls = images.length ? await uploadImages() : [];
 
+            // Upload audio if recording exists - REQUIRED before note creation
+            let finalAudioData = null;
+            if (audioBlob) {
+                setIsUploadingAudio(true);
+                try {
+                    finalAudioData = await uploadAudio(audioBlob);
+                } catch (audioError) {
+                    console.error('Audio upload error:', audioError);
+                    toast.error(audioError.message || 'Audio upload failed. Please try again.');
+                    // Abort note creation - do NOT save note without audio
+                    return;
+                }
+            }
+
+            // Save note with audio data (if available)
             await addNote(
-            note.title,
-            note.description,
-            note.tag,
-            imageUrls // CLOUDINARY URLs
+                note.title,
+                note.description,
+                note.tag,
+                imageUrls,
+                finalAudioData // Pass audio data (or null)
             );
 
             toast.success("Note has been saved");
@@ -88,10 +173,13 @@ export default function Addnote() {
             setImages([]);
             setPreview([]);
             setPreviewMode(false);
+            clearAudioRecording(); // Only clear after successful save
         } catch (error) {
-            toast.error("Failed to save note");
+            console.error('Error saving note:', error);
+            toast.error(error.message || "Failed to save note. Please try again.");
         } finally {
             setIsSubmitting(false);
+            setIsUploadingAudio(false);
         }
     };
 
@@ -281,6 +369,110 @@ export default function Addnote() {
                                 <span>Markdown Supported <svg className="inline w-3 h-3" viewBox="0 0 16 16" fill="currentColor"><path fillRule="evenodd" d="M14.85 3H1.15C.52 3 0 3.52 0 4.15v7.69C0 12.48.52 13 1.15 13h13.69c.64 0 1.15-.52 1.15-1.15v-7.7C16 3.52 15.48 3 14.85 3zM9 11H7V8L5.5 9.92 4 8v3H2V5h2l1.5 2L7 5h2v6zm2.99.5L9.5 8H11V5h2v3h1.5l-2.51 3.5z" clipRule="evenodd"/></svg></span>
                             </p>
                         </div>
+                        {/* Audio */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                Attach Audio (Optional)
+                            </label>
+
+                            {/* Audio Container - Two Column Grid */}
+                            <div className="grid grid-cols-2 gap-4">
+                                {/* Recording Section */}
+                                <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 flex flex-col min-h-64">
+                                    <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3">🎤 Record</h3>
+                                    
+                                    <div className="flex-1 flex flex-col">
+                                        {!recordedAudioUrl && (
+                                            <div className="flex-1 flex items-center justify-center">
+                                                <div className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                                                    <AudioRecorder onRecordingComplete={handleAudioRecorded} />
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {recordedAudioUrl && (
+                                            <div className="flex-1 flex flex-col items-center justify-center">
+                                                <div className="w-full p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700/50 rounded-lg">
+                                                    <div className="flex items-start gap-2 mb-2">
+                                                        <span className="flex-shrink-0 w-4 h-4 rounded-full bg-green-500 dark:bg-green-400 flex items-center justify-center mt-0.5">
+                                                            <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                            </svg>
+                                                        </span>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-xs font-medium text-green-700 dark:text-green-400">Recording ready</p>
+                                                        </div>
+                                                    </div>
+                                                    <audio controls src={recordedAudioUrl} className="w-full h-8 mb-2" />
+                                                    <button
+                                                        type="button"
+                                                        onClick={clearAudioRecording}
+                                                        className="w-full text-xs px-2 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 rounded transition-colors font-medium"
+                                                    >
+                                                        Remove
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Upload Section */}
+                                <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 flex flex-col min-h-64">
+                                    <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3">📁 Upload</h3>
+                                    
+                                    <div className="flex-1 flex flex-col items-center justify-center">
+                                        {audioBlob ? (
+                                            // File Selected State
+                                            <div className="w-full p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/50 rounded-lg">
+                                                <div className="flex items-start gap-2 mb-2">
+                                                    <span className="flex-shrink-0 w-4 h-4 rounded-full bg-blue-500 dark:bg-blue-400 flex items-center justify-center mt-0.5">
+                                                        <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                        </svg>
+                                                    </span>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-xs font-medium text-blue-700 dark:text-blue-400">File ready</p>
+                                                        <p className="text-xs text-gray-700 dark:text-gray-300 truncate break-all font-medium mt-1" title={audioBlob.name || 'Audio file'}>
+                                                            {audioBlob.name || 'Audio file'}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setAudioBlob(null)}
+                                                    className="w-full text-xs px-2 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 rounded transition-colors font-medium mt-2"
+                                                >
+                                                    Clear Selection
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            // Empty State with Drop Zone
+                                            <div className="w-full">
+                                                <label htmlFor="audioFile" className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 dark:border-gray-500 rounded-lg bg-gray-50 dark:bg-gray-700/30 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
+                                                    <svg className="w-6 h-6 text-gray-400 dark:text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 16m0 0l-3.5-3.5m3.5 3.5l3.5-3.5m-7-4.5h7a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h7m0-2v2m0 0h2m-2 0H8" />
+                                                    </svg>
+                                                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Choose File</p>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">or drag and drop</p>
+                                                </label>
+                                                <input
+                                                    type="file"
+                                                    id="audioFile"
+                                                    accept="audio/*"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) setAudioBlob(file);
+                                                    }}
+                                                    className="hidden"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Image Upload */}
                         <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -340,15 +532,19 @@ export default function Addnote() {
                         </div>
 
                         {/* Submit Button */}
-                        <button type="submit" disabled={!isFormValid || isSubmitting} className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-3 px-6 rounded-lg transition-all duration-200">
+                        <button
+                            type="submit"
+                            disabled={!isFormValid || isSubmitting || isUploadingAudio}
+                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:transform-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                        >
                             <span className="flex items-center justify-center">
-                                {isSubmitting ? (
+                                {isSubmitting || isUploadingAudio ? (
                                     <>
                                         <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        Adding Note...
+                                        {isUploadingAudio ? 'Uploading Audio...' : 'Adding Note...'}
                                     </>
                                 ) : (
                                     <>
