@@ -1,5 +1,21 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 body{
     background-color:#101828;
+}
+
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
