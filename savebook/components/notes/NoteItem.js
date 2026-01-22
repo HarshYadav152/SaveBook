@@ -105,12 +105,12 @@ export default function NoteItem(props) {
     return (
         <>
             <div className="group relative">
-                <div className="relative bg-gray-900 rounded-2xl border border-gray-700 hover:border-gray-600 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:scale-[1.02]">
+                <div className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:scale-[1.02]">
 
                     {/* Header with Gradient */}
-                    <div className="p-5 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-gray-900 relative">
+                    <div className="p-5 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 relative">
                         <div className="flex items-start justify-between mb-2">
-                            <h3 className="font-bold text-white text-lg leading-tight line-clamp-2 flex-1 pr-2">
+                            <h3 className="font-bold text-gray-900 dark:text-white text-lg leading-tight line-clamp-2 flex-1 pr-2">
                                 {note?.title || 'Untitled Note'}
                             </h3>
 
@@ -123,7 +123,7 @@ export default function NoteItem(props) {
                         </div>
 
                         {/* Metadata Row */}
-                        <div className="flex items-center justify-between text-xs text-gray-400">
+                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                             <div className="flex items-center space-x-2">
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -141,7 +141,7 @@ export default function NoteItem(props) {
 
                     {/* Body  */}
                     <div className="p-5 relative z-10">
-                        <p className="text-gray-300 text-sm leading-relaxed line-clamp-4 min-h-[84px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-3 border border-gray-700 relative z-10 whitespace-pre-wrap">
+                        <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed line-clamp-4 min-h-[84px] bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-lg p-3 border border-gray-200 dark:border-gray-700 relative z-10 whitespace-pre-wrap">
                             {note?.description ? (
                                 note.description.split(/(https?:\/\/[^\s]+)/g).map((part, i) => (
                                     part.match(/https?:\/\/[^\s]+/) ? (
@@ -170,7 +170,7 @@ export default function NoteItem(props) {
                                 {note.images.map((img, index) => (
                                     <div
                                         key={index}
-                                        className="relative overflow-hidden rounded-xl border border-gray-700 bg-gray-800 hover:scale-105 transition-transform duration-300 cursor-pointer group/img"
+                                        className="relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:scale-105 transition-transform duration-300 cursor-pointer group/img"
                                         onClick={() => setPreviewImage(img)}
                                     >
                                         <img
@@ -199,8 +199,8 @@ export default function NoteItem(props) {
 
                         {/* Audio */}
                         {note?.audio && note.audio.url && (
-                            <div className="mt-4 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                                <p className="text-xs text-gray-400 mb-2 flex items-center gap-2">
+                            <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-2">
                                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
                                     </svg>
@@ -217,7 +217,7 @@ export default function NoteItem(props) {
                     </div>
 
                     {/* Enhanced Footer */}
-                    <div className="px-5 py-4 bg-gray-800/50 border-t border-gray-700 backdrop-blur-sm relative z-10">
+                    <div className="px-5 py-4 bg-gray-50/50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 backdrop-blur-sm relative z-10">
                         {/* Action Buttons with Enhanced Design */}
                         <div className="flex justify-between items-center mb-3">
                             <button
@@ -258,8 +258,8 @@ export default function NoteItem(props) {
 
                         {/* Enhanced*/}
                         <div className="flex items-center justify-between text-xs">
-                            <div className="flex items-center space-x-2 text-gray-400">
-                                <div className="flex items-center space-x-1 bg-gray-700/50 px-2 py-1 rounded-lg border border-gray-600">
+                            <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400">
+                                <div className="flex items-center space-x-1 bg-white dark:bg-gray-700/50 px-2 py-1 rounded-lg border border-gray-200 dark:border-gray-600">
                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
@@ -268,8 +268,8 @@ export default function NoteItem(props) {
                             </div>
 
                             {/* Character Count */}
-                            <div className="flex items-center space-x-2 text-gray-400">
-                                <div className="flex items-center space-x-1 bg-gray-700/50 px-2 py-1 rounded-lg border border-gray-600">
+                            <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400">
+                                <div className="flex items-center space-x-1 bg-white dark:bg-gray-700/50 px-2 py-1 rounded-lg border border-gray-200 dark:border-gray-600">
                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
@@ -280,7 +280,7 @@ export default function NoteItem(props) {
                     </div>
 
                     {/*  */}
-                    <div className="absolute inset-0 border-2 border-transparent group-hover:border-gray-600 rounded-2xl transition-all duration-300 pointer-events-none" />
+                    <div className="absolute inset-0 border-2 border-transparent group-hover:border-gray-300 dark:group-hover:border-gray-600 rounded-2xl transition-all duration-300 pointer-events-none" />
                 </div>
 
                 {/* Glow */}
