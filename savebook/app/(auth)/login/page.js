@@ -109,7 +109,7 @@ const LoginForm = () => {
       <form className="space-y-6" onSubmit={handleSubmit}>
         {/* Username */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Username
           </label>
           <input
@@ -119,7 +119,7 @@ const LoginForm = () => {
             onChange={onchange}
             required
             disabled={isLoading}
-            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white"
+            className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter username"
           />
         </div>
@@ -127,7 +127,7 @@ const LoginForm = () => {
         {/* Password */}
         <div>
           <div className="flex justify-between mb-2">
-            <label className="block text-sm font-medium text-gray-300">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Password
             </label>
             <Link
@@ -145,7 +145,7 @@ const LoginForm = () => {
               onChange={onchange}
               required
               disabled={isLoading}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white pr-10 focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white pr-10 focus:ring-2 focus:ring-blue-500 outline-none"
               placeholder="Enter password"
             />
             <button
@@ -168,7 +168,7 @@ const LoginForm = () => {
           {isLoading ? "Signing in..." : "Sign in"}
         </button>
 
-        <p className="text-center text-sm text-gray-300">
+        <p className="text-center text-sm text-gray-600 dark:text-gray-300">
           Don’t have an account?{" "}
           <Link href="/register" className="text-blue-400">
             Register
@@ -178,9 +178,9 @@ const LoginForm = () => {
 
       {/* ========== RECOVERY CODES MODAL ========== */}
       {showRecoveryModal && recoveryCodes && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-md">
-            <h3 className="text-xl font-semibold text-white mb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
               Save your recovery codes
             </h3>
 
@@ -247,18 +247,18 @@ const LoginFormSkeleton = () => (
 ========================= */
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-blue-900 flex items-center justify-center p-4 transition-colors duration-300">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-white">
+          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
             Welcome back
           </h2>
-          <p className="mt-2 text-sm text-gray-300">
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
             Sign in to your account
           </p>
         </div>
 
-        <div className="bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-700">
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 transition-colors duration-300">
           <LoginForm />
         </div>
       </div>

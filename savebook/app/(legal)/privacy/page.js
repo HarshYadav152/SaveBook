@@ -10,12 +10,12 @@ const PrivacyPageLoading = () => {
         {/* Header loading state */}
         <div className="text-center mb-12">
           <div className="w-32 h-10 bg-gray-800 rounded-lg mx-auto mb-6 animate-pulse"></div>
-          
+
           <div className="w-16 h-16 bg-gradient-to-r from-blue-500/30 to-purple-600/30 rounded-2xl mx-auto mb-6 animate-pulse"></div>
-          
+
           <div className="h-10 bg-gray-800 rounded w-64 mx-auto mb-4 animate-pulse"></div>
           <div className="h-5 bg-gray-800 rounded max-w-md mx-auto animate-pulse"></div>
-          
+
           <div className="flex flex-wrap justify-center gap-4 mt-6">
             <div className="w-16 h-10 bg-gray-800 rounded animate-pulse"></div>
             <div className="w-16 h-10 bg-gray-800 rounded animate-pulse"></div>
@@ -27,7 +27,7 @@ const PrivacyPageLoading = () => {
         <div className="h-24 bg-gray-800 rounded-2xl border border-gray-700 mb-8 animate-pulse"></div>
 
         {/* Content loading state */}
-        <div className="bg-gray-800 rounded-2xl border border-gray-700 p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 shadow-sm">
           <div className="space-y-8">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="animate-pulse">
@@ -62,20 +62,20 @@ const PrivacyPolicyContent = () => {
             </svg>
             <span>Back to App</span>
           </Link>
-          
+
           <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
           </div>
-          
-          <h1 className="text-4xl font-bold text-white mb-4">
+
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Privacy Policy
           </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
             How we protect and handle your data in SaveBook
           </p>
-          
+
           <div className="flex flex-wrap justify-center gap-4 mt-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-400">🔒</div>
@@ -96,50 +96,50 @@ const PrivacyPolicyContent = () => {
         <div className="bg-gray-800 rounded-2xl border border-gray-700 p-6 mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-white font-semibold">Last Updated</h3>
-              <p className="text-gray-400">October 2025</p>
+              <h3 className="text-gray-900 dark:text-white font-semibold">Last Updated</h3>
+              <p className="text-gray-600 dark:text-gray-400">October 2025</p>
             </div>
             <div className="text-right">
-              <h3 className="text-white font-semibold">Version</h3>
-              <p className="text-gray-400">1.0</p>
+              <h3 className="text-gray-900 dark:text-white font-semibold">Version</h3>
+              <p className="text-gray-600 dark:text-gray-400">1.0</p>
             </div>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="bg-gray-800 rounded-2xl border border-gray-700 p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 shadow-sm">
           <div className="prose prose-invert prose-gray max-w-none">
-            
+
             {/* Introduction */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
                 <div className="w-2 h-8 bg-blue-500 rounded mr-3"></div>
                 Introduction
               </h2>
-              <p className="text-gray-300 leading-relaxed mb-4">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 Welcome to SaveBook. We are committed to protecting your privacy and ensuring the security of your personal notes and data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our notebook application.
               </p>
-              <p className="text-gray-300 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 By using SaveBook, you consent to the data practices described in this policy. If you do not agree with the data practices described in this Privacy Policy, you should not use our application.
               </p>
             </section>
 
             {/* Information We Collect */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
                 <div className="w-2 h-8 bg-green-500 rounded mr-3"></div>
                 Information We Collect
               </h2>
-              
+
               <div className="grid md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
-                  <h3 className="text-white font-semibold mb-3 flex items-center">
+                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
+                  <h3 className="text-gray-900 dark:text-white font-semibold mb-3 flex items-center">
                     <svg className="w-5 h-5 text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     Personal Information
                   </h3>
-                  <ul className="text-gray-300 space-y-2 text-sm">
+                  <ul className="text-gray-700 dark:text-gray-300 space-y-2 text-sm">
                     <li className="flex items-start">
                       <span className="text-blue-400 mr-2">•</span>
                       Username and email address
@@ -155,14 +155,14 @@ const PrivacyPolicyContent = () => {
                   </ul>
                 </div>
 
-                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
-                  <h3 className="text-white font-semibold mb-3 flex items-center">
+                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
+                  <h3 className="text-gray-900 dark:text-white font-semibold mb-3 flex items-center">
                     <svg className="w-5 h-5 text-purple-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                     Note Content
                   </h3>
-                  <ul className="text-gray-300 space-y-2 text-sm">
+                  <ul className="text-gray-700 dark:text-gray-300 space-y-2 text-sm">
                     <li className="flex items-start">
                       <span className="text-purple-400 mr-2">•</span>
                       Note titles and descriptions
@@ -186,7 +186,7 @@ const PrivacyPolicyContent = () => {
                   </svg>
                   Technical Information
                 </h3>
-                <ul className="text-gray-300 space-y-2 text-sm">
+                <ul className="text-gray-700 dark:text-gray-300 space-y-2 text-sm">
                   <li className="flex items-start">
                     <span className="text-orange-400 mr-2">•</span>
                     IP address and browser type
@@ -205,19 +205,19 @@ const PrivacyPolicyContent = () => {
 
             {/* How We Use Your Information */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
                 <div className="w-2 h-8 bg-purple-500 rounded mr-3"></div>
                 How We Use Your Information
               </h2>
-              
+
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0 w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center mr-4 mt-1">
                     <span className="text-blue-400 text-sm font-bold">1</span>
                   </div>
                   <div>
-                    <h4 className="text-white font-semibold mb-2">Provide Core Services</h4>
-                    <p className="text-gray-300">To create, store, and manage your notes, and to provide you with a personalized notebook experience.</p>
+                    <h4 className="text-gray-900 dark:text-white font-semibold mb-2">Provide Core Services</h4>
+                    <p className="text-gray-700 dark:text-gray-300">To create, store, and manage your notes, and to provide you with a personalized notebook experience.</p>
                   </div>
                 </div>
 
@@ -255,11 +255,11 @@ const PrivacyPolicyContent = () => {
 
             {/* Data Security */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
                 <div className="w-2 h-8 bg-red-500 rounded mr-3"></div>
                 Data Security
               </h2>
-              
+
               <div className="bg-gray-700/30 rounded-xl p-6 border border-gray-600">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
@@ -317,11 +317,11 @@ const PrivacyPolicyContent = () => {
 
             {/* Data Retention & Your Rights */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
                 <div className="w-2 h-8 bg-teal-500 rounded mr-3"></div>
                 Your Rights & Control
               </h2>
-              
+
               <div className="space-y-6">
                 <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
                   <h4 className="text-white font-semibold mb-3">Data Retention</h4>
@@ -370,11 +370,11 @@ const PrivacyPolicyContent = () => {
 
             {/* Contact Information */}
             <section className="mb-8">
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
                 <div className="w-2 h-8 bg-blue-500 rounded mr-3"></div>
                 Contact Us
               </h2>
-              
+
               <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl p-6 border border-blue-500/20">
                 <p className="text-gray-300 mb-4">
                   If you have any questions about this Privacy Policy or our data practices, please contact us:
