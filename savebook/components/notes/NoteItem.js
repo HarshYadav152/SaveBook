@@ -1,22 +1,24 @@
 "use client";
 
+import React, { useContext, useMemo, useState } from "react";
 import noteContext from "@/context/noteContext";
-import React, { useContext, useState, useMemo } from "react";
 import LinkPreviewCard from "./LinkPreviewCard";
 import toast from "react-hot-toast";
 import { decrypt } from "@/lib/utils/crypto";
 
 export default function NoteItem({ note, updateNote }) {
   const { deleteNote } = useContext(noteContext);
+
   const [isDeleting, setIsDeleting] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
 
+  // 🔐 Get encryption key
   const secret =
     typeof window !== "undefined"
       ? localStorage.getItem("encryptionKey")
       : null;
 
-  /* 🔐 Decryption */
+  // 🔓 Decrypt note
   let decryptedTitle = "🔒 Encrypted";
   let decryptedDescription = "🔒 Encrypted";
 
@@ -29,9 +31,9 @@ export default function NoteItem({ note, updateNote }) {
     console.error("Decryption failed:", err);
   }
 
-  /* Helpers */
-  const getTagColor = (tag) =>
-    ({
+  // 🏷 Tag colors
+  const getTagColor = (tag) => {
+    const colors = {
       General: "bg-blue-500",
       Basic: "bg-gray-500",
       Finance: "bg-green-500",
@@ -40,12 +42,8 @@ export default function NoteItem({ note, updateNote }) {
       Personal: "bg-pink-500",
       Work: "bg-indigo-500",
       Ideas: "bg-teal-500",
-    }[tag] || "bg-blue-500");
-
-  const getReadingTime = (text) => {
-    if (!text) return "< 1 min";
-    const words = text.split(/\s+/).length;
-    return `${Math.max(1, Math.ceil(words / 200))} min read`;
+    };
+    return colors[tag] || "bg-blue-500";
   };
 
   const wordCount = decryptedDescription
@@ -57,7 +55,7 @@ export default function NoteItem({ note, updateNote }) {
     return decryptedDescription.match(/https?:\/\/[^\s]+/g) || [];
   }, [decryptedDescription]);
 
-  /* Actions */
+  // 🗑 Delete
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
@@ -70,6 +68,7 @@ export default function NoteItem({ note, updateNote }) {
     }
   };
 
+  // ✏️ Edit
   const handleEdit = () => {
     updateNote({
       ...note,
@@ -79,75 +78,66 @@ export default function NoteItem({ note, updateNote }) {
   };
 
   return (
-    <div className="group relative">
-      <div className="bg-gray-900 rounded-2xl border border-gray-700 shadow-lg overflow-hidden">
-        {/* Header */}
-        <div className="p-5 border-b border-gray-700">
-          <div className="flex justify-between items-start">
-            <h3 className="text-white font-bold text-lg line-clamp-2">
-              {decryptedTitle || "Untitled Note"}
-            </h3>
-            <span
-              className={`${getTagColor(
-                note?.tag
-              )} text-white text-xs px-2 py-1 rounded`}
-            >
-              {note?.tag || "General"}
-            </span>
-          </div>
+    <div className="bg-gray-900 rounded-2xl border border-gray-700 shadow-lg overflow-hidden">
+      {/* Header */}
+      <div className="p-5 border-b border-gray-700 flex justify-between items-start">
+        <h3 className="text-white font-bold text-lg line-clamp-2">
+          {decryptedTitle || "Untitled Note"}
+        </h3>
+        <span
+          className={`${getTagColor(
+            note?.tag
+          )} text-white text-xs px-2 py-1 rounded`}
+        >
+          {note?.tag || "General"}
+        </span>
+      </div>
 
-          <p className="text-xs text-gray-400 mt-2">
-            {getReadingTime(decryptedDescription)} • {wordCount} words
-          </p>
-        </div>
+      {/* Body */}
+      <div className="p-5 space-y-4">
+        <p className="text-gray-300 text-sm whitespace-pre-wrap">
+          {decryptedDescription ||
+            "No description provided. Click edit to add content."}
+        </p>
 
-        {/* Body */}
-        <div className="p-5 space-y-4">
-          <p className="text-gray-300 text-sm whitespace-pre-wrap">
-            {decryptedDescription ||
-              "No description provided. Click edit to add content."}
-          </p>
+        <p className="text-xs text-gray-400">{wordCount} words</p>
 
-          {/* Images */}
-          {Array.isArray(note?.images) && note.images.length > 0 && (
-            <div className="flex gap-3 flex-wrap">
-              {note.images.map((img, i) => (
-                <img
-                  key={i}
-                  src={img}
-                  alt="note"
-                  className="w-24 h-24 object-cover rounded cursor-pointer"
-                  onClick={() => setPreviewImage(img)}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Link previews */}
-          {noteUrls.map((url, i) => (
-            <LinkPreviewCard key={i} url={url} />
+        {/* Images */}
+        {Array.isArray(note?.images) &&
+          note.images.map((img, i) => (
+            <img
+              key={i}
+              src={img}
+              alt="note"
+              className="w-24 h-24 object-cover rounded cursor-pointer"
+              onClick={() => setPreviewImage(img)}
+            />
           ))}
 
-          {/* Audio */}
-          {note?.audio?.url && (
-            <audio controls src={note.audio.url} className="w-full mt-2" />
-          )}
-        </div>
+        {/* Links */}
+        {noteUrls.map((url, i) => (
+          <LinkPreviewCard key={i} url={url} />
+        ))}
 
-        {/* Footer */}
-        <div className="p-4 border-t border-gray-700 flex justify-between">
-          <button onClick={handleEdit} className="text-blue-400 hover:underline">
-            Edit
-          </button>
+        {/* Audio */}
+        {note?.audio?.url && (
+          <audio controls src={note.audio.url} className="w-full" />
+        )}
+      </div>
 
-          <button
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="text-red-400 hover:underline"
-          >
-            {isDeleting ? "Deleting..." : "Delete"}
-          </button>
-        </div>
+      {/* Footer */}
+      <div className="p-4 border-t border-gray-700 flex justify-between">
+        <button onClick={handleEdit} className="text-blue-400 hover:underline">
+          Edit
+        </button>
+
+        <button
+          onClick={handleDelete}
+          disabled={isDeleting}
+          className="text-red-400 hover:underline"
+        >
+          {isDeleting ? "Deleting..." : "Delete"}
+        </button>
       </div>
 
       {/* Image Preview */}
