@@ -104,6 +104,22 @@ export default function NoteItem(props) {
         return note.description.match(urlRegex) || [];
     }, [note?.description]);
 
+    const customRenderers = {
+        h1: ({node, ...props}) => <h1 className="text-xl font-bold my-2 text-white" {...props} />,
+        h2: ({node, ...props}) => <h2 className="text-lg font-bold my-2 text-white" {...props} />,
+        h3: ({node, ...props}) => <h3 className="text-md font-bold my-1 text-white" {...props} />,
+        ul: ({node, ...props}) => <ul className="list-disc list-inside my-2 space-y-1" {...props} />,
+        ol: ({node, ...props}) => <ol className="list-decimal list-inside my-2 space-y-1" {...props} />,
+        li: ({node, ...props}) => <li className="text-gray-300" {...props} />,
+        a: ({node, ...props}) => <a className="text-blue-400 hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
+        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-gray-600 pl-4 my-2 italic text-gray-400" {...props} />,
+        code: ({node, inline, className, children, ...props}) => {
+             return inline ? 
+                <code className="bg-gray-800 rounded px-1 py-0.5 text-sm font-mono text-pink-300" {...props}>{children}</code> :
+                <code className="block bg-gray-800 rounded p-2 text-sm font-mono overflow-x-auto text-gray-200 my-2" {...props}>{children}</code>
+        }
+    };
+
     return (
         <>
             <div className="group relative">
@@ -144,9 +160,12 @@ export default function NoteItem(props) {
                     {/* Body  */}
                     <div className="p-5 relative z-10">
                         <div className="relative z-10">
-                            <div className="text-gray-300 text-sm leading-relaxed line-clamp-4 min-h-[84px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-3 border border-gray-700 relative z-10 prose prose-sm prose-invert max-w-none">
+                            <div className="text-gray-300 text-sm leading-relaxed line-clamp-4 min-h-[84px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-3 border border-gray-700 relative z-10 max-w-none">
                                 {note?.description ? (
-                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    <ReactMarkdown 
+                                        remarkPlugins={[remarkGfm]}
+                                        components={customRenderers}
+                                    >
                                         {note.description}
                                     </ReactMarkdown>
                                 ) : (
@@ -270,7 +289,6 @@ export default function NoteItem(props) {
                         </div>
                     </div>
 
-                    {/*  */}
                     <div className="absolute inset-0 border-2 border-transparent group-hover:border-gray-600 rounded-2xl transition-all duration-300 pointer-events-none" />
                 </div>
 

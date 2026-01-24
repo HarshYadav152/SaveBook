@@ -51,7 +51,22 @@ export default function Notes() {
         }
     }, [isAuthenticated, loading, getNotes]);
     
-    // Enhanced tag options with colors
+    const customRenderers = {
+        h1: ({node, ...props}) => <h1 className="text-xl font-bold my-2 text-white" {...props} />,
+        h2: ({node, ...props}) => <h2 className="text-lg font-bold my-2 text-white" {...props} />,
+        h3: ({node, ...props}) => <h3 className="text-md font-bold my-1 text-white" {...props} />,
+        ul: ({node, ...props}) => <ul className="list-disc list-inside my-2 space-y-1" {...props} />,
+        ol: ({node, ...props}) => <ol className="list-decimal list-inside my-2 space-y-1" {...props} />,
+        li: ({node, ...props}) => <li className="text-gray-300" {...props} />,
+        a: ({node, ...props}) => <a className="text-blue-400 hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
+        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-gray-600 pl-4 my-2 italic text-gray-400" {...props} />,
+        code: ({node, inline, className, children, ...props}) => {
+             return inline ? 
+                <code className="bg-gray-800 rounded px-1 py-0.5 text-sm font-mono text-pink-300" {...props}>{children}</code> :
+                <code className="block bg-gray-800 rounded p-2 text-sm font-mono overflow-x-auto text-gray-200 my-2" {...props}>{children}</code>
+        }
+    };
+
     const tagOptions = [
         { id: 1, value: "General", color: "bg-blue-500" },
         { id: 2, value: "Basic", color: "bg-gray-500" },
@@ -269,8 +284,11 @@ export default function Notes() {
                                         required
                                     />
                                 ) : (
-                                    <div className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-gray-800 min-h-[120px] prose prose-sm prose-invert max-w-none overflow-y-auto">
-                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    <div className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-gray-800 min-h-[120px] max-w-none overflow-y-auto">
+                                        <ReactMarkdown 
+                                            remarkPlugins={[remarkGfm]}
+                                            components={customRenderers}
+                                        >
                                             {note.edescription}
                                         </ReactMarkdown>
                                     </div>
