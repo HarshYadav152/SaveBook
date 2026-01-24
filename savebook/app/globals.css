@@ -1,8 +1,7 @@
 @import "tailwindcss";
-@plugin "@tailwindcss/typography";
 
-body{
-    background-color:#101828;
+body {
+    background-color: #101828;
 }
 
 input::-ms-reveal,

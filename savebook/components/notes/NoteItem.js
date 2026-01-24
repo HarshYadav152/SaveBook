@@ -109,18 +109,12 @@ export default function NoteItem(props) {
             <div className="group relative">
                 <div className="relative bg-gray-900 rounded-2xl border border-gray-700 hover:border-gray-600 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:scale-[1.02]">
 
-                {/* Body with Enhanced Text Display */}
-                <div className="p-5 relative z-10">
-                    <div className="text-gray-300 text-sm leading-relaxed line-clamp-4 min-h-[84px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-3 border border-gray-700 relative z-10 prose prose-sm prose-invert max-w-none">
-                        {note?.description ? (
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                {note.description}
-                            </ReactMarkdown>
-                        ) : (
-                            'No description provided.'
-                        )}
-                    </div>
-                </div>
+                    {/* Header with Gradient */}
+                    <div className="p-5 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-gray-900 relative">
+                        <div className="flex items-start justify-between mb-2">
+                            <h3 className="font-bold text-white text-lg leading-tight line-clamp-2 flex-1 pr-2">
+                                {note?.title || 'Untitled Note'}
+                            </h3>
 
                             {/* Tag moved to top right corner */}
                             <div className="flex-shrink-0">
@@ -149,28 +143,17 @@ export default function NoteItem(props) {
 
                     {/* Body  */}
                     <div className="p-5 relative z-10">
-                        <p className="text-gray-300 text-sm leading-relaxed line-clamp-4 min-h-[84px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-3 border border-gray-700 relative z-10 whitespace-pre-wrap">
-                            {note?.description ? (
-                                note.description.split(/(https?:\/\/[^\s]+)/g).map((part, i) => (
-                                    part.match(/https?:\/\/[^\s]+/) ? (
-                                        <a
-                                            key={i}
-                                            href={part}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-blue-400 hover:text-blue-300 hover:underline transition-colors z-20 relative font-medium"
-                                            onClick={(e) => e.stopPropagation()}
-                                        >
-                                            {part}
-                                        </a>
-                                    ) : (
-                                        <span key={i}>{part}</span>
-                                    )
-                                ))
-                            ) : (
-                                'No description provided. Click edit to add content to this note.'
-                            )}
-                        </p>
+                        <div className="relative z-10">
+                            <div className="text-gray-300 text-sm leading-relaxed line-clamp-4 min-h-[84px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-3 border border-gray-700 relative z-10 prose prose-sm prose-invert max-w-none">
+                                {note?.description ? (
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                        {note.description}
+                                    </ReactMarkdown>
+                                ) : (
+                                    'No description provided.'
+                                )}
+                            </div>
+                        </div>
 
                         {/* Images */}
                         {Array.isArray(note?.images) && note.images.length > 0 && (
@@ -289,9 +272,11 @@ export default function NoteItem(props) {
 
                     {/*  */}
                     <div className="absolute inset-0 border-2 border-transparent group-hover:border-gray-600 rounded-2xl transition-all duration-300 pointer-events-none" />
+                </div>
 
                 {/* Glow */}
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300 pointer-events-none -z-10" />
+            </div>
 
             {/* Image Preview      */}
             {previewImage && (
