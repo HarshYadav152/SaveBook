@@ -397,7 +397,7 @@ const PrivacyPolicyContent = () => {
                 Policy Updates
               </h3>
               <p className="text-gray-300">
-                We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date. You are advised to review this Privacy Policy periodically for any changes.
+                We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the &quot;Last Updated&quot; date. You are advised to review this Privacy Policy periodically for any changes.
               </p>
             </section>
           </div>
