@@ -1,38 +1,51 @@
-import { NextResponse } from 'next/server';
-import User from '@/lib/models/User';
-import dbConnect from '@/lib/db/mongodb';
+import { NextResponse } from "next/server";
+import User from "@/lib/models/User";
+import dbConnect from "@/lib/db/mongodb";
 
 export async function POST(request) {
-  await dbConnect();
-  
   try {
+    await dbConnect();
+
     const { username, password } = await request.json();
-    
-    // Check if user exists
-    let user = await User.findOne({ username });
-    if (user) {
+
+    // ✅ Input validation
+    if (
+      !username ||
+      !password ||
+      typeof username !== "string" ||
+      typeof password !== "string" ||
+      password.length < 6
+    ) {
       return NextResponse.json(
-        { error: "User with this username already exists" },
+        { success: false, message: "Invalid input" },
         { status: 400 }
       );
     }
-    
-    // Create user
+
+    // ✅ Prevent username enumeration
+    const existingUser = await User.findOne({ username });
+
+    if (existingUser) {
+      return NextResponse.json(
+        { success: false, message: "Unable to create account" },
+        { status: 400 }
+      );
+    }
+
+    // ✅ Create user
     await User.create({
       username,
       password
     });
-    
-    // Set cookie and return response
-    const response = NextResponse.json({
-      success: true
-    });
-    
-    return response;
-  } catch (error) {
-    console.error(error);
+
     return NextResponse.json(
-      { success: false, error: "Server error" },
+      { success: true, message: "Account created successfully" },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Register error:", error);
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
       { status: 500 }
     );
   }
