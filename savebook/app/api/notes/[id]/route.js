@@ -1,8 +1,19 @@
+<<<<<<< HEAD
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import dbConnect from '@/lib/db/mongodb';
 import Notes from '@/lib/models/Notes';
+=======
+import { NextResponse } from "next/server";
+import mongoose from "mongoose";
+import dbConnect from "@/lib/db/mongodb";
+import Notes from "@/lib/models/Notes";
+<<<<<<< HEAD
+>>>>>>> f927a20 (Updated the branch)
 import { verifyJwtToken } from "@/lib/utils/jwtAuth";
+=======
+import { verifyJwtToken } from "@/lib/utils/jwt";   // ensure lowercase filename
+>>>>>>> f6ab754 (Cleared the conflicts)
 
 // Get a specific note by ID
 export async function GET(request, { params }) {

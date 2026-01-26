@@ -36,8 +36,9 @@ export async function GET(request) {
       }
     });
   } catch (error) {
+    console.error("Error fetching user:", error);
     return NextResponse.json(
-      { success: false, message: 'Server error' },
+      { success: false, message: "Internal Server Error" },
       { status: 500 }
     );
   }
