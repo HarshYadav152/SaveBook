@@ -8,6 +8,7 @@ export default function NoteItem(props) {
     const { deleteNote } = context;
     const { note, updateNote } = props;
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isViewOpen, setIsViewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
 
     const handleDelete = async () => {
@@ -105,7 +106,10 @@ export default function NoteItem(props) {
     return (
         <>
             <div className="group relative">
-                <div className="relative bg-gray-900 rounded-2xl border border-gray-700 hover:border-gray-600 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:scale-[1.02]">
+                <div
+                    onClick={() => setIsViewOpen(true)}
+                    className="cursor-pointer relative bg-gray-900 rounded-2xl border border-gray-700 hover:border-gray-600 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:scale-[1.02]"
+                    >
 
                     {/* Header with Gradient */}
                     <div className="p-5 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-gray-900 relative">
@@ -221,7 +225,10 @@ export default function NoteItem(props) {
                         {/* Action Buttons with Enhanced Design */}
                         <div className="flex justify-between items-center mb-3">
                             <button
-                                onClick={handleEdit}
+                                onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit();
+                            }}
                                 disabled={isDeleting}
                                 className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-all duration-200 group/edit disabled:opacity-50 disabled:cursor-not-allowed"
                             >
@@ -234,7 +241,10 @@ export default function NoteItem(props) {
                             </button>
 
                             <button
-                                onClick={handleDelete}
+                                onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete();
+                            }}
                                 disabled={isDeleting}
                                 className="flex items-center space-x-2 text-red-400 hover:text-red-300 transition-all duration-200 group/delete disabled:opacity-50 disabled:cursor-not-allowed"
                             >
@@ -315,6 +325,48 @@ export default function NoteItem(props) {
                     </div>
                 </div>
             )}
+
+            {/* Note View Modal */}
+            {isViewOpen && (
+                <div
+                    onClick={() => setIsViewOpen(false)}
+                    className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4"
+                >
+                    <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="max-w-2xl w-full bg-gray-900 rounded-2xl border border-gray-700 shadow-2xl p-6"
+                    >
+                    {/* Header */}
+                    <div className="flex justify-between items-start mb-4">
+                        <h2 className="text-xl font-bold text-white">
+                        {note?.title || 'Untitled Note'}
+                        </h2>
+                        <button
+                        onClick={() => setIsViewOpen(false)}
+                        className="text-gray-400 hover:text-gray-200"
+                        >
+                        ✕
+                        </button>
+                    </div>
+
+                    {/* Tag */}
+                    <span className={`${tagColor.bg} ${tagColor.text} px-3 py-1 rounded-md text-xs font-medium`}>
+                        {note?.tag || 'General'}
+                    </span>
+
+                    {/* Content */}
+                    <div className="mt-4 text-gray-300 whitespace-pre-wrap leading-relaxed max-h-[60vh] overflow-y-auto">
+                        {note?.description || 'No description provided.'}
+                    </div>
+
+                    {/* Footer */}
+                    <div className="mt-6 text-xs text-gray-400 flex justify-between">
+                        <span>{wordCount} words</span>
+                        <span>{note?.date ? formatDate(note.date) : 'Unknown date'}</span>
+                    </div>
+                    </div>
+                </div>
+                )}
         </>
     );
 }
