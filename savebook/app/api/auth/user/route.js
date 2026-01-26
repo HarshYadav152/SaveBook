@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/db/mongodb";
 import User from "@/lib/models/User";
 import { verifyJwtToken } from "@/lib/utils/jwtAuth";
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 export async function GET(request) {
     try {
