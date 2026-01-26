@@ -163,7 +163,7 @@ export default function Home() {
                 className="mt-8 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl"
               >
                 <p className="text-green-700 dark:text-green-400 text-sm">
-                  ✨ You're all set! Start organizing your thoughts and ideas.
+                  ✨ You&apos;re all set! Start organizing your thoughts and ideas.
                 </p>
               </motion.div>
             )}

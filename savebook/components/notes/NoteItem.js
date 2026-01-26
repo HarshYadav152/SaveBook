@@ -2,9 +2,9 @@
 
 import React, { useContext, useMemo, useState } from "react";
 import noteContext from "@/context/noteContext";
-import LinkPreviewCard from "./LinkPreviewCard";
-import toast from "react-hot-toast";
 import { decrypt } from "@/lib/utils/crypto";
+import toast from "react-hot-toast";
+import LinkPreviewCard from "./LinkPreviewCard";
 
 export default function NoteItem({ note, updateNote }) {
   const { deleteNote } = useContext(noteContext);
@@ -12,13 +12,12 @@ export default function NoteItem({ note, updateNote }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
 
-  // 🔐 Get encryption key
+  /* 🔐 Decryption */
   const secret =
     typeof window !== "undefined"
       ? localStorage.getItem("encryptionKey")
       : null;
 
-  // 🔓 Decrypt note
   let decryptedTitle = "🔒 Encrypted";
   let decryptedDescription = "🔒 Encrypted";
 
@@ -31,31 +30,36 @@ export default function NoteItem({ note, updateNote }) {
     console.error("Decryption failed:", err);
   }
 
-  // 🏷 Tag colors
-  const getTagColor = (tag) => {
-    const colors = {
-      General: "bg-blue-500",
-      Basic: "bg-gray-500",
-      Finance: "bg-green-500",
-      Grocery: "bg-orange-500",
-      Office: "bg-purple-500",
-      Personal: "bg-pink-500",
-      Work: "bg-indigo-500",
-      Ideas: "bg-teal-500",
-    };
-    return colors[tag] || "bg-blue-500";
-  };
+  /* Counts */
+  const descriptionLength =
+    typeof decryptedDescription === "string"
+      ? decryptedDescription.length
+      : 0;
 
   const wordCount = decryptedDescription
     ? decryptedDescription.split(/\s+/).filter(Boolean).length
     : 0;
 
+  /* URLs */
   const noteUrls = useMemo(() => {
     if (!decryptedDescription) return [];
     return decryptedDescription.match(/https?:\/\/[^\s]+/g) || [];
   }, [decryptedDescription]);
 
-  // 🗑 Delete
+  /* Tag color */
+  const getTagColor = (tag) => {
+    const colors = {
+      General: { bg: "bg-blue-500", text: "text-blue-100" },
+      Work: { bg: "bg-indigo-500", text: "text-indigo-100" },
+      Personal: { bg: "bg-pink-500", text: "text-pink-100" },
+      Finance: { bg: "bg-green-500", text: "text-green-100" },
+    };
+    return colors[tag] || colors.General;
+  };
+
+  const tagColor = getTagColor(note?.tag || "General");
+
+  /* Actions */
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
@@ -68,7 +72,6 @@ export default function NoteItem({ note, updateNote }) {
     }
   };
 
-  // ✏️ Edit
   const handleEdit = () => {
     updateNote({
       ...note,
@@ -78,16 +81,14 @@ export default function NoteItem({ note, updateNote }) {
   };
 
   return (
-    <div className="bg-gray-900 rounded-2xl border border-gray-700 shadow-lg overflow-hidden">
+    <div className="group relative bg-gray-900 rounded-2xl border border-gray-700 shadow-lg overflow-hidden">
       {/* Header */}
       <div className="p-5 border-b border-gray-700 flex justify-between items-start">
         <h3 className="text-white font-bold text-lg line-clamp-2">
           {decryptedTitle || "Untitled Note"}
         </h3>
         <span
-          className={`${getTagColor(
-            note?.tag
-          )} text-white text-xs px-2 py-1 rounded`}
+          className={`${tagColor.bg} ${tagColor.text} px-2 py-1 rounded text-xs`}
         >
           {note?.tag || "General"}
         </span>
@@ -100,44 +101,52 @@ export default function NoteItem({ note, updateNote }) {
             "No description provided. Click edit to add content."}
         </p>
 
-        <p className="text-xs text-gray-400">{wordCount} words</p>
-
         {/* Images */}
-        {Array.isArray(note?.images) &&
-          note.images.map((img, i) => (
-            <img
-              key={i}
-              src={img}
-              alt="note"
-              className="w-24 h-24 object-cover rounded cursor-pointer"
-              onClick={() => setPreviewImage(img)}
-            />
-          ))}
+        {Array.isArray(note?.images) && note.images.length > 0 && (
+          <div className="flex gap-3 flex-wrap">
+            {note.images.map((img, i) => (
+              <img
+                key={i}
+                src={img}
+                alt="note"
+                className="w-24 h-24 object-cover rounded cursor-pointer"
+                onClick={() => setPreviewImage(img)}
+              />
+            ))}
+          </div>
+        )}
 
-        {/* Links */}
+        {/* Link previews */}
         {noteUrls.map((url, i) => (
           <LinkPreviewCard key={i} url={url} />
         ))}
 
         {/* Audio */}
         {note?.audio?.url && (
-          <audio controls src={note.audio.url} className="w-full" />
+          <audio controls src={note.audio.url} className="w-full mt-2" />
         )}
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-700 flex justify-between">
-        <button onClick={handleEdit} className="text-blue-400 hover:underline">
-          Edit
-        </button>
+      <div className="p-4 border-t border-gray-700 flex justify-between text-sm text-gray-400">
+        <span>{wordCount} words • {descriptionLength} chars</span>
 
-        <button
-          onClick={handleDelete}
-          disabled={isDeleting}
-          className="text-red-400 hover:underline"
-        >
-          {isDeleting ? "Deleting..." : "Delete"}
-        </button>
+        <div className="space-x-4">
+          <button
+            onClick={handleEdit}
+            className="text-blue-400 hover:underline"
+          >
+            Edit
+          </button>
+
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="text-red-400 hover:underline"
+          >
+            {isDeleting ? "Deleting..." : "Delete"}
+          </button>
+        </div>
       </div>
 
       {/* Image Preview */}

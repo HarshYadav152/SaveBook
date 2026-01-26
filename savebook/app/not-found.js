@@ -11,7 +11,7 @@ const NotFoundContent = () => {
       <h2 className="mt-6 text-2xl font-semibold">Page not found</h2>
       
       <p className="mt-3 text-gray-400">
-        The page you're looking for doesn't exist or has been moved.
+        The page you&apos;re looking for doesn&apos;t exist or has been moved.
       </p>
       
       {/* Simple action button */}
