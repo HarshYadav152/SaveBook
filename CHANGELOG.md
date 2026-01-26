@@ -1,3 +1,63 @@
+## [2026-01-23]
+
+### ✨ Features
+-  add Docker Compose configuration for MongoDB, application, and Mongo Express services. (0e33768) - @saiusesgithub
+-  add audio recording and attachment support for notes (13b37b7) - @Diksha Dabhole
+-  Add audio recording attachments to notes (Issue #122) (2df98ac) - @Diksha Dabhole
+-  add image upload support for notes and user media (8cab3d7) - @avdhut400
+
+### 📝 Documentation
+-  auto update changelog (2239ad3) - @vinayboss9669
+-  auto update changelog (0a88bb5) - @vinayboss9669
+-  auto update changelog (aba5ef7) - @HarshYadav152
+-  auto update changelog (27786d4) - @HarshYadav152
+-  auto update changelog (45e18fe) - @HarshYadav152
+
+### 📦 Other Changes
+- added Password Visibility Toggle (198b3b6) - @Abhijeet-980
+- Update savebook/docker-compose.yml (5ed7f01) - @Sai Srujan Punati
+- Update savebook/.dockerignore (ad968c3) - @Sai Srujan Punati
+- Update savebook/.dockerignore (1320235) - @Sai Srujan Punati
+- Update savebook/.dockerignore (9812ccc) - @Sai Srujan Punati
+- Fix audio upload error handling in AddNote (73d431b) - @Diksha Dabhole
+- Add weblinks with preview in notes (19fc09d) - @Suvam Chatterjee
+- Add user-media upload route and improve profile upload with size & type validation (088149c) - @avdhut400
+- Add user-media upload route and improve profile upload with size & type validation (c4cfa6d) - @avdhut400
+- route (7edcf39) - @avdhut400
+- await (fab37c8) - @Avdhut Magar
+
+
+## [2026-01-21]
+
+### ✨ Features
+-  add audio recording and attachment support for notes (13b37b7) - @Diksha Dabhole
+-  Add audio recording attachments to notes (Issue #122) (2df98ac) - @Diksha Dabhole
+-  add image upload support for notes and user media (8cab3d7) - @avdhut400
+-  add image upload support for notes (fbf9438) - @avdhut400
+
+### 🐛 Bug Fixes
+-  improve register page validation and error handling (5f451a0) - @Diksha Dabhole
+-  replace browser popup with in-app modal (0662c42) - @saburi004
+
+### 📝 Documentation
+-  auto update changelog (0a88bb5) - @vinayboss9669
+-  auto update changelog (aba5ef7) - @HarshYadav152
+-  auto update changelog (27786d4) - @HarshYadav152
+-  auto update changelog (45e18fe) - @HarshYadav152
+-  auto update changelog (b7af96d) - @vinayboss9669
+-  auto update changelog (f777e40) - @vinayboss9669
+
+### 📦 Other Changes
+- added Password Visibility Toggle (198b3b6) - @Abhijeet-980
+- Fix audio upload error handling in AddNote (73d431b) - @Diksha Dabhole
+- Add weblinks with preview in notes (19fc09d) - @Suvam Chatterjee
+- Add user-media upload route and improve profile upload with size & type validation (088149c) - @avdhut400
+- Add user-media upload route and improve profile upload with size & type validation (c4cfa6d) - @avdhut400
+- route (7edcf39) - @avdhut400
+- await (fab37c8) - @Avdhut Magar
+- Add scroll to top button (4545a0a) - @Harishchandra Gandhare
+
+
 ## [2026-01-19]
 
 ### ✨ Features
