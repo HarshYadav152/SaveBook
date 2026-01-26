@@ -10,22 +10,31 @@ export async function POST(request) {
     
 
     const { username, password } = await request.json();
+    if (
+  !username ||
+  !password ||
+  typeof username !== "string" ||
+  typeof password !== "string"
+) {
+  return NextResponse.json(
+    { success: false, message: "Invalid username or password" },
+    { status: 400 }
+  );
+}
 
     const user = await User.findOne({ username });
-    if (!user) {
-      return NextResponse.json(
-        { success: false, message: "Invalid username or password" },
-        { status: 401 }
-      );
-    }
 
-    const isPasswordValid = await user.comparePassword(password);
-    if (!isPasswordValid) {
-      return NextResponse.json(
-        { success: false, message: "Invalid username or password" },
-        { status: 401 }
-      );
-    }
+const isPasswordValid = user
+  ? await user.comparePassword(password)
+  : false;
+
+if (!user || !isPasswordValid) {
+  return NextResponse.json(
+    { success: false, message: "Invalid username or password" },
+    { status: 401 }
+  );
+}
+
 
     //  Generate auth token
     const { authToken } = await generateAuthToken(user._id.toString());
