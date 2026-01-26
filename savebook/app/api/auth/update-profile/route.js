@@ -1,6 +1,10 @@
 import dbConnect from "@/lib/db/mongodb";
 import User from "@/lib/models/User";
+<<<<<<< HEAD
 import { verifyJwtToken } from "@/lib/utils/jwtAuth";
+=======
+import { verifyJwtToken } from "@/lib/utils/jwt";   // ensure lowercase filename
+>>>>>>> f6ab754 (Cleared the conflicts)
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 

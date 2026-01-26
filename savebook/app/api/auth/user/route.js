@@ -51,25 +51,6 @@ export async function GET(request) {
       }
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        success: true,
-        user: {
-          username: user.username,
-          profileImage: user.profileImage,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          phone: user.phone, // include extra fields
-          email: user.email,
-          gender: user.gender,
-          dob: user.dob,
-          bio: user.bio,
-          location: user.location,
-        },
-      },
-      { status: 200 }
-    );
-  } catch (error) {
     console.error("Error fetching user:", error);
     return NextResponse.json(
       { success: false, message: "Internal Server Error" },

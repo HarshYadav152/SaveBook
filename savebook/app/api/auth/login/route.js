@@ -1,8 +1,9 @@
-import dbConnect from '@/lib/db/mongodb';
-import User from '@/lib/models/User';
-import { generateAuthToken } from "@/lib/utils/JWT";   // make sure filename is lowercase 'jwt.js'
-import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';   // add bcrypt for password comparison
+import { NextResponse } from "next/server";
+import dbConnect from "@/lib/db/mongodb";
+import User from "@/lib/models/User";
+import { generateAuthToken } from "@/lib/utils/jwtAuth";   // ensure lowercase filename
+import { generateRecoveryCodes } from "@/lib/utils/recoveryCodes";
+import bcrypt from "bcryptjs";
 
 export async function POST(request) {
   try {
