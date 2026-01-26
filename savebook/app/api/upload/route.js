@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
+<<<<<<< HEAD
 import { verifyJwtToken } from "@/lib/utils/jwtAuth";
+=======
+import { verifyJwtToken } from "@/lib/utils/jwtAuth";   // ensure lowercase filename
+>>>>>>> 8a479bb (Used jwtAuth instead of jwt and removed the file middleware.js)
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

@@ -3,10 +3,14 @@ import mongoose from "mongoose";
 import dbConnect from "@/lib/db/mongodb";
 import Notes from "@/lib/models/Notes";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { verifyJwtToken } from "@/lib/utils/jwtAuth";
 =======
 import { verifyJwtToken } from "@/lib/utils/jwt";   // ensure lowercase filename
 >>>>>>> f6ab754 (Cleared the conflicts)
+=======
+import { verifyJwtToken } from "@/lib/utils/jwtAuth";   // ensure lowercase filename
+>>>>>>> 8a479bb (Used jwtAuth instead of jwt and removed the file middleware.js)
 
 // Get a specific note by ID
 export async function GET(request, { params }) {

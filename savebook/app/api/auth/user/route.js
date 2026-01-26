@@ -1,6 +1,10 @@
 import dbConnect from "@/lib/db/mongodb";
 import User from "@/lib/models/User";
+<<<<<<< HEAD
 import { verifyJwtToken } from "@/lib/utils/jwtAuth";
+=======
+import { verifyJwtToken } from "@/lib/utils/jwtAuth";   // ensure lowercase filename
+>>>>>>> 8a479bb (Used jwtAuth instead of jwt and removed the file middleware.js)
 import { NextResponse } from "next/server";
 
 export async function GET(request) {
