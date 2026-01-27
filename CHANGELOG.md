@@ -1,3 +1,61 @@
+## [2026-01-26]
+
+### ✨ Features
+-  add input validation & security improvements for login/register API (683b1c0) - @Kartikey-0
+-  add Docker Compose configuration for MongoDB, application, and Mongo Express services. (0e33768) - @saiusesgithub
+-  add audio recording and attachment support for notes (13b37b7) - @Diksha Dabhole
+-  Add audio recording attachments to notes (Issue #122) (2df98ac) - @Diksha Dabhole
+
+### 📝 Documentation
+-  auto update changelog (f630373) - @vinayboss9669
+-  auto update changelog (83dca1b) - @vinayboss9669
+-  auto update changelog (2239ad3) - @vinayboss9669
+-  auto update changelog (0a88bb5) - @vinayboss9669
+-  auto update changelog (aba5ef7) - @HarshYadav152
+-  auto update changelog (27786d4) - @HarshYadav152
+
+### 📦 Other Changes
+- Fixed (fd465e1) - @Aagman Pal
+- Note Viewer Error Fixed (f5dca9a) - @Aagman Pal
+- added Password Visibility Toggle (198b3b6) - @Abhijeet-980
+- Note View Modal Added (c8ca166) - @Aagman Pal
+- Update savebook/docker-compose.yml (5ed7f01) - @Sai Srujan Punati
+- Update savebook/.dockerignore (ad968c3) - @Sai Srujan Punati
+- Update savebook/.dockerignore (1320235) - @Sai Srujan Punati
+- Update savebook/.dockerignore (9812ccc) - @Sai Srujan Punati
+- Fix audio upload error handling in AddNote (73d431b) - @Diksha Dabhole
+- Add weblinks with preview in notes (19fc09d) - @Suvam Chatterjee
+
+
+## [2026-01-26]
+
+### ✨ Features
+-  add Docker Compose configuration for MongoDB, application, and Mongo Express services. (0e33768) - @saiusesgithub
+-  add audio recording and attachment support for notes (13b37b7) - @Diksha Dabhole
+-  Add audio recording attachments to notes (Issue #122) (2df98ac) - @Diksha Dabhole
+-  add image upload support for notes and user media (8cab3d7) - @avdhut400
+
+### 📝 Documentation
+-  auto update changelog (83dca1b) - @vinayboss9669
+-  auto update changelog (2239ad3) - @vinayboss9669
+-  auto update changelog (0a88bb5) - @vinayboss9669
+-  auto update changelog (aba5ef7) - @HarshYadav152
+-  auto update changelog (27786d4) - @HarshYadav152
+-  auto update changelog (45e18fe) - @HarshYadav152
+
+### 📦 Other Changes
+- Fixed (fd465e1) - @Aagman Pal
+- Note Viewer Error Fixed (f5dca9a) - @Aagman Pal
+- added Password Visibility Toggle (198b3b6) - @Abhijeet-980
+- Note View Modal Added (c8ca166) - @Aagman Pal
+- Update savebook/docker-compose.yml (5ed7f01) - @Sai Srujan Punati
+- Update savebook/.dockerignore (ad968c3) - @Sai Srujan Punati
+- Update savebook/.dockerignore (1320235) - @Sai Srujan Punati
+- Update savebook/.dockerignore (9812ccc) - @Sai Srujan Punati
+- Fix audio upload error handling in AddNote (73d431b) - @Diksha Dabhole
+- Add weblinks with preview in notes (19fc09d) - @Suvam Chatterjee
+
+
 ## [2026-01-23]
 
 ### ✨ Features
