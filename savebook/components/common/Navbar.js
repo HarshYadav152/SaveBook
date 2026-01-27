@@ -10,6 +10,21 @@ export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const { isAuthenticated, user, logout, loading } = useAuth();
+    const [theme, setTheme] = useState("light");
+
+useEffect(() => {
+  if (theme === "dark") {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+}, [theme]);
+
+
+    const toggleTheme = () => {
+  setTheme(theme === "light" ? "dark" : "light");
+};
+
 
     // Handle client-side mounting
     useEffect(() => {
@@ -169,21 +184,39 @@ export default function Navbar() {
                                 )}
                             </div>
                         ) : (
-                            // Not authenticated - show login/signup buttons
-                            <div className="flex items-center space-x-3">
-                                <Link 
-                                    href="/login"
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                >
-                                    Login
-                                </Link>
-                                <Link 
-                                    href="/register"
-                                    className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all"
-                                >
-                                    Sign Up
-                                </Link>
-                            </div>
+                           <div className="flex items-center space-x-3">
+  {/* Theme Toggle */}
+  <button
+    onClick={toggleTheme}
+    className="px-3 py-2 rounded-lg text-sm font-medium 
+               bg-gray-200 dark:bg-gray-700 
+               text-gray-800 dark:text-gray-200 
+               hover:scale-105 transition-all"
+  >
+    {theme === "light" ? "🌙 Dark" : "☀️ Light"}
+  </button>
+
+{/*  Auth Links  */}
+  <Link
+    href="/login"
+    className="px-4 py-2 text-sm font-medium 
+               text-gray-700 dark:text-gray-300 
+               hover:text-blue-600 dark:hover:text-blue-400 
+               transition-colors"
+  >
+    Login
+  </Link>
+
+  <Link
+    href="/register"
+    className="px-4 py-2 text-sm font-medium 
+               bg-gradient-to-r from-blue-600 to-purple-600 
+               text-white rounded-lg hover:shadow-lg transition-all"
+  >
+    Sign Up
+  </Link>
+</div>
+
                         )}
                     </div>
 
