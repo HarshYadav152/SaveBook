@@ -9,7 +9,29 @@ export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isClient, setIsClient] = useState(false);
+    const [theme, setTheme] = useState("light");
     const { isAuthenticated, user, logout, loading } = useAuth();
+    //dark mode state
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            setTheme(savedTheme);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (theme === "dark") {
+            document.documentElement.classList.add("dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+        }
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(theme === "light" ? "dark" : "light");
+    };
+
 
     // Handle client-side mounting
     useEffect(() => {
@@ -77,6 +99,7 @@ export default function Navbar() {
                                 SaveBook
                             </Link>
                         </div>
+                        
                         {/* Loading skeleton */}
                         <div className="hidden md:flex items-center space-x-4">
                             <div className="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
@@ -110,6 +133,16 @@ export default function Navbar() {
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-4">
+                        {/* Theme Toggle */}
+                        <button
+                            onClick={toggleTheme}
+                            className="px-3 py-2 rounded-lg text-sm font-medium 
+                                       bg-gray-200 dark:bg-gray-700 
+                                       text-gray-800 dark:text-gray-200 
+                                       hover:scale-105 transition-all"
+                        >
+                            {theme === "light" ? "🌙 Dark" : "☀️ Light"}
+                        </button>
                         {loading ? (
                             // Loading skeleton
                             <div className="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
@@ -169,7 +202,10 @@ export default function Navbar() {
                                 )}
                             </div>
                         ) : (
+
+                            
                             // Not authenticated - show login/signup buttons
+                            
                             <div className="flex items-center space-x-3">
                                 <Link 
                                     href="/login"
@@ -189,6 +225,16 @@ export default function Navbar() {
 
                     {/* Mobile menu button */}
                     <div className="md:hidden flex items-center space-x-2">
+                        {/* Theme Toggle */}
+                        <button
+                            onClick={toggleTheme}
+                            className="px-3 py-2 rounded-lg text-sm font-medium 
+                                       bg-gray-200 dark:bg-gray-700 
+                                       text-gray-800 dark:text-gray-200 
+                                       hover:scale-105 transition-all"
+                        >
+                            {theme === "light" ? "🌙 Dark" : "☀️ Light"}
+                        </button>
                         {loading ? (
                             <div className="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
                         ) : isAuthenticated ? (
