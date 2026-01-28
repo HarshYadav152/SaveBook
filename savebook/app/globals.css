@@ -9,3 +9,19 @@ input::-ms-reveal,
 input::-ms-clear {
   display: none;
 }
+
+/* Light mode default */
+body {
+  @apply bg-white text-gray-900;
+}
+
+/* Dark mode */
+.dark body {
+  @apply bg-gray-900 text-gray-100;
+}
+
+/* Hide default browser password reveal button */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
