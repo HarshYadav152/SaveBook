@@ -22,6 +22,8 @@ const NavigationHandler = ({ isAuthenticated, loading }) => {
 };
 
 export default function Notes() {
+    // Manu95021: autosave fix implementation
+
     const { isAuthenticated, loading } = useAuth();
     const context = useContext(noteContext);
     const { notes: contextNotes = [], getNotes, editNote } = context || {};
@@ -591,3 +593,21 @@ export default function Notes() {
         </>
     )
 }
+
+useEffect(() => {
+  const savedDraft = localStorage.getItem("note-draft");
+  if (savedDraft) {
+    setNote((prev) => ({
+      ...prev,
+      edescription: savedDraft,
+    }));
+  }
+}, []);
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+    localStorage.setItem("note-draft", note.edescription);
+  }, 800);
+
+  return () => clearTimeout(timer);
+}, [note.edescription]);
