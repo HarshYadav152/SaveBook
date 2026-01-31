@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
-import dbConnect from '@/lib/db/mongodb';
-import Notes from '@/lib/models/Notes';
+import { NextResponse } from "next/server";
+import mongoose from "mongoose";
+import dbConnect from "@/lib/db/mongodb";
+import Notes from "@/lib/models/Notes";
 import { verifyJwtToken } from "@/lib/utils/jwtAuth";
 
 // Get a specific note by ID

@@ -4,44 +4,55 @@ import dbConnect from "@/lib/db/mongodb";
 
 export async function POST(request) {
   try {
-    await dbConnect();
-
     const { username, password } = await request.json();
-
-    // ✅ Input validation
-    if (
-      !username ||
-      !password ||
-      typeof username !== "string" ||
-      typeof password !== "string" ||
-      password.length < 6
-    ) {
+    
+    // Validate required fields
+    if (!username || !password) {
       return NextResponse.json(
-        { success: false, message: "Invalid input" },
+        { success: false, message: "All fields are required" },
         { status: 400 }
       );
     }
 
-    // ✅ Prevent username enumeration
-    const existingUser = await User.findOne({ username });
-
-    if (existingUser) {
+    // Password strength check
+    if (password.length < 6) {
       return NextResponse.json(
-        { success: false, message: "Unable to create account" },
+        { success: false, message: "Password must be at least 6 characters" },
         { status: 400 }
       );
     }
 
-    // ✅ Create user
-    await User.create({
-      username,
-      password
-    });
+    // Check if user exists
+    const user = await User.findOne({ username });
+    if (user) {
+      return NextResponse.json(
+        { success: false, message: "User with this username already exists" },
+        { status: 400 }
+      );
+    }
+    
+    // Try creating user
+    try {
+      await User.create({ username, password });
 
-    return NextResponse.json(
-      { success: true, message: "Account created successfully" },
-      { status: 201 }
-    );
+      return NextResponse.json(
+        { success: true, message: "Account created successfully" },
+        { status: 201 }
+      );
+    } catch (err) {
+      // Handle duplicate key error explicitly
+      if (err.code === 11000) {
+        return NextResponse.json(
+          { success: false, message: "Username already taken" },
+          { status: 400 }
+        );
+      }
+
+      return NextResponse.json(
+        { success: false, message: err.message || "Failed to create user" },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error("Register error:", error);
     return NextResponse.json(

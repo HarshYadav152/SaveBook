@@ -1,381 +1,276 @@
-"use client"
-import { useAuth } from '@/context/auth/authContext';
-import { useRouter } from 'next/navigation';
-import React, { useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
-import Link from 'next/link';
+"use client";
 
-import { Eye, EyeOff } from 'lucide-react';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/context/auth/authContext";
 
-// Signup Form Component
-const SignupForm = () => {
-    const { register, isAuthenticated } = useAuth();
-    const [credentials, setCredentials] = useState({
-        username: '',
-        password: '',
-        confirmPassword: ''
-    });
-    const [errors, setErrors] = useState({
-        username: '',
-        password: '',
-        confirmPassword: ''
-    });
-    const [isLoading, setIsLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const router = useRouter();
+export default function SignupPage() {
+  const { register, isAuthenticated } = useAuth();
+  const router = useRouter();
 
-    // Handle redirection based on authentication status
-    useEffect(() => {
-        if (isAuthenticated) {
-            router.push("/");
-        }
-    }, [isAuthenticated, router]);
+  const [credentials, setCredentials] = useState({
+    username: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [globalMessage, setGlobalMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const onChange = (e) => {
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
+  };
 
-        // Prevent submission if already authenticated
-        if (isAuthenticated) {
-            router.push("/");
-            return;
-        }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        // Validate and collect errors
-        const newErrors = {};
-
-        if (!credentials.username.trim()) {
-            newErrors.username = 'Username is required';
-        }
-
-        if (!credentials.password) {
-            newErrors.password = 'Password is required';
-        } else if (credentials.password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
-        }
-
-        if (!credentials.confirmPassword) {
-            newErrors.confirmPassword = 'Please confirm your password';
-        } else if (credentials.password !== credentials.confirmPassword) {
-            newErrors.confirmPassword = 'Passwords do not match';
-        }
-
-        // If validation errors exist, show them and return
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-            return;
-        }
-
-        setIsLoading(true);
-
-        try {
-            // Use the register method from AuthContext
-            const result = await register(
-                credentials.username,
-                credentials.password
-            );
-
-            if (result.success) {
-                toast.success("Account created successfully! 🎉");
-                router.push("/login")
-                // The useEffect will handle the redirect
-            } else {
-                toast.error(result.message || "Registration failed");
-            }
-        } catch (error) {
-            console.error("Registration error:", error);
-
-            // Attempt to extract meaningful error message
-            let errorMessage = "Something went wrong. Please try again.";
-
-            try {
-                // Check if response exists and extract message from JSON
-                if (error.response?.data) {
-                    const data = error.response.data;
-
-                    // Try to get message from JSON response
-                    if (typeof data === 'object' && data !== null) {
-                        if (data.message) {
-                            errorMessage = data.message;
-                        } else if (data.error) {
-                            errorMessage = data.error;
-                        }
-                    }
-                    // If data is a string (HTML), it means we got an error page
-                    else if (typeof data === 'string' && data.includes('<')) {
-                        // HTML response detected, use status code instead
-                        throw new Error('HTML_RESPONSE');
-                    }
-                }
-
-                // Handle HTTP status codes if no JSON message was found
-                if (errorMessage.includes('Something went wrong')) {
-                    if (error.response?.status === 500) {
-                        errorMessage = "Server error. Please try again later.";
-                    } else if (error.response?.status === 400) {
-                        errorMessage = "Invalid registration details. Please check your input.";
-                    }
-                }
-            } catch (parseError) {
-                // If JSON parsing failed or HTML was detected, use status-based message
-                if (error.response?.status === 500) {
-                    errorMessage = "Server error. Please try again later.";
-                } else if (error.response?.status === 400) {
-                    errorMessage = "Invalid registration details. Please check your input.";
-                } else if (error.response?.status) {
-                    errorMessage = `Registration failed with error ${error.response.status}. Please try again.`;
-                } else if (error.message && !error.message.includes('<!DOCTYPE')) {
-                    errorMessage = error.message;
-                }
-            }
-
-            toast.error(errorMessage);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const onchange = (e) => {
-        setCredentials({ ...credentials, [e.target.name]: e.target.value });
-        // Clear error for this field when user starts typing
-        setErrors({ ...errors, [e.target.name]: '' });
-    };
-
-    // Show loading state while checking authentication
-    if (isAuthenticated === undefined) {
-        return <SignupFormSkeleton />;
+    const newErrors = {};
+    if (!credentials.username.trim()) newErrors.username = "Username is required";
+    if (!credentials.password) {
+      newErrors.password = "Password is required";
+    } else if (credentials.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+    if (!credentials.confirmPassword) {
+      newErrors.confirmPassword = "Confirm password is required";
+    } else if (credentials.password !== credentials.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
-    return (
-        <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Username Field */}
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setGlobalMessage("All fields are required");
+      return;
+    }
+
+    setErrors({});
+    setGlobalMessage("");
+    setIsLoading(true);
+
+    try {
+        const result = await register(credentials.username, credentials.password);
+        if (result?.success) {
+            setGlobalMessage({ text: "Account created successfully!", type: "success" });
+            setTimeout(() => router.push("/login"), 1500);
+        } else {
+            // Username already exists
+            setGlobalMessage({ text: "Account already exists", type: "error" });
+        }
+    } catch (error) {
+        // Password mismatch case handled separately
+        if (credentials.password !== credentials.confirmPassword) {
+            setGlobalMessage({ text: "Passwords Mismatched", type: "error" });
+        } else {
+            setGlobalMessage({ text: "Something went wrong. Please try again.", type: "error" });
+        }
+    } finally {
+        setIsLoading(false);
+    }
+};
+
+  if (isAuthenticated === undefined) {
+    return <SignupFormSkeleton />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-black via-blue-950 to-blue-900 text-white flex flex-col">
+      {/* Top Navigation */}
+      <div className="flex justify-end items-center px-6 py-4 space-x-4 text-sm">
+        <Link href="/login" className="hover:text-green-400 transition">Login</Link>
+        <Link href="/register" className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-1 rounded-full text-sm font-medium shadow hover:opacity-90 transition">
+          Sign Up
+        </Link>
+      </div>
+
+      {/* Main Form */}
+      <div className="flex-grow flex items-center justify-center px-4">
+        <div className="w-full max-w-md bg-slate-900 p-8 rounded-lg shadow-lg space-y-6">
+          {/* Logo */}
+          <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            SaveBook
+          </h1>
+
+          {/* Heading */}
+          <div className="text-center space-y-1">
+            <h2 className="text-xl font-semibold">Create Account</h2>
+            <p className="text-sm text-gray-400">Join us and get started</p>
+          </div>
+
+          <form className="space-y-6" onSubmit={handleSubmit} noValidate>
+            {/* Username */}
             <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
-                    Username
-                </label>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
+                Username
+              </label>
+              <input
+                type="text"
+                name="username"
+                id="username"
+                value={credentials.username}
+                onChange={onChange}
+                disabled={isLoading}
+                className={`w-full px-4 py-3 border rounded-lg outline-none transition-all duration-200 ${
+                  errors.username
+                    ? "border-red-500 bg-red-100 text-black"
+                    : "border-gray-300 bg-white text-black"
+                }`}
+                placeholder="Enter your name"
+                required
+              />
+              {errors.username && <p className="mt-1 text-sm text-red-500">{errors.username}</p>}
+            </div>
+
+            {/* Password */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                Password
+              </label>
+              <div className="relative">
                 <input
-                    type="text"
-                    name="username"
-                    id="username"
-                    value={credentials.username}
-                    onChange={onchange}
-                    disabled={isLoading || isAuthenticated}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 ${errors.username
-                            ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
-                            : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
-                        }`}
-                    placeholder="Choose a username"
-                    required
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  id="password"
+                  value={credentials.password}
+                  onChange={onChange}
+                  disabled={isLoading}
+                  className={`w-full px-4 py-3 border rounded-lg outline-none pr-10 transition-all duration-200 ${
+                    errors.password
+                      ? "border-red-500 bg-red-900/20 text-white"
+                      : "border-gray-600 bg-gray-700 text-white"
+                  }`}
+                  placeholder="Create a password"
+                  required
                 />
-                {errors.username && (
-                    <p className="mt-1 text-sm text-red-400">{errors.username}</p>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+              {errors.password && <p className="mt-1 text-sm text-red-400">{errors.password}</p>}
             </div>
 
-            {/* Password Field */}
+            {/* Confirm Password */}
             <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                    Password
-                </label>
-                <div className="relative">
-                    <input
-                        type={showPassword ? "text" : "password"}
-                        name="password"
-                        id="password"
-                        value={credentials.password}
-                        onChange={onchange}
-                        disabled={isLoading || isAuthenticated}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 pr-10 ${errors.password
-                                ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
-                                : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
-                            }`}
-                        placeholder="Create a password"
-                        required
-                    />
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 focus:outline-none"
-                        aria-label={showPassword ? "Hide password" : "Show password"}
-                    >
-                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                </div>
-                {errors.password && (
-                    <p className="mt-1 text-sm text-red-400">{errors.password}</p>
-                )}
-                {!errors.password && (
-                    <p className="mt-1 text-xs text-gray-400">Password must be at least 6 characters long.</p>
-                )}
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  id="confirmPassword"
+                  value={credentials.confirmPassword}
+                  onChange={onChange}
+                  disabled={isLoading}
+                  className={`w-full px-4 py-3 border rounded-lg outline-none pr-10 transition-all duration-200 ${
+                    errors.confirmPassword
+                      ? "border-red-500 bg-red-900/20 text-white"
+                      : "border-gray-600 bg-gray-700 text-white"
+                  }`}
+                  placeholder="Confirm your password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                >
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+              {errors.confirmPassword && (
+                <p className="mt-1 text-sm text-red-400">{errors.confirmPassword}</p>
+              )}
             </div>
 
-            {/* Confirm Password Field */}
-            <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
-                    Confirm Password
-                </label>
-                <div className="relative">
-                    <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        name="confirmPassword"
-                        id="confirmPassword"
-                        value={credentials.confirmPassword}
-                        onChange={onchange}
-                        disabled={isLoading || isAuthenticated}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 pr-10 ${errors.confirmPassword
-                                ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
-                                : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
-                            }`}
-                        placeholder="Confirm your password"
-                        required
-                    />
-                    <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 focus:outline-none"
-                        aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-                    >
-                        {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
+            {/* Global Message Above Button */}
+            {globalMessage?.text && (
+                <div
+                    className={`text-center text-sm font-medium mb-2 ${
+                        globalMessage.type === "success" ? "text-green-400" : "text-red-400"
+                    }`}
+                >
+                    {globalMessage.text}
                 </div>
-                {errors.confirmPassword && (
-                    <p className="mt-1 text-sm text-red-400">{errors.confirmPassword}</p>
-                )}
-            </div>
+            )}
 
             {/* Submit Button */}
             <button
-                type="submit"
-                disabled={isLoading || isAuthenticated}
-                className="w-full bg-gradient-to-r from-green-600 to-blue-700 text-white py-3 px-4 rounded-lg font-medium hover:from-green-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-green-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3 bg-gradient-to-r from-green-600 to-blue-700 text-white rounded-lg font-medium hover:opacity-90 transition disabled:opacity-50"
             >
-                {isLoading ? (
-                    <>
-                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Registering...
-                    </>
-                ) : (
-                    isAuthenticated ? 'Redirecting...' : 'Create Account'
-                )}
+              {isLoading ? "Registering..." : "Create Account"}
             </button>
+          </form>
 
-            {/* Login link */}
-            <div className="text-center">
-                <span className="text-sm text-gray-300">
-                    Already have an account?{' '}
-                    <Link
-                        href="/login"
-                        className="font-medium text-green-400 hover:text-green-300"
-                        onClick={(e) => {
-                            if (isLoading || isAuthenticated) {
-                                e.preventDefault();
-                            }
-                        }}
-                    >
-                        Login
-                    </Link>
-                </span>
-            </div>
-        </form>
-    );
+          {/* Login Link */}
+          <div className="text-center pt-2">
+            <span className="text-sm text-gray-300">
+              Already have an account?{" "}
+              <Link href="/login" className="font-medium text-green-400 hover:text-green-300">
+                Login
+              </Link>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-// Signup Skeleton Component for loading state
+// Skeleton Loader Component
 const SignupFormSkeleton = () => {
-    return (
-        <div className="space-y-6">
-            {/* Username Field Skeleton */}
-            <div>
-                <div className="h-5 w-20 bg-gray-700 rounded mb-2 animate-pulse"></div>
-                <div className="h-12 bg-gray-700 rounded-lg animate-pulse"></div>
-            </div>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-black via-blue-950 to-blue-900 flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-slate-900 p-8 rounded-lg shadow-lg space-y-6 animate-pulse">
+        
+        {/* Logo Skeleton */}
+        <div className="h-8 w-32 bg-gradient-to-r from-blue-400 to-purple-500 rounded mx-auto mb-4"></div>
 
-            {/* Password Field Skeleton */}
-            <div>
-                <div className="h-5 w-20 bg-gray-700 rounded mb-2 animate-pulse"></div>
-                <div className="h-12 bg-gray-700 rounded-lg animate-pulse"></div>
-            </div>
+        {/* Heading Skeleton */}
+        <div className="h-6 w-40 bg-gray-600 rounded mx-auto mb-2"></div>
+        <div className="h-4 w-32 bg-gray-600 rounded mx-auto mb-6"></div>
 
-            {/* Confirm Password Field Skeleton */}
-            <div>
-                <div className="h-5 w-32 bg-gray-700 rounded mb-2 animate-pulse"></div>
-                <div className="h-12 bg-gray-700 rounded-lg animate-pulse"></div>
-            </div>
-
-            {/* Button Skeleton */}
-            <div className="h-12 bg-gradient-to-r from-green-600/30 to-blue-700/30 rounded-lg animate-pulse"></div>
-
-            {/* Sign up link Skeleton */}
-            <div className="flex justify-center">
-                <div className="h-5 w-48 bg-gray-700 rounded animate-pulse"></div>
-            </div>
+        {/* Username Field Skeleton */}
+        <div>
+          <div className="h-5 w-24 bg-gray-600 rounded mb-2"></div>
+          {/* White box to mimic actual username input */}
+          <div className="h-12 bg-white rounded-lg"></div>
         </div>
-    );
+
+        {/* Password Field Skeleton */}
+        <div>
+          <div className="h-5 w-24 bg-gray-600 rounded mb-2"></div>
+          <div className="h-12 bg-gray-700 rounded-lg"></div>
+        </div>
+
+        {/* Confirm Password Field Skeleton */}
+        <div>
+          <div className="h-5 w-32 bg-gray-600 rounded mb-2"></div>
+          <div className="h-12 bg-gray-700 rounded-lg"></div>
+        </div>
+
+        {/* Global Message Skeleton */}
+        <div className="h-5 w-64 bg-red-400/30 rounded mx-auto"></div>
+
+        {/* Submit Button Skeleton */}
+        <div className="h-12 bg-gradient-to-r from-green-600/30 to-blue-700/30 rounded-lg"></div>
+
+        {/* Login Link Skeleton */}
+        <div className="flex justify-center">
+          <div className="h-5 w-48 bg-gray-600 rounded"></div>
+        </div>
+      </div>
+    </div>
+  );
 };
-
-// Main component
-export default function Signup() {
-    const { isAuthenticated } = useAuth();
-
-    // Show loading while checking initial auth state
-    if (isAuthenticated === undefined) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center">
-                <div className="max-w-md w-full">
-                    {/* Header Skeleton */}
-                    <div className="text-center mb-8">
-                        <div className="mx-auto h-12 w-12 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center mb-4 animate-pulse"></div>
-                        <div className="h-8 w-48 bg-gray-700 rounded mx-auto mb-2 animate-pulse"></div>
-                        <div className="h-4 w-32 bg-gray-700 rounded mx-auto animate-pulse"></div>
-                    </div>
-
-                    {/* Form Skeleton */}
-                    <div className="bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-700">
-                        <SignupFormSkeleton />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // // Redirect if already authenticated
-    // if (isAuthenticated) {
-    //     return (
-    //         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
-    //             <div className="text-center">
-    //                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-    //                 <p className="text-white">Redirecting...</p>
-    //             </div>
-    //         </div>
-    //     );
-    // }
-
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
-            <div className="max-w-md w-full">
-                {/* Header */}
-                <div className="text-center mb-8">
-                    <div className="mx-auto h-12 w-12 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center mb-4">
-                        <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                        </svg>
-                    </div>
-                    <h2 className="text-3xl font-bold text-white">
-                        Create Account
-                    </h2>
-                    <p className="mt-2 text-gray-300">
-                        Join us and get started
-                    </p>
-                </div>
-
-                {/* Signup Form */}
-                <div className="bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-700">
-                    <SignupForm />
-                </div>
-            </div>
-        </div>
-    );
-}
