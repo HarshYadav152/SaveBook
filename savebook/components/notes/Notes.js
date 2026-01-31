@@ -22,6 +22,8 @@ const NavigationHandler = ({ isAuthenticated, loading }) => {
 };
 
 export default function Notes() {
+    // Manu95021: autosave fix implementation
+
     const { isAuthenticated, loading } = useAuth();
     const context = useContext(noteContext);
     const { notes: contextNotes = [], getNotes, editNote } = context || {};
