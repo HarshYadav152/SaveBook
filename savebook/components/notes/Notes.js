@@ -591,17 +591,21 @@ export default function Notes() {
         </>
     )
 }
+
 useEffect(() => {
   const savedDraft = localStorage.getItem("note-draft");
   if (savedDraft) {
-    setNoteContent(savedDraft);
+    setNote((prev) => ({
+      ...prev,
+      edescription: savedDraft,
+    }));
   }
 }, []);
 
 useEffect(() => {
   const timer = setTimeout(() => {
-    localStorage.setItem("note-draft", noteContent);
+    localStorage.setItem("note-draft", note.edescription);
   }, 800);
 
   return () => clearTimeout(timer);
-}, [noteContent]);
+}, [note.edescription]);
