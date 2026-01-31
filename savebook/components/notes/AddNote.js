@@ -6,7 +6,6 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Modal from '../common/Modal';
 import AudioRecorder from '@/components/AudioRecorder';
-import AudioPlayer from '@/components/AudioPlayer';
 
 // Define Note Templates
 const NOTE_TEMPLATES = {
@@ -235,6 +234,25 @@ export default function Addnote() {
     const allTags = Array.from(new Set([...defaultTags, ...userTags]));
     const isFormValid = note.title.length >= 5 && note.description.length >= 5 && note.tag.length >= 2;
 
+    const customRenderers = {
+        h1: ({node, ...props}) => <h1 className="text-xl font-bold my-2 text-white border-b border-gray-700 pb-1" {...props} />,
+        h2: ({node, ...props}) => <h2 className="text-lg font-bold my-2 text-white" {...props} />,
+        h3: ({node, ...props}) => <h3 className="text-md font-bold my-1 text-white" {...props} />,
+        ul: ({node, ...props}) => <ul className="list-disc list-inside my-2 space-y-1 pl-1 text-gray-300" {...props} />,
+        ol: ({node, ...props}) => <ol className="list-decimal list-inside my-2 space-y-1 pl-1 text-gray-300" {...props} />,
+        li: ({node, ...props}) => <li className="text-gray-300" {...props} />,
+        p: ({node, ...props}) => <p className="mb-2 last:mb-0 text-gray-300" {...props} />,
+        strong: ({node, ...props}) => <strong className="font-bold text-gray-100" {...props} />,
+        em: ({node, ...props}) => <em className="italic text-gray-200" {...props} />,
+        a: ({node, ...props}) => <a className="text-blue-400 hover:underline cursor-pointer" target="_blank" rel="noopener noreferrer" {...props} />,
+        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-gray-600 pl-4 my-2 italic text-gray-400" {...props} />,
+        code: ({node, inline, className, children, ...props}) => {
+             return inline ? 
+                <code className="bg-gray-800 rounded px-1 py-0.5 text-sm font-mono text-pink-300" {...props}>{children}</code> :
+                <code className="block bg-gray-800 rounded p-2 text-sm font-mono overflow-x-auto text-gray-200 my-2" {...props}>{children}</code>
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-20 p-2">
             <div className="max-w-4xl mx-auto">
@@ -351,13 +369,14 @@ export default function Addnote() {
                             )}
 
                             {previewMode && (
-                                <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 min-h-[200px] prose prose-sm dark:prose-invert max-w-none overflow-y-auto">
+                                <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 min-h-[200px] max-w-none overflow-y-auto">
                                     {note.description ? (
-                                        <p className="text-white">
-                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                                {note.description}
-                                            </ReactMarkdown>
-                                        </p>
+                                        <ReactMarkdown 
+                                            remarkPlugins={[remarkGfm]} 
+                                            components={customRenderers}
+                                        >
+                                            {note.description}
+                                        </ReactMarkdown>
                                     ) : (
                                         <p className="text-gray-400 italic">Nothing to preview yet...</p>
                                     )}
