@@ -1,27 +1,26 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db/mongodb";
 import User from "@/lib/models/User";
-import { generateAuthToken } from "@/lib/utils/jwtAuth";   // ensure lowercase filename
+import { generateAuthToken } from "@/lib/utils/jwtAuth";
 import { generateRecoveryCodes } from "@/lib/utils/recoveryCodes";
 import bcrypt from "bcryptjs";
 
 export async function POST(request) {
   try {
     await dbConnect();
-    
 
     const { username, password } = await request.json();
     if (
-  !username ||
-  !password ||
-  typeof username !== "string" ||
-  typeof password !== "string"
-) {
-  return NextResponse.json(
-    { success: false, message: "Invalid username or password" },
-    { status: 400 }
-  );
-}
+      !username ||
+      !password ||
+      typeof username !== "string" ||
+      typeof password !== "string"
+    ) {
+      return NextResponse.json(
+        { success: false, message: "Invalid username or password" },
+        { status: 400 }
+      );
+    }
 
     // Find user
     const user = await User.findOne({ username }).select("+password");
@@ -33,16 +32,19 @@ export async function POST(request) {
     }
 
     // Verify password
-    const isPasswordValid = await user.comparePassword(password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return NextResponse.json(
-        { error: 'Invalid username or password' },
+        { success: false, message: "Invalid username or password" },
         { status: 401 }
       );
     }
 
-    // Generate token and set cookie
+    // Generate token
     const { authToken } = await generateAuthToken(user._id.toString());
+
+    // Generate recovery codes only on first login (optional)
+    const recoveryCodes = generateRecoveryCodes();
 
     const response = NextResponse.json(
       {
@@ -56,16 +58,15 @@ export async function POST(request) {
             bio: user.bio,
             location: user.location,
           },
-          //  only present on first login
-          recoveryCodes,
+          recoveryCodes, // only if you want to send them
         },
-        message: "Login successful"
+        message: "Login successful",
       },
       { status: 200 }
     );
-    
-    // Set cookie only on success
-    response.cookies.set('authToken', authToken, {
+
+    // Set cookie
+    response.cookies.set("authToken", authToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
@@ -75,6 +76,7 @@ export async function POST(request) {
 
     return response;
   } catch (error) {
+    console.error("Login error:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
       { status: 500 }

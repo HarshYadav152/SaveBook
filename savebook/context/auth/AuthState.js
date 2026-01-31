@@ -56,28 +56,6 @@ const AuthProvider = ({ children }) => {
         credentials: "include", // keep cookie
         });
 
-<<<<<<< HEAD
-            const data = await response.json();
-            
-            if (data.success) {
-                setUser(data.data.user);
-                setIsAuthenticated(true);
-                return { success: true, message: data.message,recoveryCodes: data.data?.recoveryCodes || null };
-            } else {
-                return { 
-                    success: false, 
-                    message: data.message || "Login failed" 
-                };
-            }
-        } catch (error) {
-            console.error("Login error:", error);
-            return { 
-                success: false, 
-                message: "An error occurred during login" 
-            };
-        } finally {
-            setLoading(false);
-=======
         const data = await response.json();
 
         if (response.ok && data.success) {
@@ -94,7 +72,6 @@ const AuthProvider = ({ children }) => {
             success: false,
             message: data.message || "Invalid credentials",
         };
->>>>>>> a61f6ef (Updated login page and update profile page, fix: removal of console logs, restored .env)
         }
     } catch (error) {
         console.error("Login error:", error);
