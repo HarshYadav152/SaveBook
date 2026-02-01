@@ -2,6 +2,8 @@ import noteContext from '@/context/noteContext';
 import React, { useContext, useState, useMemo } from 'react'
 import LinkPreviewCard from './LinkPreviewCard';
 import toast from 'react-hot-toast';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function NoteItem(props) {
     const context = useContext(noteContext);
@@ -103,6 +105,25 @@ export default function NoteItem(props) {
         return note.description.match(urlRegex) || [];
     }, [note?.description]);
 
+    const customRenderers = {
+        h1: ({node, ...props}) => <h1 className="text-xl font-bold my-2 text-white border-b border-gray-700 pb-1" {...props} />,
+        h2: ({node, ...props}) => <h2 className="text-lg font-bold my-2 text-white" {...props} />,
+        h3: ({node, ...props}) => <h3 className="text-md font-bold my-1 text-white" {...props} />,
+        ul: ({node, ...props}) => <ul className="list-disc list-inside my-2 space-y-1 pl-1" {...props} />,
+        ol: ({node, ...props}) => <ol className="list-decimal list-inside my-2 space-y-1 pl-1" {...props} />,
+        li: ({node, ...props}) => <li className="text-gray-300" {...props} />,
+        p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
+        strong: ({node, ...props}) => <strong className="font-bold text-gray-100" {...props} />,
+        em: ({node, ...props}) => <em className="italic text-gray-200" {...props} />,
+        a: ({node, ...props}) => <a className="text-blue-400 hover:underline cursor-pointer relative z-30" target="_blank" rel="noopener noreferrer" onClick={(e)=>e.stopPropagation()} {...props} />,
+        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-gray-600 pl-4 my-2 italic text-gray-400" {...props} />,
+        code: ({node, inline, className, children, ...props}) => {
+             return inline ? 
+                <code className="bg-gray-800 rounded px-1 py-0.5 text-sm font-mono text-pink-300" {...props}>{children}</code> :
+                <code className="block bg-gray-800 rounded p-2 text-sm font-mono overflow-x-auto text-gray-200 my-2" {...props}>{children}</code>
+        }
+    };
+
     return (
         <>
             <div className="group relative">
@@ -117,8 +138,6 @@ export default function NoteItem(props) {
                             <h3 className="font-bold text-white text-lg leading-tight line-clamp-2 flex-1 pr-2">
                                 {note?.title || 'Untitled Note'}
                             </h3>
-
-                            {/* Tag moved to top right corner */}
                             <div className="flex-shrink-0">
                                 <span className={`${tagColor.bg} ${tagColor.text} px-2 py-1 rounded-md text-xs font-medium`}>
                                     {note?.tag || 'General'}
@@ -126,7 +145,6 @@ export default function NoteItem(props) {
                             </div>
                         </div>
 
-                        {/* Metadata Row */}
                         <div className="flex items-center justify-between text-xs text-gray-400">
                             <div className="flex items-center space-x-2">
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,30 +161,24 @@ export default function NoteItem(props) {
                         </div>
                     </div>
 
-                    {/* Body  */}
                     <div className="p-5 relative z-10">
-                        <p className="text-gray-300 text-sm leading-relaxed line-clamp-4 min-h-[84px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-3 border border-gray-700 relative z-10 whitespace-pre-wrap">
-                            {note?.description ? (
-                                note.description.split(/(https?:\/\/[^\s]+)/g).map((part, i) => (
-                                    part.match(/https?:\/\/[^\s]+/) ? (
-                                        <a
-                                            key={i}
-                                            href={part}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-blue-400 hover:text-blue-300 hover:underline transition-colors z-20 relative font-medium"
-                                            onClick={(e) => e.stopPropagation()}
-                                        >
-                                            {part}
-                                        </a>
-                                    ) : (
-                                        <span key={i}>{part}</span>
-                                    )
-                                ))
-                            ) : (
-                                'No description provided. Click edit to add content to this note.'
-                            )}
-                        </p>
+                        <div className="relative z-10">
+                            <div 
+                                className="text-gray-300 text-sm leading-relaxed max-h-[160px] overflow-hidden bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-3 border border-gray-700 relative z-10 max-w-none"
+                                style={{ maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)' }}
+                            >
+                                {note?.description ? (
+                                    <ReactMarkdown 
+                                        remarkPlugins={[remarkGfm]}
+                                        components={customRenderers}
+                                    >
+                                        {note.description}
+                                    </ReactMarkdown>
+                                ) : (
+                                    'No description provided.'
+                                )}
+                            </div>
+                        </div>
 
                         {/* Images */}
                         {Array.isArray(note?.images) && note.images.length > 0 && (
@@ -183,7 +195,6 @@ export default function NoteItem(props) {
                                             loading="lazy"
                                             className="w-24 h-24 object-cover"
                                         />
-                                        {/* Preview */}
                                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                                             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -222,7 +233,6 @@ export default function NoteItem(props) {
 
                     {/* Enhanced Footer */}
                     <div className="px-5 py-4 bg-gray-800/50 border-t border-gray-700 backdrop-blur-sm relative z-10">
-                        {/* Action Buttons with Enhanced Design */}
                         <div className="flex justify-between items-center mb-3">
                             <button
                                 onClick={(e) => {
@@ -266,7 +276,6 @@ export default function NoteItem(props) {
                             </button>
                         </div>
 
-                        {/* Enhanced*/}
                         <div className="flex items-center justify-between text-xs">
                             <div className="flex items-center space-x-2 text-gray-400">
                                 <div className="flex items-center space-x-1 bg-gray-700/50 px-2 py-1 rounded-lg border border-gray-600">
@@ -276,8 +285,6 @@ export default function NoteItem(props) {
                                     <span>{note?.date ? formatDate(note.date) : 'Unknown'}</span>
                                 </div>
                             </div>
-
-                            {/* Character Count */}
                             <div className="flex items-center space-x-2 text-gray-400">
                                 <div className="flex items-center space-x-1 bg-gray-700/50 px-2 py-1 rounded-lg border border-gray-600">
                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -289,22 +296,18 @@ export default function NoteItem(props) {
                         </div>
                     </div>
 
-                    {/*  */}
                     <div className="absolute inset-0 border-2 border-transparent group-hover:border-gray-600 rounded-2xl transition-all duration-300 pointer-events-none" />
                 </div>
 
-                {/* Glow */}
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300 pointer-events-none -z-10" />
             </div>
 
-            {/* Image Preview      */}
             {previewImage && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
                     onClick={() => setPreviewImage(null)}
                 >
                     <div className="relative max-w-7xl max-h-[90vh] w-full flex items-center justify-center">
-                        {/* Close Button */}
                         <button
                             onClick={() => setPreviewImage(null)}
                             className="absolute top-4 right-4 bg-gray-900/80 hover:bg-gray-900 text-white rounded-full p-3 transition-all duration-200 z-10 border border-gray-700"
@@ -315,7 +318,6 @@ export default function NoteItem(props) {
                             </svg>
                         </button>
 
-                        {/* Image */}
                         <img
                             src={previewImage}
                             alt="Preview"

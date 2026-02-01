@@ -2,15 +2,16 @@
 import noteContext from '@/context/noteContext';
 import React, { useContext, useState } from 'react'
 import toast from 'react-hot-toast';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import Modal from '../common/Modal';
 import AudioRecorder from '@/components/AudioRecorder';
-import AudioPlayer from '@/components/AudioPlayer';
 
 // Define Note Templates
 const NOTE_TEMPLATES = {
-    meeting: `Date: [Insert Date]\n\nAttendees: [List attendees]\n\nAgenda:\n- \n- \n- \n\nNotes:\n\nAction Items:\n- \n- `,
-    journal: `What happened today:\n[Write your experiences here]\n\nGoals for tomorrow:\n[List your goals]\n\nGratitude:\n[Write things you're grateful for]`,
-    checklist: `Project: [Project Name]\n\nTasks:\n- [ ] Define project goal\n- [ ] List all tasks\n- [ ] Assign owners\n- [ ] Set deadlines\n- [ ] Plan resources\n- [ ] Review progress\n- [ ] Complete project`
+  meeting: `Date: [Insert Date]\n\nAttendees: [List attendees]\n\nAgenda:\n- \n- \n- \n\nNotes:\n\nAction Items:\n- [ ] \n- [ ] `,
+  journal: `**What happened today:**\n[Write your experiences here]\n\n**Goals for tomorrow:**\n1. [List your goals]\n\n**Gratitude:**\n> [Write things you're grateful for]`,
+  checklist: `## Project: [Project Name]\n\n**Tasks:**\n- [ ] Define project goal\n- [ ] List all tasks\n- [ ] Assign owners\n- [ ] Set deadlines\n- [ ] Plan resources\n- [ ] Review progress\n- [ ] Complete project`
 };
 
 export default function Addnote() {
@@ -19,7 +20,7 @@ export default function Addnote() {
 
     const [note, setNote] = useState({ title: "", description: "", tag: "" });
     const [isSubmitting, setIsSubmitting] = useState(false);
-
+    const [previewMode, setPreviewMode] = useState(false);
     // Modal State
     const [showModal, setShowModal] = useState(false);
     const [pendingTemplate, setPendingTemplate] = useState(null);
@@ -170,6 +171,7 @@ export default function Addnote() {
             setNote({ title: "", description: "", tag: "" });
             setImages([]);
             setPreview([]);
+            setPreviewMode(false);
             clearAudioRecording(); // Only clear after successful save
         } catch (error) {
             console.error('Error saving note:', error);
@@ -193,11 +195,15 @@ export default function Addnote() {
         const template = NOTE_TEMPLATES[templateKey];
         if (!template) return;
 
-        // If description is empty, directly apply the template
         if (!note.description.trim()) {
             setNote({ ...note, description: template });
             toast.success(`${templateKey.charAt(0).toUpperCase() + templateKey.slice(1)} template applied!`);
         } else {
+            if (window.confirm('Replace current content with this template? This action cannot be undone.')) {
+                setNote({ ...note, description: template });
+                toast.success(`${templateKey.charAt(0).toUpperCase() + templateKey.slice(1)} template applied!`);
+            }
+
             // If description has content, trigger modal
             setPendingTemplate({ key: templateKey, content: template });
             setShowModal(true);
@@ -228,10 +234,28 @@ export default function Addnote() {
     const allTags = Array.from(new Set([...defaultTags, ...userTags]));
     const isFormValid = note.title.length >= 5 && note.description.length >= 5 && note.tag.length >= 2;
 
+    const customRenderers = {
+        h1: ({node, ...props}) => <h1 className="text-xl font-bold my-2 text-white border-b border-gray-700 pb-1" {...props} />,
+        h2: ({node, ...props}) => <h2 className="text-lg font-bold my-2 text-white" {...props} />,
+        h3: ({node, ...props}) => <h3 className="text-md font-bold my-1 text-white" {...props} />,
+        ul: ({node, ...props}) => <ul className="list-disc list-inside my-2 space-y-1 pl-1 text-gray-300" {...props} />,
+        ol: ({node, ...props}) => <ol className="list-decimal list-inside my-2 space-y-1 pl-1 text-gray-300" {...props} />,
+        li: ({node, ...props}) => <li className="text-gray-300" {...props} />,
+        p: ({node, ...props}) => <p className="mb-2 last:mb-0 text-gray-300" {...props} />,
+        strong: ({node, ...props}) => <strong className="font-bold text-gray-100" {...props} />,
+        em: ({node, ...props}) => <em className="italic text-gray-200" {...props} />,
+        a: ({node, ...props}) => <a className="text-blue-400 hover:underline cursor-pointer" target="_blank" rel="noopener noreferrer" {...props} />,
+        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-gray-600 pl-4 my-2 italic text-gray-400" {...props} />,
+        code: ({node, inline, className, children, ...props}) => {
+             return inline ? 
+                <code className="bg-gray-800 rounded px-1 py-0.5 text-sm font-mono text-pink-300" {...props}>{children}</code> :
+                <code className="block bg-gray-800 rounded p-2 text-sm font-mono overflow-x-auto text-gray-200 my-2" {...props}>{children}</code>
+        }
+    };
+
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-18 p-2">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-20 p-2">
             <div className="max-w-4xl mx-auto">
-                {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">
                         Notebook on the Cloud
@@ -241,7 +265,6 @@ export default function Addnote() {
                     </p>
                 </div>
 
-                {/* Add Note Form */}
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-8">
                     <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">
                         Add New Note
@@ -269,69 +292,100 @@ export default function Addnote() {
                             </p>
                         </div>
 
-                        {/* Description Field with Templates */}
                         <div>
                             <div className="flex items-center justify-between mb-2">
-                                <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Description
                                 </label>
-                                <span className="text-xs text-gray-600 dark:text-gray-400">
-                                    Quick Templates:
-                                </span>
+                                <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => setPreviewMode(false)}
+                                        className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${!previewMode ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-gray-400'}`}
+                                    >
+                                        Write
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setPreviewMode(true)}
+                                        className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${previewMode ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-gray-400'}`}
+                                    >
+                                        Preview
+                                    </button>
+                                </div>
                             </div>
 
-                            {/* Templates Row - Quick Start Buttons */}
-                            <div className="flex flex-wrap gap-2 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-                                <button
-                                    type="button"
-                                    onClick={() => applyTemplate('meeting')}
-                                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-                                    title="Auto-fill with Meeting Notes template"
-                                >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    Meeting
-                                </button>
+                            {!previewMode && (
+                                <>
+                                    <div className="flex flex-wrap gap-2 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                                        <button
+                                            type="button"
+                                            onClick={() => applyTemplate('meeting')}
+                                            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            Meeting
+                                        </button>
 
-                                <button
-                                    type="button"
-                                    onClick={() => applyTemplate('journal')}
-                                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-                                    title="Auto-fill with Daily Journal template"
-                                >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.998 10-10.747 0-6.002-4.5-10.747-10-10.747z" />
-                                    </svg>
-                                    Daily
-                                </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => applyTemplate('journal')}
+                                            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200"
+                                            title="Auto-fill with Daily Journal template"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.998 10-10.747 0-6.002-4.5-10.747-10-10.747z" />
+                                            </svg>
+                                            Journal
+                                        </button>
 
-                                <button
-                                    type="button"
-                                    onClick={() => applyTemplate('checklist')}
-                                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-                                    title="Auto-fill with Project Checklist template"
-                                >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                                    </svg>
-                                    Checklist
-                                </button>
-                            </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => applyTemplate('checklist')}
+                                            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200"
+                                            title="Auto-fill with Project Checklist template"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                            </svg>
+                                            Checklist
+                                        </button>        
+                                    </div>
 
-                            <textarea
-                                name="description"
-                                id="description"
-                                rows="6"
-                                value={note.description}
-                                onChange={onchange}
-                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none transition-all duration-200 outline-none"
-                                placeholder="Write your note content here... or click a template button above to get started!"
-                                minLength={5}
-                                required
-                            />
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                Minimum 5 characters required. Click template buttons to auto-fill with pre-formatted structures.
+                                    <textarea
+                                        name="description"
+                                        id="description"
+                                        rows="6"
+                                        value={note.description}
+                                        onChange={onchange}
+                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none transition-all duration-200 outline-none font-mono text-sm"
+                                        placeholder="Write your note in Markdown... # Heading, **bold**, - list"
+                                        minLength={5}
+                                        required
+                                    />
+                                </>
+                            )}
+
+                            {previewMode && (
+                                <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 min-h-[200px] max-w-none overflow-y-auto">
+                                    {note.description ? (
+                                        <ReactMarkdown 
+                                            remarkPlugins={[remarkGfm]} 
+                                            components={customRenderers}
+                                        >
+                                            {note.description}
+                                        </ReactMarkdown>
+                                    ) : (
+                                        <p className="text-gray-400 italic">Nothing to preview yet...</p>
+                                    )}
+                                </div>
+                            )}
+
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 flex justify-between">
+                                <span>Minimum 5 characters required.</span>
+                                <span>Markdown Supported <svg className="inline w-3 h-3" viewBox="0 0 16 16" fill="currentColor"><path fillRule="evenodd" d="M14.85 3H1.15C.52 3 0 3.52 0 4.15v7.69C0 12.48.52 13 1.15 13h13.69c.64 0 1.15-.52 1.15-1.15v-7.7C16 3.52 15.48 3 14.85 3zM9 11H7V8L5.5 9.92 4 8v3H2V5h2l1.5 2L7 5h2v6zm2.99.5L9.5 8H11V5h2v3h1.5l-2.51 3.5z" clipRule="evenodd"/></svg></span>
                             </p>
                         </div>
                         {/* Audio */}
@@ -491,32 +545,9 @@ export default function Addnote() {
 
                         {/* Tag Field */}
                         <div>
-                            <label htmlFor="tag" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Tag
-                            </label>
-                            <input
-                                list="datalistOptions"
-                                name="tag"
-                                id="tag"
-                                value={note.tag}
-                                onChange={onchange}
-                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-200 outline-none"
-                                placeholder="Select or type a tag"
-                                minLength={2}
-                                required
-                            />
-                            <datalist id="datalistOptions" className="bg-white dark:bg-gray-700">
-                                {allTags.map((tag, index) => (
-                                    <option
-                                        key={index}
-                                        value={tag}
-                                        className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                                    />
-                                ))}
-                            </datalist>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                Choose from suggestions or type your own (min. 2 chars)
-                            </p>
+                            <label htmlFor="tag" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tag</label>
+                            <input list="datalistOptions" name="tag" id="tag" value={note.tag} onChange={onchange} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 outline-none" placeholder="Select or type a tag" minLength={2} required />
+                            <datalist id="datalistOptions" className="bg-white dark:bg-gray-700">{allTags.map((tag, index) => (<option key={index} value={tag}/>))}</datalist>
                         </div>
 
                         {/* Submit Button */}
