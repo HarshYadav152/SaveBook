@@ -1,3 +1,32 @@
+## [2026-02-01]
+
+### ✨ Features
+-  add input validation & security improvements for login/register API (683b1c0) - @Kartikey-0
+-  add Docker Compose configuration for MongoDB, application, and Mongo Express services. (0e33768) - @saiusesgithub
+
+### 📝 Documentation
+-  auto update changelog (130b843) - @vinayboss9669
+-  auto update changelog (f630373) - @vinayboss9669
+-  auto update changelog (83dca1b) - @vinayboss9669
+-  auto update changelog (2239ad3) - @vinayboss9669
+
+### 📦 Other Changes
+- Custom Renderers (fc04db9) - @Gaurav Karakoti
+- Fixed (fd465e1) - @Aagman Pal
+- Note Viewer Error Fixed (f5dca9a) - @Aagman Pal
+- Markdown (09e54d3) - @Gaurav Karakoti
+- Remove ReactMarkdown Wrapper (4d1bd18) - @Gaurav Karakoti
+- Styling (b7860d7) - @Gaurav Karakoti
+- Merge conflicts (fc16350) - @Gaurav Karakoti
+- Preview (6c63cb8) - @Gaurav Karakoti
+- added Password Visibility Toggle (198b3b6) - @Abhijeet-980
+- Note View Modal Added (c8ca166) - @Aagman Pal
+- Update savebook/docker-compose.yml (5ed7f01) - @Sai Srujan Punati
+- Update savebook/.dockerignore (ad968c3) - @Sai Srujan Punati
+- Update savebook/.dockerignore (1320235) - @Sai Srujan Punati
+- Update savebook/.dockerignore (9812ccc) - @Sai Srujan Punati
+
+
 ## [2026-01-26]
 
 ### ✨ Features
