@@ -48,7 +48,12 @@ export async function GET(request) {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 bio: user.bio,
-                location: user.location
+                location: user.location,
+                email: user.email,
+                education: user.education,
+                course: user.course,
+                phoneNumber: user.phoneNumber,
+                subjectsOfInterest: user.subjectsOfInterest
             }
         }, { status: 200 });
 
