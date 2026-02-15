@@ -26,9 +26,9 @@ const AuthProvider = ({ children }) => {
                 },
                 credentials: 'include', // Important: sends cookies with request
             });
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
                 setUser(data.user);
                 setIsAuthenticated(true);
@@ -59,22 +59,22 @@ const AuthProvider = ({ children }) => {
             });
 
             const data = await response.json();
-            
+
             if (data.success) {
                 setUser(data.data.user);
                 setIsAuthenticated(true);
-                return { success: true, message: data.message,recoveryCodes: data.data?.recoveryCodes || null };
+                return { success: true, message: data.message, recoveryCodes: data.data?.recoveryCodes || null };
             } else {
-                return { 
-                    success: false, 
-                    message: data.message || "Login failed" 
+                return {
+                    success: false,
+                    message: data.message || "Login failed"
                 };
             }
         } catch (error) {
             console.error("Login error:", error);
-            return { 
-                success: false, 
-                message: "An error occurred during login" 
+            return {
+                success: false,
+                message: "An error occurred during login"
             };
         } finally {
             setLoading(false);
@@ -82,7 +82,7 @@ const AuthProvider = ({ children }) => {
     };
 
     // Register function
-    const register = async (username, password) => {
+    const register = async (userData) => {
         try {
             setLoading(true);
             const response = await fetch('/api/auth/register', {
@@ -90,28 +90,28 @@ const AuthProvider = ({ children }) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ username,password }),
+                body: JSON.stringify(userData),
                 credentials: 'include'
             });
 
             const data = await response.json();
-            
+
             if (data.success) {
                 return {
-                    success:true,
-                    message:data.message
+                    success: true,
+                    message: data.message
                 }
             } else {
-                return { 
-                    success: false, 
-                    message: data.message || data.error || "Registration failed" 
+                return {
+                    success: false,
+                    message: data.message || data.error || "Registration failed"
                 };
             }
         } catch (error) {
             console.error("Registration error:", error);
-            return { 
-                success: false, 
-                message: "An error occurred during registration" 
+            return {
+                success: false,
+                message: "An error occurred during registration"
             };
         } finally {
             setLoading(false);
@@ -126,7 +126,7 @@ const AuthProvider = ({ children }) => {
                 method: 'GET',
                 credentials: 'include'
             });
-            
+
             setUser(null);
             setIsAuthenticated(false);
             router.push('/');

@@ -11,7 +11,12 @@ export default function ProfilePage() {
     firstName: '',
     lastName: '',
     bio: '',
-    location: ''
+    location: '',
+    email: '',
+    education: '',
+    course: '',
+    phoneNumber: '',
+    subjectsOfInterest: ''
   });
   const [imagePreview, setImagePreview] = useState('');
   const [message, setMessage] = useState('');
@@ -26,7 +31,12 @@ export default function ProfilePage() {
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         bio: user.bio || '',
-        location: user.location || ''
+        location: user.location || '',
+        email: user.email || '',
+        education: user.education || '',
+        course: user.course || '',
+        phoneNumber: user.phoneNumber || '',
+        subjectsOfInterest: user.subjectsOfInterest ? (Array.isArray(user.subjectsOfInterest) ? user.subjectsOfInterest.join(', ') : user.subjectsOfInterest) : ''
       });
       setImagePreview(user.profileImage || '');
       setIsDataLoaded(true);
@@ -43,35 +53,35 @@ export default function ProfilePage() {
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
-    
+
     if (file) {
       // Validate file type
       if (!file.type.match('image.*')) {
         setError('Please select an image file');
         return;
       }
-      
+
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         setError('File size exceeds 5MB limit');
         return;
       }
-      
+
       // Show loading state
       setMessage('Uploading image...');
-      
+
       const formData = new FormData();
       formData.append('image', file);
-      
+
       try {
         const response = await fetch('/api/upload', {
           method: 'POST',
           body: formData,
           credentials: 'include'
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
           setImagePreview(result.imageUrl);
           setFormData(prev => ({
@@ -80,7 +90,7 @@ export default function ProfilePage() {
           }));
           setMessage('Image uploaded successfully!');
           setError(''); // Clear any previous error
-          
+
           // Clear message after 2 seconds
           setTimeout(() => setMessage(''), 2000);
         } else {
@@ -109,7 +119,12 @@ export default function ProfilePage() {
           firstName: formData.firstName,
           lastName: formData.lastName,
           bio: formData.bio,
-          location: formData.location
+          location: formData.location,
+          email: formData.email,
+          education: formData.education,
+          course: formData.course,
+          phoneNumber: formData.phoneNumber,
+          subjectsOfInterest: formData.subjectsOfInterest.split(',').map(s => s.trim()).filter(s => s)
         }),
         credentials: 'include'
       });
@@ -118,28 +133,33 @@ export default function ProfilePage() {
 
       if (data.success) {
         setMessage('Profile updated successfully!');
-        
+
         // Update form data to reflect the changes immediately
         setFormData({
           profileImage: data.user.profileImage,
           firstName: data.user.firstName,
           lastName: data.user.lastName,
           bio: data.user.bio,
-          location: data.user.location
+          location: data.user.location,
+          email: data.user.email,
+          education: data.user.education,
+          course: data.user.course,
+          phoneNumber: data.user.phoneNumber,
+          subjectsOfInterest: Array.isArray(data.user.subjectsOfInterest) ? data.user.subjectsOfInterest.join(', ') : data.user.subjectsOfInterest
         });
-        
+
         // Update image preview
         setImagePreview(data.user.profileImage);
-        
+
         // Refresh user data from the server to ensure we have the latest data in context
         if (checkUserAuthentication) {
           await checkUserAuthentication();
         }
-        
+
         setTimeout(() => {
           setIsEditing(false);
         }, 500);
-        
+
         setTimeout(() => {
           setMessage(''); // Clear message
           // Optionally redirect after update
@@ -174,11 +194,11 @@ export default function ProfilePage() {
       </div>
     );
   }
-  
+
   const handleEditClick = () => {
     setIsEditing(true);
   };
-  
+
   const handleCancelEdit = () => {
     setIsEditing(false);
     // Reset form to current user data
@@ -188,39 +208,44 @@ export default function ProfilePage() {
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         bio: user.bio || '',
-        location: user.location || ''
+        location: user.location || '',
+        email: user.email || '',
+        education: user.education || '',
+        course: user.course || '',
+        phoneNumber: user.phoneNumber || '',
+        subjectsOfInterest: user.subjectsOfInterest ? (Array.isArray(user.subjectsOfInterest) ? user.subjectsOfInterest.join(', ') : user.subjectsOfInterest) : ''
       });
       setImagePreview(user.profileImage || '');
     }
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
           <div className="p-6">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Edit Profile</h1>
-            
+
             {message && (
               <div className="fixed bottom-4 right-4 p-4 bg-green-500 text-white rounded-lg shadow-lg z-50">
                 {message}
               </div>
             )}
-            
+
             {error && (
               <div className="fixed bottom-4 right-4 p-4 bg-red-500 text-white rounded-lg shadow-lg z-50">
                 {error}
               </div>
             )}
-            
+
             {!isEditing ? (
               <div className="space-y-6">
                 {/* Profile Preview Card */}
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Your Profile</h2>
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={handleEditClick}
                       className="flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                     >
@@ -230,13 +255,13 @@ export default function ProfilePage() {
                       Edit
                     </button>
                   </div>
-                  
+
                   <div className="flex flex-col items-center mb-6">
                     <div className="w-24 h-24 rounded-full bg-gray-200 border-4 border-white dark:border-gray-600 shadow-lg overflow-hidden mb-4">
                       {user?.profileImage ? (
-                        <img 
-                          src={user.profileImage} 
-                          alt="Profile" 
+                        <img
+                          src={user.profileImage}
+                          alt="Profile"
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -249,7 +274,7 @@ export default function ProfilePage() {
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 dark:text-white">{user?.username || 'N/A'}</h3>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div>
                       <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Full Name</h4>
@@ -258,146 +283,259 @@ export default function ProfilePage() {
                         {(user?.firstName || user?.lastName) ? '' : 'N/A'}
                       </p>
                     </div>
-                    
+
                     <div>
                       <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Bio</h4>
                       <p className="text-gray-800 dark:text-white">
                         {user?.bio || 'N/A'}
                       </p>
                     </div>
-                    
+
                     <div>
                       <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Location</h4>
                       <p className="text-gray-800 dark:text-white">
                         {user?.location || 'N/A'}
                       </p>
                     </div>
+
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Email</h4>
+                      <p className="text-gray-800 dark:text-white">
+                        {user?.email || 'N/A'}
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Phone</h4>
+                      <p className="text-gray-800 dark:text-white">
+                        {user?.phoneNumber || 'N/A'}
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Education</h4>
+                      <p className="text-gray-800 dark:text-white">
+                        {user?.course ? `${user.course} at ` : ''}{user?.education || 'N/A'}
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Interests</h4>
+                      <div className="flex flex-wrap gap-2 mt-1">
+                        {user?.subjectsOfInterest && user.subjectsOfInterest.length > 0 ? (
+                          user.subjectsOfInterest.map((subject, index) => (
+                            <span key={index} className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full">
+                              {subject}
+                            </span>
+                          ))
+                        ) : (
+                          <p className="text-gray-800 dark:text-white">N/A</p>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             ) : isDataLoaded ? (
               <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="flex flex-col items-center mb-8">
-                <div className="relative">
-                  <div className="w-32 h-32 rounded-full bg-gray-200 border-4 border-white dark:border-gray-700 shadow-lg overflow-hidden">
-                    {imagePreview ? (
-                      <img 
-                        src={imagePreview} 
-                        alt="Profile Preview" 
-                        className="w-full h-full object-cover"
+                <div className="flex flex-col items-center mb-8">
+                  <div className="relative">
+                    <div className="w-32 h-32 rounded-full bg-gray-200 border-4 border-white dark:border-gray-700 shadow-lg overflow-hidden">
+                      {imagePreview ? (
+                        <img
+                          src={imagePreview}
+                          alt="Profile Preview"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500">
+                          <span className="text-4xl">
+                            {user?.username?.charAt(0)?.toUpperCase() || 'U'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <label className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 transition-colors shadow-lg">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleImageChange}
                       />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500">
-                        <span className="text-4xl">
-                          {user?.username?.charAt(0)?.toUpperCase() || 'U'}
-                        </span>
-                      </div>
-                    )}
+                    </label>
                   </div>
-                  <label className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 transition-colors shadow-lg">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <input 
-                      type="file" 
-                      className="hidden" 
-                      accept="image/*"
-                      onChange={handleImageChange}
-                    />
-                  </label>
                 </div>
-              </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Username
-                  </label>
-                  <div className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                    {user?.username || 'N/A'}
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <div>
-                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      First Name
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Username
+                    </label>
+                    <div className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                      {user?.username || 'N/A'}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        First Name
+                      </label>
+                      <input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        value={formData.firstName || ''}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                        placeholder="Enter first name"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Last Name
+                      </label>
+                      <input
+                        type="text"
+                        id="lastName"
+                        name="lastName"
+                        value={formData.lastName || ''}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                        placeholder="Enter last name"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="bio" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Bio
+                    </label>
+                    <textarea
+                      id="bio"
+                      name="bio"
+                      value={formData.bio || ''}
+                      onChange={handleInputChange}
+                      rows="3"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="Tell us about yourself"
+                    ></textarea>
+                  </div>
+
+                  <div>
+                    <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Location
                     </label>
                     <input
                       type="text"
-                      id="firstName"
-                      name="firstName"
-                      value={formData.firstName || ''}
+                      id="location"
+                      name="location"
+                      value={formData.location || ''}
                       onChange={handleInputChange}
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                      placeholder="Enter first name"
+                      placeholder="Enter your location"
                     />
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Last Name
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email || ''}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="Enter email"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        value={formData.phoneNumber || ''}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                        placeholder="Enter phone number"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="course" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Course
+                      </label>
+                      <input
+                        type="text"
+                        id="course"
+                        name="course"
+                        value={formData.course || ''}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                        placeholder="e.g. Computer Science"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="education" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Education / University
                     </label>
                     <input
                       type="text"
-                      id="lastName"
-                      name="lastName"
-                      value={formData.lastName || ''}
+                      id="education"
+                      name="education"
+                      value={formData.education || ''}
                       onChange={handleInputChange}
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                      placeholder="Enter last name"
+                      placeholder="Enter university or school name"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="subjectsOfInterest" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Subjects of Interest <span className="text-xs text-gray-500 dark:text-gray-400">(separate with commas)</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="subjectsOfInterest"
+                      name="subjectsOfInterest"
+                      value={formData.subjectsOfInterest || ''}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="e.g. Mathematics, Physics, History"
                     />
                   </div>
                 </div>
-                
-                <div>
-                  <label htmlFor="bio" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Bio
-                  </label>
-                  <textarea
-                    id="bio"
-                    name="bio"
-                    value={formData.bio || ''}
-                    onChange={handleInputChange}
-                    rows="3"
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                    placeholder="Tell us about yourself"
-                  ></textarea>
-                </div>
-                
-                <div>
-                  <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    id="location"
-                    name="location"
-                    value={formData.location || ''}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                    placeholder="Enter your location"
-                  />
-                </div>
-              </div>
 
-              <div className="flex justify-end space-x-4 pt-4">
-                <button
-                  type="button"
-                  onClick={handleCancelEdit}
-                  className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
-                >
-                  Update Profile
-                </button>
-              </div>
-            </form>
+                <div className="flex justify-end space-x-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+                  >
+                    Update Profile
+                  </button>
+                </div>
+              </form>
             ) : (
               <div className="flex items-center justify-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
