@@ -22,8 +22,36 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata = {
-  title: "SaveBook | Your Personal Notebook",
-  description: "SaveBook is a cloud-based notebook application.",
+  title: {
+    default: "SaveBook | Your Personal Notebook",
+    template: "%s | SaveBook",
+  },
+  description:
+    "SaveBook is a cloud-based notebook application that allows users to securely create, manage, and access notes from anywhere.",
+  keywords: [
+    "SaveBook",
+    "Notebook App",
+    "Cloud Notes",
+    "Note Taking App",
+    "Next.js App",
+  ],
+  authors: [{ name: "SaveBook Team" }],
+  creator: "SaveBook",
+  openGraph: {
+    title: "SaveBook | Your Personal Notebook",
+    description:
+      "Securely create, manage, and access your notes anytime, anywhere.",
+    url: "https://savebook.vercel.app",
+    siteName: "SaveBook",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SaveBook | Your Personal Notebook",
+    description:
+      "A cloud-based notebook application built with Next.js.",
+  },
 };
 
 export default function RootLayout({ children }) {
