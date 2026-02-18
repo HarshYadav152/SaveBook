@@ -4,14 +4,18 @@ import LinkPreviewCard from './LinkPreviewCard';
 import toast from 'react-hot-toast';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Share2, Globe, Lock, Copy, Check } from 'lucide-react';
 
 export default function NoteItem(props) {
     const context = useContext(noteContext);
-    const { deleteNote } = context;
+    const { deleteNote, toggleShare } = context;
     const { note, updateNote } = props;
     const [isDeleting, setIsDeleting] = useState(false);
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [copied, setCopied] = useState(false);
+    const [sharing, setSharing] = useState(false);
 
     const handleDelete = async () => {
         setIsDeleting(true);
@@ -28,6 +32,28 @@ export default function NoteItem(props) {
     const handleEdit = () => {
         updateNote(note);
     }
+
+    const handleShare = async (e) => {
+        e.stopPropagation();
+        setSharing(true);
+        try {
+            await toggleShare(note._id);
+            toast.success(note.isPublic ? "Note is now private 🔒" : "Note is now public 🌍");
+        } catch (error) {
+            toast.error("Failed to update share status");
+        } finally {
+            setSharing(false);
+        }
+    };
+
+    const copyLink = (e) => {
+        e.stopPropagation();
+        const url = `${window.location.origin}/share/${note._id}`;
+        navigator.clipboard.writeText(url);
+        setCopied(true);
+        toast.success("Link copied to clipboard! 📋");
+        setTimeout(() => setCopied(false), 2000);
+    };
 
     // Enhanced tag colors with better dark mode variants
     const getTagColor = (tag) => {
@@ -106,19 +132,19 @@ export default function NoteItem(props) {
     }, [note?.description]);
 
     const customRenderers = {
-        h1: ({node, ...props}) => <h1 className="text-xl font-bold my-2 text-white border-b border-gray-700 pb-1" {...props} />,
-        h2: ({node, ...props}) => <h2 className="text-lg font-bold my-2 text-white" {...props} />,
-        h3: ({node, ...props}) => <h3 className="text-md font-bold my-1 text-white" {...props} />,
-        ul: ({node, ...props}) => <ul className="list-disc list-inside my-2 space-y-1 pl-1" {...props} />,
-        ol: ({node, ...props}) => <ol className="list-decimal list-inside my-2 space-y-1 pl-1" {...props} />,
-        li: ({node, ...props}) => <li className="text-gray-300" {...props} />,
-        p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
-        strong: ({node, ...props}) => <strong className="font-bold text-gray-100" {...props} />,
-        em: ({node, ...props}) => <em className="italic text-gray-200" {...props} />,
-        a: ({node, ...props}) => <a className="text-blue-400 hover:underline cursor-pointer relative z-30" target="_blank" rel="noopener noreferrer" onClick={(e)=>e.stopPropagation()} {...props} />,
-        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-gray-600 pl-4 my-2 italic text-gray-400" {...props} />,
-        code: ({node, inline, className, children, ...props}) => {
-             return inline ? 
+        h1: ({ node, ...props }) => <h1 className="text-xl font-bold my-2 text-white border-b border-gray-700 pb-1" {...props} />,
+        h2: ({ node, ...props }) => <h2 className="text-lg font-bold my-2 text-white" {...props} />,
+        h3: ({ node, ...props }) => <h3 className="text-md font-bold my-1 text-white" {...props} />,
+        ul: ({ node, ...props }) => <ul className="list-disc list-inside my-2 space-y-1 pl-1" {...props} />,
+        ol: ({ node, ...props }) => <ol className="list-decimal list-inside my-2 space-y-1 pl-1" {...props} />,
+        li: ({ node, ...props }) => <li className="text-gray-300" {...props} />,
+        p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+        strong: ({ node, ...props }) => <strong className="font-bold text-gray-100" {...props} />,
+        em: ({ node, ...props }) => <em className="italic text-gray-200" {...props} />,
+        a: ({ node, ...props }) => <a className="text-blue-400 hover:underline cursor-pointer relative z-30" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} {...props} />,
+        blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-gray-600 pl-4 my-2 italic text-gray-400" {...props} />,
+        code: ({ node, inline, className, children, ...props }) => {
+            return inline ?
                 <code className="bg-gray-800 rounded px-1 py-0.5 text-sm font-mono text-pink-300" {...props}>{children}</code> :
                 <code className="block bg-gray-800 rounded p-2 text-sm font-mono overflow-x-auto text-gray-200 my-2" {...props}>{children}</code>
         }
@@ -130,7 +156,7 @@ export default function NoteItem(props) {
                 <div
                     onClick={() => setIsViewOpen(true)}
                     className="cursor-pointer relative bg-gray-900 rounded-2xl border border-gray-700 hover:border-gray-600 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:scale-[1.02]"
-                    >
+                >
 
                     {/* Header with Gradient */}
                     <div className="p-5 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-gray-900 relative">
@@ -163,12 +189,12 @@ export default function NoteItem(props) {
 
                     <div className="p-5 relative z-10">
                         <div className="relative z-10">
-                            <div 
+                            <div
                                 className="text-gray-300 text-sm leading-relaxed max-h-[160px] overflow-hidden bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-3 border border-gray-700 relative z-10 max-w-none"
                                 style={{ maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)' }}
                             >
                                 {note?.description ? (
-                                    <ReactMarkdown 
+                                    <ReactMarkdown
                                         remarkPlugins={[remarkGfm]}
                                         components={customRenderers}
                                     >
@@ -233,32 +259,60 @@ export default function NoteItem(props) {
 
                     {/* Enhanced Footer */}
                     <div className="px-5 py-4 bg-gray-800/50 border-t border-gray-700 backdrop-blur-sm relative z-10">
-                        <div className="flex justify-between items-center mb-3">
-                            <button
-                                onClick={(e) => {
-                                e.stopPropagation();
-                                handleEdit();
-                            }}
-                                disabled={isDeleting}
-                                className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-all duration-200 group/edit disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-500/10 group-hover/edit:bg-blue-500/20 border border-blue-500/20 group-hover/edit:border-blue-500/30 transition-all duration-200 group-hover/edit:scale-110">
+                        <div className="flex items-center justify-between gap-4 mb-3">
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEdit();
+                                    }}
+                                    disabled={isDeleting}
+                                    className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all duration-200 group/edit disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="Edit Note"
+                                >
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
-                                </div>
-                                <span className="text-sm font-medium">Edit</span>
-                            </button>
+                                </button>
 
-                            <button
-                                onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete();
-                            }}
-                                disabled={isDeleting}
-                                className="flex items-center space-x-2 text-red-400 hover:text-red-300 transition-all duration-200 group/delete disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-red-500/10 group-hover/delete:bg-red-500/20 border border-red-500/20 group-hover/delete:border-red-500/30 transition-all duration-200 group-hover/delete:scale-110">
+                                {/* Share Button */}
+                                <div className="relative group/share">
+                                    <button
+                                        onClick={handleShare}
+                                        disabled={sharing}
+                                        className={`p-2 ${note.isPublic ? 'text-green-400 hover:text-green-300 hover:bg-green-500/10' : 'text-gray-400 hover:text-gray-300 hover:bg-gray-700/50'} rounded-lg transition-all duration-200 disabled:opacity-50`}
+                                        title={note.isPublic ? "Make Private" : "Share Note"}
+                                    >
+                                        {sharing ? (
+                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current"></div>
+                                        ) : note.isPublic ? (
+                                            <Globe className="w-5 h-5" />
+                                        ) : (
+                                            <Share2 className="w-5 h-5" />
+                                        )}
+                                    </button>
+
+                                    {/* Link Copy Tooltip - Only show when public */}
+                                    {note.isPublic && (
+                                        <button
+                                            onClick={copyLink}
+                                            className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover/share:opacity-100 transition-opacity duration-200 whitespace-nowrap border border-gray-700 flex items-center gap-1 z-50"
+                                        >
+                                            {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                                            {copied ? 'Copied!' : 'Copy Link'}
+                                        </button>
+                                    )}
+                                </div>
+
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete();
+                                    }}
+                                    disabled={isDeleting}
+                                    className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-200 group/delete disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="Delete Note"
+                                >
                                     {isDeleting ? (
                                         <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -269,11 +323,8 @@ export default function NoteItem(props) {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
                                     )}
-                                </div>
-                                <span className="text-sm font-medium">
-                                    {isDeleting ? 'Deleting...' : 'Delete'}
-                                </span>
-                            </button>
+                                </button>
+                            </div>
                         </div>
 
                         <div className="flex items-center justify-between text-xs">
@@ -335,40 +386,40 @@ export default function NoteItem(props) {
                     className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4"
                 >
                     <div
-                    onClick={(e) => e.stopPropagation()}
-                    className="max-w-2xl w-full bg-gray-900 rounded-2xl border border-gray-700 shadow-2xl p-6"
+                        onClick={(e) => e.stopPropagation()}
+                        className="max-w-2xl w-full bg-gray-900 rounded-2xl border border-gray-700 shadow-2xl p-6"
                     >
-                    {/* Header */}
-                    <div className="flex justify-between items-start mb-4">
-                        <h2 className="text-xl font-bold text-white">
-                        {note?.title || 'Untitled Note'}
-                        </h2>
-                        <button
-                        onClick={() => setIsViewOpen(false)}
-                        className="text-gray-400 hover:text-gray-200"
-                        >
-                        ✕
-                        </button>
-                    </div>
+                        {/* Header */}
+                        <div className="flex justify-between items-start mb-4">
+                            <h2 className="text-xl font-bold text-white">
+                                {note?.title || 'Untitled Note'}
+                            </h2>
+                            <button
+                                onClick={() => setIsViewOpen(false)}
+                                className="text-gray-400 hover:text-gray-200"
+                            >
+                                ✕
+                            </button>
+                        </div>
 
-                    {/* Tag */}
-                    <span className={`${tagColor.bg} ${tagColor.text} px-3 py-1 rounded-md text-xs font-medium`}>
-                        {note?.tag || 'General'}
-                    </span>
+                        {/* Tag */}
+                        <span className={`${tagColor.bg} ${tagColor.text} px-3 py-1 rounded-md text-xs font-medium`}>
+                            {note?.tag || 'General'}
+                        </span>
 
-                    {/* Content */}
-                    <div className="mt-4 text-gray-300 whitespace-pre-wrap leading-relaxed max-h-[60vh] overflow-y-auto">
-                        {note?.description || 'No description provided.'}
-                    </div>
+                        {/* Content */}
+                        <div className="mt-4 text-gray-300 whitespace-pre-wrap leading-relaxed max-h-[60vh] overflow-y-auto">
+                            {note?.description || 'No description provided.'}
+                        </div>
 
-                    {/* Footer */}
-                    <div className="mt-6 text-xs text-gray-400 flex justify-between">
-                        <span>{wordCount} words</span>
-                        <span>{note?.date ? formatDate(note.date) : 'Unknown date'}</span>
-                    </div>
+                        {/* Footer */}
+                        <div className="mt-6 text-xs text-gray-400 flex justify-between">
+                            <span>{wordCount} words</span>
+                            <span>{note?.date ? formatDate(note.date) : 'Unknown date'}</span>
+                        </div>
                     </div>
                 </div>
-                )}
+            )}
         </>
     );
 }
