@@ -6,36 +6,63 @@ export async function POST(request) {
   try {
     await dbConnect();
 
-    const { username, password } = await request.json();
+    const { username, password, email, education, course, phoneNumber, subjectsOfInterest, name } = await request.json();
 
     // ✅ Input validation
     if (
       !username ||
       !password ||
+      !email ||
       typeof username !== "string" ||
       typeof password !== "string" ||
+      typeof email !== "string" ||
       password.length < 6
     ) {
       return NextResponse.json(
-        { success: false, message: "Invalid input" },
+        { success: false, message: "Invalid input. Username, password (min 6 chars), and email are required." },
         { status: 400 }
       );
     }
 
-    // ✅ Prevent username enumeration
-    const existingUser = await User.findOne({ username });
+    // Basic email validation regex
+    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { success: false, message: "Invalid email format." },
+        { status: 400 }
+      );
+    }
+
+    // ✅ Prevent username/email enumeration
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
 
     if (existingUser) {
       return NextResponse.json(
-        { success: false, message: "Unable to create account" },
+        { success: false, message: "Username or Email already exists" },
         { status: 400 }
       );
+    }
+
+    // Split name into firstName and lastName if provided
+    let firstName = '';
+    let lastName = '';
+    if (name) {
+      const parts = name.trim().split(' ');
+      firstName = parts[0];
+      lastName = parts.slice(1).join(' ');
     }
 
     // ✅ Create user
     await User.create({
       username,
-      password
+      password,
+      email,
+      education,
+      course,
+      phoneNumber,
+      subjectsOfInterest: Array.isArray(subjectsOfInterest) ? subjectsOfInterest : [],
+      firstName,
+      lastName
     });
 
     return NextResponse.json(

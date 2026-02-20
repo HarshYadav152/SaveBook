@@ -44,7 +44,28 @@ const UserSchema = new Schema({
   }
 ],
 
-
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+    },
+    education: {
+        type: String,
+        default: ''
+    },
+    course: {
+        type: String,
+        default: ''
+    },
+    phoneNumber: {
+        type: String,
+        default: ''
+    },
+    subjectsOfInterest: {
+        type: [String],
+        default: []
+    },
 });
 
 // Password hashing middleware
