@@ -20,10 +20,15 @@ const NotesSchema = new Schema({
     default: "General",
   },
 
-  
+  isPublic: {
+    type: Boolean,
+    default: false,
+  },
+
+
 
   images: {
-    type: [String],   
+    type: [String],
     default: [],
   },
 
