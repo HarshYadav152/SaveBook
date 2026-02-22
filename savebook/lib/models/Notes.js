@@ -20,8 +20,6 @@ const NotesSchema = new Schema({
     default: "General",
   },
 
-  
-
   images: {
     type: [String],   
     default: [],
@@ -33,6 +31,16 @@ const NotesSchema = new Schema({
       duration: Number,
     },
     default: null,
+  },
+
+  attachments: {
+    type: [{
+      url: String,
+      name: String,
+      type: String,
+      size: Number,
+    }],
+    default: [],
   },
 
   date: {
