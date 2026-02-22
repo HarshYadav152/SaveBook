@@ -15,9 +15,7 @@ const SignupForm = () => {
         password: '',
         confirmPassword: '',
         name: '',
-        education: '',
         course: '',
-        phoneNumber: '',
         subjectsOfInterest: ''
     });
     const [errors, setErrors] = useState({});
@@ -70,9 +68,6 @@ const SignupForm = () => {
             newErrors.confirmPassword = 'Passwords do not match';
         }
 
-        if (credentials.phoneNumber && !/^\d{10}$/.test(credentials.phoneNumber)) {
-            newErrors.phoneNumber = 'Phone number must be 10 digits';
-        }
 
         // If validation errors exist, show them and return
         if (Object.keys(newErrors).length > 0) {
@@ -89,9 +84,7 @@ const SignupForm = () => {
                 password: credentials.password,
                 email: credentials.email,
                 name: credentials.name,
-                education: credentials.education,
                 course: credentials.course,
-                phoneNumber: credentials.phoneNumber,
                 subjectsOfInterest: credentials.subjectsOfInterest.split(',').map(s => s.trim()).filter(s => s)
             };
 
@@ -151,22 +144,6 @@ const SignupForm = () => {
                 {errors.email && <p className="mt-1 text-sm text-red-400">{errors.email}</p>}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Phone Number */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Phone Number</label>
-                    <input type="tel" name="phoneNumber" value={credentials.phoneNumber} onChange={onchange} disabled={isLoading}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 bg-gray-700 text-white ${errors.phoneNumber ? 'border-red-500' : 'border-gray-600'}`} placeholder="1234567890" />
-                    {errors.phoneNumber && <p className="mt-1 text-sm text-red-400">{errors.phoneNumber}</p>}
-                </div>
-
-                {/* Education */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Education</label>
-                    <input type="text" name="education" value={credentials.education} onChange={onchange} disabled={isLoading}
-                        className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:border-blue-500 bg-gray-700 text-white" placeholder="University/College" />
-                </div>
-            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Course */}

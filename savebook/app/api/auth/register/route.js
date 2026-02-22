@@ -6,7 +6,7 @@ export async function POST(request) {
   try {
     await dbConnect();
 
-    const { username, password, email, education, course, phoneNumber, subjectsOfInterest, name } = await request.json();
+    const { username, password, email, course, subjectsOfInterest, name } = await request.json();
 
     // ✅ Input validation
     if (
@@ -57,9 +57,7 @@ export async function POST(request) {
       username,
       password,
       email,
-      education,
       course,
-      phoneNumber,
       subjectsOfInterest: Array.isArray(subjectsOfInterest) ? subjectsOfInterest : [],
       firstName,
       lastName
