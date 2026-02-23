@@ -1,3 +1,90 @@
+## [2026-02-20]
+
+### ✨ Features
+-  #190 Text editor updated and tools added. (32e61c2) - @Sibsankar-de
+-  #189 Note sharing feature added. (9fe30c6) - @Sibsankar-de
+-  add input validation & security improvements for login/register API (683b1c0) - @Kartikey-0
+
+### 📝 Documentation
+-  auto update changelog (28f655b) - @HarshYadav152
+-  auto update changelog (cc87bc0) - @HarshYadav152
+-  auto update changelog (e9ffa69) - @vinayboss9669
+-  auto update changelog (d349839) - @HarshYadav152
+-  auto update changelog (130b843) - @vinayboss9669
+-  auto update changelog (f630373) - @vinayboss9669
+-  auto update changelog (83dca1b) - @vinayboss9669
+
+### 📦 Other Changes
+- Change Discord link in greeting workflow (210ebfd) - @Harsh Yadav
+- Github (6b5e5ef) - @Gaurav Karakoti
+- Custom Renderers (fc04db9) - @Gaurav Karakoti
+- Fixed (fd465e1) - @Aagman Pal
+- Note Viewer Error Fixed (f5dca9a) - @Aagman Pal
+- Markdown (09e54d3) - @Gaurav Karakoti
+- Remove ReactMarkdown Wrapper (4d1bd18) - @Gaurav Karakoti
+- Styling (b7860d7) - @Gaurav Karakoti
+- Merge conflicts (fc16350) - @Gaurav Karakoti
+- Preview (6c63cb8) - @Gaurav Karakoti
+
+
+## [2026-02-19]
+
+### ✨ Features
+-  #189 Note sharing feature added. (9fe30c6) - @Sibsankar-de
+-  add input validation & security improvements for login/register API (683b1c0) - @Kartikey-0
+
+### 📝 Documentation
+-  auto update changelog (cc87bc0) - @HarshYadav152
+-  auto update changelog (e9ffa69) - @vinayboss9669
+-  auto update changelog (d349839) - @HarshYadav152
+-  auto update changelog (130b843) - @vinayboss9669
+-  auto update changelog (f630373) - @vinayboss9669
+-  auto update changelog (83dca1b) - @vinayboss9669
+-  auto update changelog (2239ad3) - @vinayboss9669
+
+### 📦 Other Changes
+- Change Discord link in greeting workflow (210ebfd) - @Harsh Yadav
+- Github (6b5e5ef) - @Gaurav Karakoti
+- Custom Renderers (fc04db9) - @Gaurav Karakoti
+- Fixed (fd465e1) - @Aagman Pal
+- Note Viewer Error Fixed (f5dca9a) - @Aagman Pal
+- Markdown (09e54d3) - @Gaurav Karakoti
+- Remove ReactMarkdown Wrapper (4d1bd18) - @Gaurav Karakoti
+- Styling (b7860d7) - @Gaurav Karakoti
+- Merge conflicts (fc16350) - @Gaurav Karakoti
+- Preview (6c63cb8) - @Gaurav Karakoti
+- added Password Visibility Toggle (198b3b6) - @Abhijeet-980
+
+
+## [2026-02-18]
+
+### ✨ Features
+-  add input validation & security improvements for login/register API (683b1c0) - @Kartikey-0
+-  add Docker Compose configuration for MongoDB, application, and Mongo Express services. (0e33768) - @saiusesgithub
+
+### 📝 Documentation
+-  auto update changelog (e9ffa69) - @vinayboss9669
+-  auto update changelog (d349839) - @HarshYadav152
+-  auto update changelog (130b843) - @vinayboss9669
+-  auto update changelog (f630373) - @vinayboss9669
+-  auto update changelog (83dca1b) - @vinayboss9669
+-  auto update changelog (2239ad3) - @vinayboss9669
+
+### 📦 Other Changes
+- Change Discord link in greeting workflow (210ebfd) - @Harsh Yadav
+- Github (6b5e5ef) - @Gaurav Karakoti
+- Custom Renderers (fc04db9) - @Gaurav Karakoti
+- Fixed (fd465e1) - @Aagman Pal
+- Note Viewer Error Fixed (f5dca9a) - @Aagman Pal
+- Markdown (09e54d3) - @Gaurav Karakoti
+- Remove ReactMarkdown Wrapper (4d1bd18) - @Gaurav Karakoti
+- Styling (b7860d7) - @Gaurav Karakoti
+- Merge conflicts (fc16350) - @Gaurav Karakoti
+- Preview (6c63cb8) - @Gaurav Karakoti
+- added Password Visibility Toggle (198b3b6) - @Abhijeet-980
+- Note View Modal Added (c8ca166) - @Aagman Pal
+
+
 ## [2026-02-03]
 
 ### ✨ Features

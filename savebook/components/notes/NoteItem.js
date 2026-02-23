@@ -10,11 +10,14 @@ import 'katex/dist/katex.min.css';
 
 export default function NoteItem(props) {
     const context = useContext(noteContext);
-    const { deleteNote } = context;
+    const { deleteNote, toggleShare } = context;
     const { note, updateNote } = props;
     const [isDeleting, setIsDeleting] = useState(false);
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [copied, setCopied] = useState(false);
+    const [sharing, setSharing] = useState(false);
 
     const handleDelete = async () => {
         setIsDeleting(true);
@@ -31,6 +34,28 @@ export default function NoteItem(props) {
     const handleEdit = () => {
         updateNote(note);
     }
+
+    const handleShare = async (e) => {
+        e.stopPropagation();
+        setSharing(true);
+        try {
+            await toggleShare(note._id);
+            toast.success(note.isPublic ? "Note is now private 🔒" : "Note is now public 🌍");
+        } catch (error) {
+            toast.error("Failed to update share status");
+        } finally {
+            setSharing(false);
+        }
+    };
+
+    const copyLink = (e) => {
+        e.stopPropagation();
+        const url = `${window.location.origin}/share/${note._id}`;
+        navigator.clipboard.writeText(url);
+        setCopied(true);
+        toast.success("Link copied to clipboard! 📋");
+        setTimeout(() => setCopied(false), 2000);
+    };
 
     // Enhanced tag colors with better dark mode variants
     const getTagColor = (tag) => {
@@ -288,9 +313,36 @@ export default function NoteItem(props) {
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
+                                </button>
+
+                                {/* Share Button */}
+                                <div className="relative group/share">
+                                    <button
+                                        onClick={handleShare}
+                                        disabled={sharing}
+                                        className={`p-2 ${note.isPublic ? 'text-green-400 hover:text-green-300 hover:bg-green-500/10' : 'text-gray-400 hover:text-gray-300 hover:bg-gray-700/50'} rounded-lg transition-all duration-200 disabled:opacity-50`}
+                                        title={note.isPublic ? "Make Private" : "Share Note"}
+                                    >
+                                        {sharing ? (
+                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current"></div>
+                                        ) : note.isPublic ? (
+                                            <Globe className="w-5 h-5" />
+                                        ) : (
+                                            <Share2 className="w-5 h-5" />
+                                        )}
+                                    </button>
+
+                                    {/* Link Copy Tooltip - Only show when public */}
+                                    {note.isPublic && (
+                                        <button
+                                            onClick={copyLink}
+                                            className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover/share:opacity-100 transition-opacity duration-200 whitespace-nowrap border border-gray-700 flex items-center gap-1 z-50"
+                                        >
+                                            {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                                            {copied ? 'Copied!' : 'Copy Link'}
+                                        </button>
+                                    )}
                                 </div>
-                                <span className="text-sm font-medium">Edit</span>
-                            </button>
 
                             <button
                                 onClick={(e) => {
@@ -311,11 +363,8 @@ export default function NoteItem(props) {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
                                     )}
-                                </div>
-                                <span className="text-sm font-medium">
-                                    {isDeleting ? 'Deleting...' : 'Delete'}
-                                </span>
-                            </button>
+                                </button>
+                            </div>
                         </div>
 
                         <div className="flex items-center justify-between text-xs">

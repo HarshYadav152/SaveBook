@@ -9,6 +9,7 @@ import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import Modal from '../common/Modal';
 import AudioRecorder from '@/components/AudioRecorder';
+import RichTextEditor from './RichTextEditor';
 
 // Define Note Templates
 const NOTE_TEMPLATES = {
@@ -157,6 +158,7 @@ export default function Addnote() {
             toast.success("Note saved successfully!");
             setNote({ title: "", description: "", tag: "" });
             setImages([]);
+            setImages([]);
             setPreview([]);
             setAttachments([]);
             setAttachmentPreviews([]);
@@ -299,6 +301,11 @@ export default function Addnote() {
                                     </div>
                                 </div>
                             </div>
+                            <RichTextEditor
+                                content={note.description}
+                                onChange={(content) => setNote({ ...note, description: content })}
+                                placeholder="Write your note... Use the toolbar for formatting."
+                            />
 
                             {!previewMode && (
                                 <>

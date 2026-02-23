@@ -110,7 +110,6 @@ export default function Notes() {
             etag: currentNote.tag,
             audio: currentNote.audio || null
         });
-        setEditPreview(false);
         setExistingImages(currentNote.images || []);
         setExistingAttachments(currentNote.attachments || []);
         setNewImages([]);

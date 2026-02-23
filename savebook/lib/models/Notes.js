@@ -21,7 +21,7 @@ const NotesSchema = new Schema({
   },
 
   images: {
-    type: [String],   
+    type: [String],
     default: [],
   },
 

@@ -8,11 +8,11 @@ const NoteState = (props) => {
 
   const handleResponse = async (response) => {
     const contentType = response.headers.get('content-type');
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       let errorMessage = `HTTP ${response.status}`;
-      
+
       try {
         const errorJson = JSON.parse(errorText);
         errorMessage = errorJson.message || errorJson.error || errorMessage;
@@ -23,14 +23,14 @@ const NoteState = (props) => {
           errorMessage = errorText || errorMessage;
         }
       }
-      
+
       throw new Error(errorMessage);
     }
-    
+
     if (!contentType?.includes('application/json')) {
       throw new Error(`Expected JSON but got ${contentType}`);
     }
-    
+
     return response.json();
   };
 
@@ -120,17 +120,19 @@ const NoteState = (props) => {
   );
 
   return (
-    <noteContext.Provider 
-      value={{ 
-        notes, 
-        setNotes, 
-        addNote, 
-        deleteNote, 
-        editNote, 
-        getNotes 
+    <noteContext.Provider
+      value={{
+        notes,
+        setNotes,
+        addNote,
+        deleteNote,
+        editNote,
+        getNotes,
+        toggleShare
       }}>
       {props.children}
     </noteContext.Provider>
   )
 }
+
 export default NoteState;
