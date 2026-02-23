@@ -4,6 +4,9 @@ import LinkPreviewCard from './LinkPreviewCard';
 import toast from 'react-hot-toast';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 export default function NoteItem(props) {
     const context = useContext(noteContext);
@@ -106,22 +109,32 @@ export default function NoteItem(props) {
     }, [note?.description]);
 
     const customRenderers = {
-        h1: ({node, ...props}) => <h1 className="text-xl font-bold my-2 text-white border-b border-gray-700 pb-1" {...props} />,
-        h2: ({node, ...props}) => <h2 className="text-lg font-bold my-2 text-white" {...props} />,
-        h3: ({node, ...props}) => <h3 className="text-md font-bold my-1 text-white" {...props} />,
-        ul: ({node, ...props}) => <ul className="list-disc list-inside my-2 space-y-1 pl-1" {...props} />,
-        ol: ({node, ...props}) => <ol className="list-decimal list-inside my-2 space-y-1 pl-1" {...props} />,
-        li: ({node, ...props}) => <li className="text-gray-300" {...props} />,
-        p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
-        strong: ({node, ...props}) => <strong className="font-bold text-gray-100" {...props} />,
-        em: ({node, ...props}) => <em className="italic text-gray-200" {...props} />,
-        a: ({node, ...props}) => <a className="text-blue-400 hover:underline cursor-pointer relative z-30" target="_blank" rel="noopener noreferrer" onClick={(e)=>e.stopPropagation()} {...props} />,
-        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-gray-600 pl-4 my-2 italic text-gray-400" {...props} />,
-        code: ({node, inline, className, children, ...props}) => {
-             return inline ? 
+        h1: ({ node, ...props }) => <h1 className="text-xl font-bold my-2 text-white border-b border-gray-700 pb-1" {...props} />,
+        h2: ({ node, ...props }) => <h2 className="text-lg font-bold my-2 text-white" {...props} />,
+        h3: ({ node, ...props }) => <h3 className="text-md font-bold my-1 text-white" {...props} />,
+        ul: ({ node, ...props }) => <ul className="list-disc list-inside my-2 space-y-1 pl-1" {...props} />,
+        ol: ({ node, ...props }) => <ol className="list-decimal list-inside my-2 space-y-1 pl-1" {...props} />,
+        li: ({ node, ...props }) => <li className="text-gray-300" {...props} />,
+        p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+        strong: ({ node, ...props }) => <strong className="font-bold text-gray-100" {...props} />,
+        em: ({ node, ...props }) => <em className="italic text-gray-200" {...props} />,
+        a: ({ node, ...props }) => <a className="text-blue-400 hover:underline cursor-pointer relative z-30" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} {...props} />,
+        blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-gray-600 pl-4 my-2 italic text-gray-400" {...props} />,
+        code: ({ node, inline, className, children, ...props }) => {
+            return inline ?
                 <code className="bg-gray-800 rounded px-1 py-0.5 text-sm font-mono text-pink-300" {...props}>{children}</code> :
                 <code className="block bg-gray-800 rounded p-2 text-sm font-mono overflow-x-auto text-gray-200 my-2" {...props}>{children}</code>
-        }
+        },
+        table: ({ node, ...props }) => (
+            <div className="overflow-x-auto my-4 relative z-20" onClick={(e) => e.stopPropagation()}>
+                <table className="min-w-full border-collapse border border-gray-600 text-sm" {...props} />
+            </div>
+        ),
+        thead: ({ node, ...props }) => <thead className="bg-gray-800" {...props} />,
+        tbody: ({ node, ...props }) => <tbody className="bg-gray-900" {...props} />,
+        tr: ({ node, ...props }) => <tr className="border-b border-gray-700" {...props} />,
+        th: ({ node, ...props }) => <th className="border border-gray-600 px-4 py-2 text-left font-semibold text-white" {...props} />,
+        td: ({ node, ...props }) => <td className="border border-gray-600 px-4 py-2 text-gray-300" {...props} />,
     };
 
     return (
@@ -130,7 +143,7 @@ export default function NoteItem(props) {
                 <div
                     onClick={() => setIsViewOpen(true)}
                     className="cursor-pointer relative bg-gray-900 rounded-2xl border border-gray-700 hover:border-gray-600 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:scale-[1.02]"
-                    >
+                >
 
                     {/* Header with Gradient */}
                     <div className="p-5 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-gray-900 relative">
@@ -163,13 +176,14 @@ export default function NoteItem(props) {
 
                     <div className="p-5 relative z-10">
                         <div className="relative z-10">
-                            <div 
+                            <div
                                 className="text-gray-300 text-sm leading-relaxed max-h-[160px] overflow-hidden bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-3 border border-gray-700 relative z-10 max-w-none"
                                 style={{ maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)' }}
                             >
                                 {note?.description ? (
-                                    <ReactMarkdown 
-                                        remarkPlugins={[remarkGfm]}
+                                    <ReactMarkdown
+                                        remarkPlugins={[remarkGfm, remarkMath]}
+                                        rehypePlugins={[rehypeKatex]}
                                         components={customRenderers}
                                     >
                                         {note.description}
@@ -205,6 +219,34 @@ export default function NoteItem(props) {
                                 ))}
                             </div>
                         )}
+
+                        {/* Attachments (PDFs) */}
+                        {Array.isArray(note?.attachments) && note.attachments.length > 0 && (
+                            <div className="mt-4 space-y-2 relative z-30" onClick={(e) => e.stopPropagation()}>
+                                {note.attachments.map((file, index) => (
+                                    <a
+                                        key={index}
+                                        href={file.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-3 p-3 bg-gray-800/50 hover:bg-gray-800 rounded-xl border border-gray-700 transition-colors group/file"
+                                    >
+                                        <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 group-hover/file:bg-red-500/20 transition-colors">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-xs font-medium text-gray-200 truncate">{file.name}</p>
+                                            <p className="text-[10px] text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB • PDF</p>
+                                        </div>
+                                        <svg className="w-4 h-4 text-gray-400 group-hover/file:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                    </a>
+                                ))}
+                            </div>
+                        )}
                         {/* Link Previews */}
                         {noteUrls.map((url, index) => (
                             <div key={index} className="relative z-20" onClick={(e) => e.stopPropagation()}>
@@ -236,9 +278,9 @@ export default function NoteItem(props) {
                         <div className="flex justify-between items-center mb-3">
                             <button
                                 onClick={(e) => {
-                                e.stopPropagation();
-                                handleEdit();
-                            }}
+                                    e.stopPropagation();
+                                    handleEdit();
+                                }}
                                 disabled={isDeleting}
                                 className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-all duration-200 group/edit disabled:opacity-50 disabled:cursor-not-allowed"
                             >
@@ -252,9 +294,9 @@ export default function NoteItem(props) {
 
                             <button
                                 onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete();
-                            }}
+                                    e.stopPropagation();
+                                    handleDelete();
+                                }}
                                 disabled={isDeleting}
                                 className="flex items-center space-x-2 text-red-400 hover:text-red-300 transition-all duration-200 group/delete disabled:opacity-50 disabled:cursor-not-allowed"
                             >
@@ -335,40 +377,101 @@ export default function NoteItem(props) {
                     className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4"
                 >
                     <div
-                    onClick={(e) => e.stopPropagation()}
-                    className="max-w-2xl w-full bg-gray-900 rounded-2xl border border-gray-700 shadow-2xl p-6"
+                        onClick={(e) => e.stopPropagation()}
+                        className="max-w-2xl w-full bg-gray-900 rounded-2xl border border-gray-700 shadow-2xl p-6"
                     >
-                    {/* Header */}
-                    <div className="flex justify-between items-start mb-4">
-                        <h2 className="text-xl font-bold text-white">
-                        {note?.title || 'Untitled Note'}
-                        </h2>
-                        <button
-                        onClick={() => setIsViewOpen(false)}
-                        className="text-gray-400 hover:text-gray-200"
-                        >
-                        ✕
-                        </button>
-                    </div>
+                        {/* Header */}
+                        <div className="flex justify-between items-start mb-4">
+                            <h2 className="text-xl font-bold text-white">
+                                {note?.title || 'Untitled Note'}
+                            </h2>
+                            <button
+                                onClick={() => setIsViewOpen(false)}
+                                className="text-gray-400 hover:text-gray-200"
+                            >
+                                ✕
+                            </button>
+                        </div>
 
-                    {/* Tag */}
-                    <span className={`${tagColor.bg} ${tagColor.text} px-3 py-1 rounded-md text-xs font-medium`}>
-                        {note?.tag || 'General'}
-                    </span>
+                        {/* Tag */}
+                        <span className={`${tagColor.bg} ${tagColor.text} px-3 py-1 rounded-md text-xs font-medium`}>
+                            {note?.tag || 'General'}
+                        </span>
 
-                    {/* Content */}
-                    <div className="mt-4 text-gray-300 whitespace-pre-wrap leading-relaxed max-h-[60vh] overflow-y-auto">
-                        {note?.description || 'No description provided.'}
-                    </div>
+                        <div className="mt-4 text-gray-300 leading-relaxed max-h-[60vh] overflow-y-auto">
+                            <ReactMarkdown
+                                remarkPlugins={[remarkGfm, remarkMath]}
+                                rehypePlugins={[rehypeKatex]}
+                                components={customRenderers}
+                            >
+                                {note?.description || 'No description provided.'}
+                            </ReactMarkdown>
 
-                    {/* Footer */}
-                    <div className="mt-6 text-xs text-gray-400 flex justify-between">
-                        <span>{wordCount} words</span>
-                        <span>{note?.date ? formatDate(note.date) : 'Unknown date'}</span>
-                    </div>
+                            {/* Images in Modal */}
+                            {Array.isArray(note?.images) && note.images.length > 0 && (
+                                <div className="mt-6 flex gap-3 flex-wrap">
+                                    {note.images.map((img, index) => (
+                                        <img
+                                            key={index}
+                                            src={img}
+                                            alt={`note image ${index + 1}`}
+                                            className="w-full max-w-md rounded-xl border border-gray-700 mx-auto"
+                                        />
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Audio in Modal */}
+                            {note?.audio && note.audio.url && (
+                                <div className="mt-6 p-4 bg-gray-800 rounded-xl border border-gray-700">
+                                    <p className="text-xs text-gray-400 mb-3 flex items-center gap-2">
+                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
+                                        </svg>
+                                        Voice Note
+                                    </p>
+                                    <audio controls src={note.audio.url} className="w-full" />
+                                </div>
+                            )}
+
+                            {/* Attachments in Modal */}
+                            {Array.isArray(note?.attachments) && note.attachments.length > 0 && (
+                                <div className="mt-6 space-y-3">
+                                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Attachments</p>
+                                    {note.attachments.map((file, index) => (
+                                        <a
+                                            key={index}
+                                            href={file.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-4 p-4 bg-gray-800 hover:bg-gray-700 rounded-xl border border-gray-700 transition-all group/modal-file"
+                                        >
+                                            <div className="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 group-hover/modal-file:bg-red-500/20">
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium text-white truncate">{file.name}</p>
+                                                <p className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB • PDF Document</p>
+                                            </div>
+                                            <div className="px-3 py-1 rounded-lg bg-gray-900 border border-gray-600 text-[10px] font-bold text-gray-400 group-hover/modal-file:text-white group-hover/modal-file:border-gray-500 uppercase">
+                                                View
+                                            </div>
+                                        </a>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="mt-6 text-xs text-gray-400 flex justify-between">
+                            <span>{wordCount} words</span>
+                            <span>{note?.date ? formatDate(note.date) : 'Unknown date'}</span>
+                        </div>
                     </div>
                 </div>
-                )}
+            )}
         </>
     );
 }

@@ -8,18 +8,21 @@ import NoteItem from './NoteItem';
 import { useAuth } from '@/context/auth/authContext';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 // Separate navigation handler component to use router with Suspense
 const NavigationHandler = ({ isAuthenticated, loading }) => {
     const router = useRouter();
-    
+
     useEffect(() => {
         // Only redirect if loading is complete and user is not authenticated
         if (!loading && !isAuthenticated) {
             router.push("/login");
         }
     }, [isAuthenticated, loading, router]);
-    
+
     return null;
 };
 
@@ -28,7 +31,7 @@ export default function Notes() {
     const context = useContext(noteContext);
     const { notes: contextNotes = [], getNotes, editNote } = context || {};
     const [editPreview, setEditPreview] = useState(false);
-    
+
     // Ensure notes is always an array
     const notes =
         isAuthenticated && Array.isArray(contextNotes)
@@ -42,6 +45,9 @@ export default function Notes() {
     const [preview, setPreview] = useState([]);
     const [replaceImages, setReplaceImages] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
+    const [existingAttachments, setExistingAttachments] = useState([]);
+    const [newAttachments, setNewAttachments] = useState([]);
+    const [isUploadingAttachments, setIsUploadingAttachments] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTag, setSelectedTag] = useState('all');
 
@@ -50,21 +56,31 @@ export default function Notes() {
             getNotes().catch(() => toast.error("Failed to load notes"));
         }
     }, [isAuthenticated, loading, getNotes]);
-    
+
     const customRenderers = {
-        h1: ({node, ...props}) => <h1 className="text-xl font-bold my-2 text-white" {...props} />,
-        h2: ({node, ...props}) => <h2 className="text-lg font-bold my-2 text-white" {...props} />,
-        h3: ({node, ...props}) => <h3 className="text-md font-bold my-1 text-white" {...props} />,
-        ul: ({node, ...props}) => <ul className="list-disc list-inside my-2 space-y-1" {...props} />,
-        ol: ({node, ...props}) => <ol className="list-decimal list-inside my-2 space-y-1" {...props} />,
-        li: ({node, ...props}) => <li className="text-gray-300" {...props} />,
-        a: ({node, ...props}) => <a className="text-blue-400 hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
-        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-gray-600 pl-4 my-2 italic text-gray-400" {...props} />,
-        code: ({node, inline, className, children, ...props}) => {
-             return inline ? 
+        h1: ({ node, ...props }) => <h1 className="text-xl font-bold my-2 text-white" {...props} />,
+        h2: ({ node, ...props }) => <h2 className="text-lg font-bold my-2 text-white" {...props} />,
+        h3: ({ node, ...props }) => <h3 className="text-md font-bold my-1 text-white" {...props} />,
+        ul: ({ node, ...props }) => <ul className="list-disc list-inside my-2 space-y-1" {...props} />,
+        ol: ({ node, ...props }) => <ol className="list-decimal list-inside my-2 space-y-1" {...props} />,
+        li: ({ node, ...props }) => <li className="text-gray-300" {...props} />,
+        a: ({ node, ...props }) => <a className="text-blue-400 hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
+        blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-gray-600 pl-4 my-2 italic text-gray-400" {...props} />,
+        code: ({ node, inline, className, children, ...props }) => {
+            return inline ?
                 <code className="bg-gray-800 rounded px-1 py-0.5 text-sm font-mono text-pink-300" {...props}>{children}</code> :
                 <code className="block bg-gray-800 rounded p-2 text-sm font-mono overflow-x-auto text-gray-200 my-2" {...props}>{children}</code>
-        }
+        },
+        table: ({ node, ...props }) => (
+            <div className="overflow-x-auto my-4 relative z-20" onClick={(e) => e.stopPropagation()}>
+                <table className="min-w-full border-collapse border border-gray-600 text-sm" {...props} />
+            </div>
+        ),
+        thead: ({ node, ...props }) => <thead className="bg-gray-800" {...props} />,
+        tbody: ({ node, ...props }) => <tbody className="bg-gray-900" {...props} />,
+        tr: ({ node, ...props }) => <tr className="border-b border-gray-700" {...props} />,
+        th: ({ node, ...props }) => <th className="border border-gray-600 px-4 py-2 text-left font-semibold text-white" {...props} />,
+        td: ({ node, ...props }) => <td className="border border-gray-600 px-4 py-2 text-gray-300" {...props} />,
     };
 
     const tagOptions = [
@@ -80,8 +96,8 @@ export default function Notes() {
 
     // Filter notes based on search and tag
     const filteredNotes = notes.filter(note => {
-        const matchesSearch = note.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                            note.description?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = note.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            note.description?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesTag = selectedTag === 'all' || note.tag === selectedTag;
         return matchesSearch && matchesTag;
     });
@@ -91,11 +107,14 @@ export default function Notes() {
             id: currentNote._id,
             etitle: currentNote.title,
             edescription: currentNote.description,
-            etag: currentNote.tag
+            etag: currentNote.tag,
+            audio: currentNote.audio || null
         });
         setEditPreview(false);
         setExistingImages(currentNote.images || []);
+        setExistingAttachments(currentNote.attachments || []);
         setNewImages([]);
+        setNewAttachments([]);
         setPreview([]);
         setReplaceImages(false);
         setPreviewImage(null);
@@ -119,6 +138,22 @@ export default function Notes() {
         return Array.isArray(data.imageUrls) ? data.imageUrls : [];
     };
 
+    const uploadAttachments = async (files) => {
+        if (!files || files.length === 0) return [];
+        const formData = new FormData();
+        files.forEach(file => formData.append("attachment", file));
+        const res = await fetch("/api/upload/attachments", {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+        });
+        if (!res.ok) {
+            throw new Error("Attachment upload failed");
+        }
+        const data = await res.json();
+        return Array.isArray(data.attachments) ? data.attachments : [];
+    };
+
     const handleClick = async () => {
         try {
             let uploadedUrls = [];
@@ -126,21 +161,34 @@ export default function Notes() {
                 uploadedUrls = await uploadImages(newImages);
             }
             const finalImages = replaceImages
-                ? uploadedUrls              
-                : [...existingImages, ...uploadedUrls]; 
+                ? uploadedUrls
+                : [...existingImages, ...uploadedUrls];
+
+            setIsUploadingAttachments(true);
+            let uploadedAttachments = [];
+            if (newAttachments.length > 0) {
+                uploadedAttachments = await uploadAttachments(newAttachments);
+            }
+            const finalAttachments = [...existingAttachments, ...uploadedAttachments];
+
             await editNote(
                 note.id,
                 note.etitle,
                 note.edescription,
                 note.etag,
-                finalImages
+                finalImages,
+                note.audio,
+                finalAttachments
             );
             setIsEditModalOpen(false);
             setExistingImages([]);
+            setExistingAttachments([]);
             setNewImages([]);
+            setNewAttachments([]);
             setPreview([]);
             setReplaceImages(false);
             setPreviewImage(null);
+            setIsUploadingAttachments(false);
             toast.success("Note updated successfully! 🎉");
         } catch (error) {
             console.error(error);
@@ -199,7 +247,7 @@ export default function Notes() {
             <Suspense fallback={null}>
                 <NavigationHandler isAuthenticated={isAuthenticated} loading={loading} />
             </Suspense>
-            
+
             <Addnote />
 
             {/* Edit Note Modal */}
@@ -250,9 +298,25 @@ export default function Notes() {
                             {/* Description Field */}
                             <div>
                                 <div className="flex items-center justify-between mb-3">
-                                    <label htmlFor="edescription" className="block text-sm font-medium text-gray-300">
-                                        Description
-                                    </label>
+                                    <div className="flex items-center gap-4">
+                                        <label htmlFor="edescription" className="block text-sm font-medium text-gray-300">
+                                            Description
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <button type="button" onClick={() => {
+                                                const syntax = '$$\nE = mc^2\n$$';
+                                                setNote({ ...note, edescription: note.edescription + (note.edescription.length ? '\n\n' : '') + syntax + '\n\n' });
+                                            }} className="px-2 py-1 text-[10px] bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded hover:bg-purple-500/30 transition-colors">
+                                                ∑ Math
+                                            </button>
+                                            <button type="button" onClick={() => {
+                                                const syntax = '| Header 1 | Header 2 |\n|----------|----------|\n| Cell 1   | Cell 2   |';
+                                                setNote({ ...note, edescription: note.edescription + (note.edescription.length ? '\n\n' : '') + syntax + '\n\n' });
+                                            }} className="px-2 py-1 text-[10px] bg-green-500/20 text-green-400 border border-green-500/30 rounded hover:bg-green-500/30 transition-colors">
+                                                ⊞ Table
+                                            </button>
+                                        </div>
+                                    </div>
                                     <div className="flex bg-gray-800 rounded-lg p-1 border border-gray-700">
                                         <button
                                             type="button"
@@ -285,8 +349,9 @@ export default function Notes() {
                                     />
                                 ) : (
                                     <div className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-gray-800 min-h-[120px] max-w-none overflow-y-auto">
-                                        <ReactMarkdown 
-                                            remarkPlugins={[remarkGfm]}
+                                        <ReactMarkdown
+                                            remarkPlugins={[remarkGfm, remarkMath]}
+                                            rehypePlugins={[rehypeKatex]}
                                             components={customRenderers}
                                         >
                                             {note.edescription}
@@ -321,6 +386,70 @@ export default function Notes() {
                                 <p className="text-xs text-gray-400 mt-2">
                                     Choose a category for your note
                                 </p>
+                            </div>
+
+                            {/* PDF Attachments Section */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-3">
+                                    Study Materials (PDF Attachments)
+                                </label>
+
+                                {/* Existing Attachments */}
+                                {existingAttachments.length > 0 && (
+                                    <div className="mb-4 space-y-2">
+                                        {existingAttachments.map((file, i) => (
+                                            <div key={i} className="flex items-center justify-between p-3 bg-gray-800 border border-gray-700 rounded-xl">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded bg-red-500/10 flex items-center justify-center text-red-400">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs font-medium text-gray-200 truncate max-w-[200px]">{file.name}</p>
+                                                        <p className="text-[10px] text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setExistingAttachments(prev => prev.filter((_, idx) => idx !== i))}
+                                                    className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                <div className="relative">
+                                    <input
+                                        type="file"
+                                        multiple
+                                        accept=".pdf"
+                                        onChange={(e) => {
+                                            const files = Array.from(e.target.files);
+                                            const validFiles = files.filter(f => f.size <= 10 * 1024 * 1024);
+                                            if (files.length !== validFiles.length) {
+                                                toast.error("Some files exceed 10MB limit");
+                                            }
+                                            setNewAttachments(validFiles);
+                                        }}
+                                        className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-800 text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-red-600/20 file:text-red-400 hover:file:bg-red-600/30 file:cursor-pointer transition-all duration-200 outline-none"
+                                    />
+                                </div>
+                                {newAttachments.length > 0 && (
+                                    <div className="mt-2 space-y-1">
+                                        {newAttachments.map((f, i) => (
+                                            <p key={i} className="text-[10px] text-blue-400 flex items-center gap-1">
+                                                <span className="w-1 h-1 rounded-full bg-blue-400"></span>
+                                                New: {f.name} ({(f.size / 1024 / 1024).toFixed(2)} MB)
+                                            </p>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                             {/* ===== Existing Images ===== */}
@@ -376,7 +505,7 @@ export default function Notes() {
                                         className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-800 text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer transition-all duration-200 outline-none"
                                     />
                                 </div>
-                                
+
                                 {/* Replace Images Checkbox */}
                                 <div className="flex items-center gap-2 mt-3 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
                                     <input
@@ -390,7 +519,7 @@ export default function Notes() {
                                         Replace existing images (instead of adding to them)
                                     </label>
                                 </div>
-                                
+
                                 <p className="text-xs text-gray-400 mt-2">
                                     Select one or more images to {replaceImages ? 'replace all existing images' : 'add to your note'}
                                 </p>
@@ -484,7 +613,7 @@ export default function Notes() {
 
             {/* Image Preview Modal */}
             {previewImage && (
-                <div 
+                <div
                     className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-[60] backdrop-blur-sm"
                     onClick={() => setPreviewImage(null)}
                 >
@@ -499,7 +628,7 @@ export default function Notes() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
-                        
+
                         {/* Image */}
                         <img
                             src={previewImage}
@@ -546,11 +675,10 @@ export default function Notes() {
                         <div className="flex flex-wrap gap-2">
                             <button
                                 onClick={() => setSelectedTag('all')}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                    selectedTag === 'all' 
-                                        ? 'bg-blue-600 text-white' 
-                                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                                }`}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${selectedTag === 'all'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                                    }`}
                             >
                                 All
                             </button>
@@ -558,11 +686,10 @@ export default function Notes() {
                                 <button
                                     key={tag.id}
                                     onClick={() => setSelectedTag(tag.value)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                        selectedTag === tag.value 
-                                            ? `${tag.color} text-white` 
-                                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                                    }`}
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${selectedTag === tag.value
+                                        ? `${tag.color} text-white`
+                                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                                        }`}
                                 >
                                     {tag.value}
                                 </button>
@@ -589,7 +716,7 @@ export default function Notes() {
                                 {searchTerm || selectedTag !== 'all' ? 'No matching notes found' : 'No notes yet'}
                             </h3>
                             <p className="text-gray-500 max-w-md mx-auto">
-                                {searchTerm || selectedTag !== 'all' 
+                                {searchTerm || selectedTag !== 'all'
                                     ? 'Try adjusting your search or filter criteria'
                                     : 'Create your first note to get started!'
                                 }
