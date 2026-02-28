@@ -2,16 +2,16 @@
 import noteContext from '@/context/noteContext';
 import React, { useContext, useState } from 'react'
 import toast from 'react-hot-toast';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+
 import Modal from '../common/Modal';
 import AudioRecorder from '@/components/AudioRecorder';
+import RichTextEditor from './RichTextEditor';
 
 // Define Note Templates
 const NOTE_TEMPLATES = {
-  meeting: `Date: [Insert Date]\n\nAttendees: [List attendees]\n\nAgenda:\n- \n- \n- \n\nNotes:\n\nAction Items:\n- [ ] \n- [ ] `,
-  journal: `**What happened today:**\n[Write your experiences here]\n\n**Goals for tomorrow:**\n1. [List your goals]\n\n**Gratitude:**\n> [Write things you're grateful for]`,
-  checklist: `## Project: [Project Name]\n\n**Tasks:**\n- [ ] Define project goal\n- [ ] List all tasks\n- [ ] Assign owners\n- [ ] Set deadlines\n- [ ] Plan resources\n- [ ] Review progress\n- [ ] Complete project`
+    meeting: `Date: [Insert Date]\n\nAttendees: [List attendees]\n\nAgenda:\n- \n- \n- \n\nNotes:\n\nAction Items:\n- [ ] \n- [ ] `,
+    journal: `**What happened today:**\n[Write your experiences here]\n\n**Goals for tomorrow:**\n1. [List your goals]\n\n**Gratitude:**\n> [Write things you're grateful for]`,
+    checklist: `## Project: [Project Name]\n\n**Tasks:**\n- [ ] Define project goal\n- [ ] List all tasks\n- [ ] Assign owners\n- [ ] Set deadlines\n- [ ] Plan resources\n- [ ] Review progress\n- [ ] Complete project`
 };
 
 export default function Addnote() {
@@ -20,7 +20,6 @@ export default function Addnote() {
 
     const [note, setNote] = useState({ title: "", description: "", tag: "" });
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [previewMode, setPreviewMode] = useState(false);
     // Modal State
     const [showModal, setShowModal] = useState(false);
     const [pendingTemplate, setPendingTemplate] = useState(null);
@@ -36,7 +35,7 @@ export default function Addnote() {
     ];
     const [images, setImages] = useState([]);
     const [preview, setPreview] = useState([]);
-    
+
     // Audio state management
     const [audioBlob, setAudioBlob] = useState(null);
     const [recordedAudioUrl, setRecordedAudioUrl] = useState(null);
@@ -45,11 +44,9 @@ export default function Addnote() {
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
-
         setImages(files);
         setPreview(files.map(file => URL.createObjectURL(file)));
     };
-
 
     const uploadImages = async () => {
         const formData = new FormData();
@@ -72,7 +69,6 @@ export default function Addnote() {
     // Handle audio recording from AudioRecorder component
     const handleAudioRecorded = (blob) => {
         setAudioBlob(blob);
-        // Create temporary URL for preview
         const url = URL.createObjectURL(blob);
         setRecordedAudioUrl(url);
     };
@@ -89,26 +85,21 @@ export default function Addnote() {
         });
 
         if (!res.ok) {
-            // Log full error response for debugging
             let errorMessage = `HTTP ${res.status}`;
             const contentType = res.headers.get('content-type');
-            
+
             try {
-                // Try to parse as JSON first
                 if (contentType?.includes('application/json')) {
                     const errorData = await res.json();
                     errorMessage = errorData.error || errorData.message || errorMessage;
                 } else {
-                    // Fallback to text
                     const errorText = await res.text();
                     errorMessage = errorText.slice(0, 200) || errorMessage;
                 }
             } catch (parseError) {
-                // If parsing fails, use status code
                 console.error('Failed to parse error response:', parseError);
             }
-            
-            console.error('Audio upload error:', { status: res.status, error: errorMessage });
+
             throw new Error(`Audio upload failed: ${errorMessage}`);
         }
 
@@ -129,62 +120,45 @@ export default function Addnote() {
         setAudioData(null);
     };
 
-
-
-
-
-
-
     const handleSaveNote = async (e) => {
         e.preventDefault();
         if (isSubmitting) return;
 
         setIsSubmitting(true);
         try {
-            // Upload images
             const imageUrls = images.length ? await uploadImages() : [];
 
-            // Upload audio if recording exists - REQUIRED before note creation
             let finalAudioData = null;
             if (audioBlob) {
                 setIsUploadingAudio(true);
                 try {
                     finalAudioData = await uploadAudio(audioBlob);
                 } catch (audioError) {
-                    console.error('Audio upload error:', audioError);
                     toast.error(audioError.message || 'Audio upload failed. Please try again.');
-                    // Abort note creation - do NOT save note without audio
                     return;
                 }
             }
 
-            // Save note with audio data (if available)
             await addNote(
                 note.title,
                 note.description,
                 note.tag,
                 imageUrls,
-                finalAudioData // Pass audio data (or null)
+                finalAudioData 
             );
 
             toast.success("Note has been saved");
             setNote({ title: "", description: "", tag: "" });
             setImages([]);
             setPreview([]);
-            setPreviewMode(false);
-            clearAudioRecording(); // Only clear after successful save
+            clearAudioRecording(); 
         } catch (error) {
-            console.error('Error saving note:', error);
             toast.error(error.message || "Failed to save note. Please try again.");
         } finally {
             setIsSubmitting(false);
             setIsUploadingAudio(false);
         }
     };
-
-
-
-
 
     const onchange = (e) => {
         setNote({ ...note, [e.target.name]: e.target.value });
@@ -199,12 +173,6 @@ export default function Addnote() {
             setNote({ ...note, description: template });
             toast.success(`${templateKey.charAt(0).toUpperCase() + templateKey.slice(1)} template applied!`);
         } else {
-            if (window.confirm('Replace current content with this template? This action cannot be undone.')) {
-                setNote({ ...note, description: template });
-                toast.success(`${templateKey.charAt(0).toUpperCase() + templateKey.slice(1)} template applied!`);
-            }
-
-            // If description has content, trigger modal
             setPendingTemplate({ key: templateKey, content: template });
             setShowModal(true);
         }
@@ -222,7 +190,7 @@ export default function Addnote() {
         setShowModal(false);
         setPendingTemplate(null);
     }
-    // Collect unique tags from existing notes
+
     const userTags = Array.from(
         new Set(
             (Array.isArray(notes) ? notes : [])
@@ -233,25 +201,6 @@ export default function Addnote() {
 
     const allTags = Array.from(new Set([...defaultTags, ...userTags]));
     const isFormValid = note.title.length >= 5 && note.description.length >= 5 && note.tag.length >= 2;
-
-    const customRenderers = {
-        h1: ({node, ...props}) => <h1 className="text-xl font-bold my-2 text-white border-b border-gray-700 pb-1" {...props} />,
-        h2: ({node, ...props}) => <h2 className="text-lg font-bold my-2 text-white" {...props} />,
-        h3: ({node, ...props}) => <h3 className="text-md font-bold my-1 text-white" {...props} />,
-        ul: ({node, ...props}) => <ul className="list-disc list-inside my-2 space-y-1 pl-1 text-gray-300" {...props} />,
-        ol: ({node, ...props}) => <ol className="list-decimal list-inside my-2 space-y-1 pl-1 text-gray-300" {...props} />,
-        li: ({node, ...props}) => <li className="text-gray-300" {...props} />,
-        p: ({node, ...props}) => <p className="mb-2 last:mb-0 text-gray-300" {...props} />,
-        strong: ({node, ...props}) => <strong className="font-bold text-gray-100" {...props} />,
-        em: ({node, ...props}) => <em className="italic text-gray-200" {...props} />,
-        a: ({node, ...props}) => <a className="text-blue-400 hover:underline cursor-pointer" target="_blank" rel="noopener noreferrer" {...props} />,
-        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-gray-600 pl-4 my-2 italic text-gray-400" {...props} />,
-        code: ({node, inline, className, children, ...props}) => {
-             return inline ? 
-                <code className="bg-gray-800 rounded px-1 py-0.5 text-sm font-mono text-pink-300" {...props}>{children}</code> :
-                <code className="block bg-gray-800 rounded p-2 text-sm font-mono overflow-x-auto text-gray-200 my-2" {...props}>{children}</code>
-        }
-    };
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-20 p-2">
@@ -270,7 +219,7 @@ export default function Addnote() {
                         Add New Note
                     </h2>
 
-                    <form onSubmit={handleSaveNote} className="space-y-6">
+                    <form onSubmit={handleSaveNote} className="space-y-6" noValidate>
                         {/* Title Field */}
                         <div>
                             <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -282,124 +231,81 @@ export default function Addnote() {
                                 id="title"
                                 value={note.title}
                                 onChange={onchange}
+                                aria-required="true"
+                                aria-describedby="title-help"
                                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-200 outline-none"
                                 placeholder="Enter a descriptive title for your note"
                                 minLength={5}
                                 required
                             />
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            <p id="title-help" className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 Minimum 5 characters required
                             </p>
                         </div>
 
                         <div>
-                            <div className="flex items-center justify-between mb-2">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Description
-                                </label>
-                                <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-                                    <button
-                                        type="button"
-                                        onClick={() => setPreviewMode(false)}
-                                        className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${!previewMode ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-gray-400'}`}
-                                    >
-                                        Write
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setPreviewMode(true)}
-                                        className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${previewMode ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-500 dark:text-gray-400'}`}
-                                    >
-                                        Preview
-                                    </button>
-                                </div>
+                            <div className="flex flex-wrap gap-2 mb-3" role="group" aria-label="Note templates">
+                                <button
+                                    type="button"
+                                    onClick={() => applyTemplate('meeting')}
+                                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    aria-label="Apply Meeting Template"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Meeting
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => applyTemplate('journal')}
+                                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    aria-label="Apply Journal Template"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.998 10-10.747 0-6.002-4.5-10.747-10-10.747z" />
+                                    </svg>
+                                    Journal
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => applyTemplate('checklist')}
+                                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    aria-label="Apply Checklist Template"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                    </svg>
+                                    Checklist
+                                </button>
                             </div>
+                            
+                            <RichTextEditor
+                                content={note.description}
+                                onChange={(content) => setNote({ ...note, description: content })}
+                                placeholder="Write your note... Use the toolbar for formatting."
+                                aria-describedby="editor-help"
+                            />
 
-                            {!previewMode && (
-                                <>
-                                    <div className="flex flex-wrap gap-2 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-                                        <button
-                                            type="button"
-                                            onClick={() => applyTemplate('meeting')}
-                                            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            Meeting
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            onClick={() => applyTemplate('journal')}
-                                            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200"
-                                            title="Auto-fill with Daily Journal template"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.998 10-10.747 0-6.002-4.5-10.747-10-10.747z" />
-                                            </svg>
-                                            Journal
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            onClick={() => applyTemplate('checklist')}
-                                            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200"
-                                            title="Auto-fill with Project Checklist template"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                                            </svg>
-                                            Checklist
-                                        </button>        
-                                    </div>
-
-                                    <textarea
-                                        name="description"
-                                        id="description"
-                                        rows="6"
-                                        value={note.description}
-                                        onChange={onchange}
-                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none transition-all duration-200 outline-none font-mono text-sm"
-                                        placeholder="Write your note in Markdown... # Heading, **bold**, - list"
-                                        minLength={5}
-                                        required
-                                    />
-                                </>
-                            )}
-
-                            {previewMode && (
-                                <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 min-h-[200px] max-w-none overflow-y-auto">
-                                    {note.description ? (
-                                        <ReactMarkdown 
-                                            remarkPlugins={[remarkGfm]} 
-                                            components={customRenderers}
-                                        >
-                                            {note.description}
-                                        </ReactMarkdown>
-                                    ) : (
-                                        <p className="text-gray-400 italic">Nothing to preview yet...</p>
-                                    )}
-                                </div>
-                            )}
-
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 flex justify-between">
+                            <p id="editor-help" className="text-xs text-gray-500 dark:text-gray-400 mt-1 flex justify-between">
                                 <span>Minimum 5 characters required.</span>
-                                <span>Markdown Supported <svg className="inline w-3 h-3" viewBox="0 0 16 16" fill="currentColor"><path fillRule="evenodd" d="M14.85 3H1.15C.52 3 0 3.52 0 4.15v7.69C0 12.48.52 13 1.15 13h13.69c.64 0 1.15-.52 1.15-1.15v-7.7C16 3.52 15.48 3 14.85 3zM9 11H7V8L5.5 9.92 4 8v3H2V5h2l1.5 2L7 5h2v6zm2.99.5L9.5 8H11V5h2v3h1.5l-2.51 3.5z" clipRule="evenodd"/></svg></span>
+                                <span>Markdown Supported <svg className="inline w-3 h-3" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fillRule="evenodd" d="M14.85 3H1.15C.52 3 0 3.52 0 4.15v7.69C0 12.48.52 13 1.15 13h13.69c.64 0 1.15-.52 1.15-1.15v-7.7C16 3.52 15.48 3 14.85 3zM9 11H7V8L5.5 9.92 4 8v3H2V5h2l1.5 2L7 5h2v6zm2.99.5L9.5 8H11V5h2v3h1.5l-2.51 3.5z" clipRule="evenodd" /></svg></span>
                             </p>
                         </div>
+                        
                         {/* Audio */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                        <div role="group" aria-labelledby="audio-label">
+                            <label id="audio-label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                 Attach Audio (Optional)
                             </label>
 
-                            {/* Audio Container - Two Column Grid */}
                             <div className="grid grid-cols-2 gap-4">
                                 {/* Recording Section */}
                                 <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 flex flex-col min-h-64">
-                                    <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3">🎤 Record</h3>
-                                    
+                                    <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3" aria-hidden="true">🎤 Record</h3>
+
                                     <div className="flex-1 flex flex-col">
                                         {!recordedAudioUrl && (
                                             <div className="flex-1 flex items-center justify-center">
@@ -410,11 +316,11 @@ export default function Addnote() {
                                         )}
 
                                         {recordedAudioUrl && (
-                                            <div className="flex-1 flex flex-col items-center justify-center">
+                                            <div className="flex-1 flex flex-col items-center justify-center" aria-live="polite">
                                                 <div className="w-full p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700/50 rounded-lg">
                                                     <div className="flex items-start gap-2 mb-2">
                                                         <span className="flex-shrink-0 w-4 h-4 rounded-full bg-green-500 dark:bg-green-400 flex items-center justify-center mt-0.5">
-                                                            <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                            <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                                                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                                             </svg>
                                                         </span>
@@ -422,11 +328,12 @@ export default function Addnote() {
                                                             <p className="text-xs font-medium text-green-700 dark:text-green-400">Recording ready</p>
                                                         </div>
                                                     </div>
-                                                    <audio controls src={recordedAudioUrl} className="w-full h-8 mb-2" />
+                                                    <audio controls src={recordedAudioUrl} className="w-full h-8 mb-2" aria-label="Recorded audio preview" />
                                                     <button
                                                         type="button"
                                                         onClick={clearAudioRecording}
-                                                        className="w-full text-xs px-2 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 rounded transition-colors font-medium"
+                                                        className="w-full text-xs px-2 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 rounded transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-red-500"
+                                                        aria-label="Remove recorded audio"
                                                     >
                                                         Remove
                                                     </button>
@@ -438,15 +345,14 @@ export default function Addnote() {
 
                                 {/* Upload Section */}
                                 <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 flex flex-col min-h-64">
-                                    <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3">📁 Upload</h3>
-                                    
-                                    <div className="flex-1 flex flex-col items-center justify-center">
+                                    <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3" aria-hidden="true">📁 Upload</h3>
+
+                                    <div className="flex-1 flex flex-col items-center justify-center" aria-live="polite">
                                         {audioBlob ? (
-                                            // File Selected State
                                             <div className="w-full p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/50 rounded-lg">
                                                 <div className="flex items-start gap-2 mb-2">
                                                     <span className="flex-shrink-0 w-4 h-4 rounded-full bg-blue-500 dark:bg-blue-400 flex items-center justify-center mt-0.5">
-                                                        <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                        <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                                         </svg>
                                                     </span>
@@ -460,16 +366,16 @@ export default function Addnote() {
                                                 <button
                                                     type="button"
                                                     onClick={() => setAudioBlob(null)}
-                                                    className="w-full text-xs px-2 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 rounded transition-colors font-medium mt-2"
+                                                    className="w-full text-xs px-2 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 rounded transition-colors font-medium mt-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                                    aria-label="Clear selected audio file"
                                                 >
                                                     Clear Selection
                                                 </button>
                                             </div>
                                         ) : (
-                                            // Empty State with Drop Zone
                                             <div className="w-full">
-                                                <label htmlFor="audioFile" className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 dark:border-gray-500 rounded-lg bg-gray-50 dark:bg-gray-700/30 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
-                                                    <svg className="w-6 h-6 text-gray-400 dark:text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <label htmlFor="audioFile" className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 dark:border-gray-500 rounded-lg bg-gray-50 dark:bg-gray-700/30 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors focus-within:ring-2 focus-within:ring-blue-500">
+                                                    <svg className="w-6 h-6 text-gray-400 dark:text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 16m0 0l-3.5-3.5m3.5 3.5l3.5-3.5m-7-4.5h7a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h7m0-2v2m0 0h2m-2 0H8" />
                                                     </svg>
                                                     <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Choose File</p>
@@ -484,6 +390,7 @@ export default function Addnote() {
                                                         if (file) setAudioBlob(file);
                                                     }}
                                                     className="hidden"
+                                                    aria-label="Upload audio file"
                                                 />
                                             </div>
                                         )}
@@ -494,118 +401,90 @@ export default function Addnote() {
 
                         {/* Image Upload */}
                         <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Attach Images
-                        </label>
+                            <label htmlFor="imageUpload" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Attach Images (Optional)
+                            </label>
 
-                        <input
-                            type="file"
-                            accept="image/*"
-                            capture="environment"
-                            multiple
-                            onChange={handleImageChange}
-                            className="block w-full text-sm text-gray-500
+                            <input
+                                id="imageUpload"
+                                type="file"
+                                accept="image/*"
+                                capture="environment"
+                                multiple
+                                onChange={handleImageChange}
+                                aria-label="Attach images"
+                                className="block w-full text-sm text-gray-500
                             file:mr-4 file:py-2 file:px-4
                             file:rounded-lg file:border-0
                             file:text-sm file:font-semibold
                             file:bg-blue-50 file:text-blue-700
-                            hover:file:bg-blue-100"
-                        />
+                            hover:file:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
 
-                        {preview.length > 0 && (
-                            <div className="flex gap-3 mt-3 flex-wrap">
-                            {preview.map((src, index) => (
-                                <img
-                                key={index}
-                                src={src}
-                                alt="preview"
-                                className="w-24 h-24 object-cover rounded-lg border"
-                                />
-                            ))}
-                            </div>
-                        )}
+                            {preview.length > 0 && (
+                                <div className="flex gap-3 mt-3 flex-wrap" aria-live="polite">
+                                    {preview.map((src, index) => (
+                                        <img
+                                            key={index}
+                                            src={src}
+                                            alt={`Preview of selected image ${index + 1}`}
+                                            className="w-24 h-24 object-cover rounded-lg border"
+                                        />
+                                    ))}
+                                </div>
+                            )}
                         </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                         {/* Tag Field */}
                         <div>
                             <label htmlFor="tag" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tag</label>
-                            <input list="datalistOptions" name="tag" id="tag" value={note.tag} onChange={onchange} className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 outline-none" placeholder="Select or type a tag" minLength={2} required />
-                            <datalist id="datalistOptions" className="bg-white dark:bg-gray-700">{allTags.map((tag, index) => (<option key={index} value={tag}/>))}</datalist>
+                            <input 
+                                list="datalistOptions" 
+                                name="tag" 
+                                id="tag" 
+                                value={note.tag} 
+                                onChange={onchange} 
+                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 outline-none" 
+                                placeholder="Select or type a tag" 
+                                minLength={2} 
+                                required 
+                                aria-required="true"
+                            />
+                            <datalist id="datalistOptions" className="bg-white dark:bg-gray-700">
+                                {allTags.map((tag, index) => (<option key={index} value={tag} />))}
+                            </datalist>
                         </div>
 
                         {/* Submit Button */}
                         <button
                             type="submit"
                             disabled={!isFormValid || isSubmitting || isUploadingAudio}
+                            aria-live="polite"
                             className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:transform-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
                         >
                             <span className="flex items-center justify-center">
                                 {isSubmitting || isUploadingAudio ? (
                                     <>
-                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        {isUploadingAudio ? 'Uploading Audio...' : 'Adding Note...'}
+                                        <span>{isUploadingAudio ? 'Uploading Audio...' : 'Adding Note...'}</span>
                                     </>
                                 ) : (
                                     <>
-                                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                         </svg>
-                                        Add Note
+                                        <span>Add Note</span>
                                     </>
                                 )}
                             </span>
                         </button>
                     </form>
                 </div>
-
-                {/* Quick Tips */}
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
-                    <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-300 mb-3 flex items-center">
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Quick Tips
-                    </h3>
-                    <ul className="text-blue-700 dark:text-blue-400 text-sm space-y-2">
-                        <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            Use descriptive titles to easily find your notes later
-                        </li>
-                        <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            Click template buttons (Meeting, Daily, Checklist) to auto-fill note structure
-                        </li>
-                        <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            Tags help organize and categorize your notes effectively
-                        </li>
-                        <li className="flex items-start">
-                            <span className="mr-2">•</span>
-                            All fields require at least 5 characters for better note quality
-                        </li>
-                    </ul>
-                </div>
             </div>
+
             {/* Confirmation Modal */}
             <Modal
                 isOpen={showModal}
@@ -615,7 +494,7 @@ export default function Addnote() {
                     <>
                         <button
                             onClick={handleCloseModal}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
                         >
                             Cancel
                         </button>
@@ -634,7 +513,7 @@ export default function Addnote() {
                         <span className="font-semibold text-blue-600 dark:text-blue-400"> {pendingTemplate?.key} </span>
                         template?
                     </p>
-                    <p className="text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg border border-red-100 dark:border-red-800">
+                    <p className="text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg border border-red-100 dark:border-red-800" role="alert">
                         ⚠️ This action cannot be undone. Your current description will be overwritten.
                     </p>
                 </div>
@@ -642,6 +521,3 @@ export default function Addnote() {
         </div>
     )
 }
-
-
-

@@ -9,11 +9,11 @@ const NoteState = (props) => {
   // Helper function to handle fetch responses
   const handleResponse = async (response) => {
     const contentType = response.headers.get('content-type');
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       let errorMessage = `HTTP ${response.status}`;
-      
+
       try {
         // Try to parse as JSON first
         const errorJson = JSON.parse(errorText);
@@ -26,14 +26,14 @@ const NoteState = (props) => {
           errorMessage = errorText || errorMessage;
         }
       }
-      
+
       throw new Error(errorMessage);
     }
-    
+
     if (!contentType?.includes('application/json')) {
       throw new Error(`Expected JSON but gots ${contentType}`);
     }
-    
+
     return response.json();
   };
 
@@ -97,55 +97,88 @@ const NoteState = (props) => {
   }, [notes, getNotes]);
 
   // Edit note 
- const editNote = useCallback(
-  async (id, title, description, tag, images = [], audio = null) => {
+  const editNote = useCallback(
+    async (id, title, description, tag, images = [], audio = null) => {
+      try {
+        const response = await fetch(`/api/notes/${id}`, {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title, description, tag, images, audio }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to update note");
+        }
+
+        const updatedNote = await response.json();
+
+
+        setNotes((prev) =>
+          prev.map((note) =>
+            note._id === id ? updatedNote : note
+          )
+        );
+      } catch (error) {
+        console.error("Error updating note:", error);
+        toast.error("Failed to update note");
+        getNotes(); // fallback
+        throw error;
+      }
+    },
+    [getNotes]
+  );
+
+  // Toggle Share
+  const toggleShare = useCallback(async (id) => {
     try {
-      const response = await fetch(`/api/notes/${id}`, {
-        method: "PUT",
+      const response = await fetch(`/api/notes/share/${id}`, {
+        method: 'PUT',
         credentials: "include",
         headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ title, description, tag, images, audio }),
+          'Content-Type': 'application/json'
+        }
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update note");
+        throw new Error("Failed to toggle share status");
       }
 
       const updatedNote = await response.json();
 
-      
       setNotes((prev) =>
         prev.map((note) =>
-          note._id === id ? updatedNote : note
+          note._id === id ? { ...note, isPublic: updatedNote.isPublic } : note
         )
       );
+
+      return updatedNote;
+
     } catch (error) {
-      console.error("Error updating note:", error);
-      toast.error("Failed to update note");
-      getNotes(); // fallback
+      console.error("Error toggling share:", error);
       throw error;
     }
-  },
-  [getNotes]
-);
+  }, []);
 
 
   return (
-    <noteContext.Provider 
-      value={{ 
-        notes, 
-        setNotes, 
-        addNote, 
-        deleteNote, 
-        editNote, 
-        getNotes 
+    <noteContext.Provider
+      value={{
+        notes,
+        setNotes,
+        addNote,
+        deleteNote,
+        editNote,
+        getNotes,
+        toggleShare
       }}>
       {props.children}
     </noteContext.Provider>
   )
 }
+
 export default NoteState;
 
 

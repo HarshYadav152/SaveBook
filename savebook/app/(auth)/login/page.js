@@ -109,10 +109,11 @@ const LoginForm = () => {
       <form className="space-y-6" onSubmit={handleSubmit}>
         {/* Username */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Username or Email
+          <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
+            Username
           </label>
           <input
+            id="username"
             type="text"
             name="username"
             value={credentials.username}
@@ -127,23 +128,22 @@ const LoginForm = () => {
         {/* Password */}
         <div>
           <div className="flex justify-between mb-2">
-            <label className="block text-sm font-medium text-gray-300">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-300">
               Password
             </label>
-            <Link
-              href="/forgot-password"
-              className="text-sm text-blue-400 hover:text-blue-300"
-            >
+            <Link href="/forgot-password" className="text-sm text-blue-400 hover:text-blue-300 focus:outline-none focus:underline">
               Forgot password?
             </Link>
           </div>
           <div className="relative">
             <input
+              id="password"
               type={showPassword ? "text" : "password"}
               name="password"
               value={credentials.password}
               onChange={onchange}
               required
+              aria-required="true"
               disabled={isLoading}
               className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white pr-10 focus:ring-2 focus:ring-blue-500 outline-none"
               placeholder="Enter password"
@@ -151,10 +151,11 @@ const LoginForm = () => {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 focus:outline-none"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full p-1"
               aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-pressed={showPassword}
             >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              {showPassword ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
             </button>
           </div>
         </div>
@@ -192,9 +193,9 @@ const LoginForm = () => {
 
       {/* ========== RECOVERY CODES MODAL ========== */}
       {showRecoveryModal && recoveryCodes && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-md">
-            <h3 className="text-xl font-semibold text-white mb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70" role="dialog" aria-modal="true" aria-labelledby="recovery-title">
+          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-md focus:outline-none" tabIndex="-1">
+            <h3 id="recovery-title" className="text-xl font-semibold text-white mb-3">
               Save your recovery codes
             </h3>
 

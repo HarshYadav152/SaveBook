@@ -6,20 +6,19 @@ import toast from 'react-hot-toast';
 import Addnote from './AddNote';
 import NoteItem from './NoteItem';
 import { useAuth } from '@/context/auth/authContext';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import RichTextEditor from './RichTextEditor';
 
 // Separate navigation handler component to use router with Suspense
 const NavigationHandler = ({ isAuthenticated, loading }) => {
     const router = useRouter();
-    
+
     useEffect(() => {
         // Only redirect if loading is complete and user is not authenticated
         if (!loading && !isAuthenticated) {
             router.push("/login");
         }
     }, [isAuthenticated, loading, router]);
-    
+
     return null;
 };
 
@@ -27,8 +26,7 @@ export default function Notes() {
     const { isAuthenticated, loading } = useAuth();
     const context = useContext(noteContext);
     const { notes: contextNotes = [], getNotes, editNote } = context || {};
-    const [editPreview, setEditPreview] = useState(false);
-    
+
     // Ensure notes is always an array
     const notes =
         isAuthenticated && Array.isArray(contextNotes)
@@ -50,22 +48,8 @@ export default function Notes() {
             getNotes().catch(() => toast.error("Failed to load notes"));
         }
     }, [isAuthenticated, loading, getNotes]);
-    
-    const customRenderers = {
-        h1: ({node, ...props}) => <h1 className="text-xl font-bold my-2 text-white" {...props} />,
-        h2: ({node, ...props}) => <h2 className="text-lg font-bold my-2 text-white" {...props} />,
-        h3: ({node, ...props}) => <h3 className="text-md font-bold my-1 text-white" {...props} />,
-        ul: ({node, ...props}) => <ul className="list-disc list-inside my-2 space-y-1" {...props} />,
-        ol: ({node, ...props}) => <ol className="list-decimal list-inside my-2 space-y-1" {...props} />,
-        li: ({node, ...props}) => <li className="text-gray-300" {...props} />,
-        a: ({node, ...props}) => <a className="text-blue-400 hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
-        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-gray-600 pl-4 my-2 italic text-gray-400" {...props} />,
-        code: ({node, inline, className, children, ...props}) => {
-             return inline ? 
-                <code className="bg-gray-800 rounded px-1 py-0.5 text-sm font-mono text-pink-300" {...props}>{children}</code> :
-                <code className="block bg-gray-800 rounded p-2 text-sm font-mono overflow-x-auto text-gray-200 my-2" {...props}>{children}</code>
-        }
-    };
+
+
 
     const tagOptions = [
         { id: 1, value: "General", color: "bg-blue-500" },
@@ -80,8 +64,8 @@ export default function Notes() {
 
     // Filter notes based on search and tag
     const filteredNotes = notes.filter(note => {
-        const matchesSearch = note.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                            note.description?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = note.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            note.description?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesTag = selectedTag === 'all' || note.tag === selectedTag;
         return matchesSearch && matchesTag;
     });
@@ -93,7 +77,6 @@ export default function Notes() {
             edescription: currentNote.description,
             etag: currentNote.tag
         });
-        setEditPreview(false);
         setExistingImages(currentNote.images || []);
         setNewImages([]);
         setPreview([]);
@@ -126,8 +109,8 @@ export default function Notes() {
                 uploadedUrls = await uploadImages(newImages);
             }
             const finalImages = replaceImages
-                ? uploadedUrls              
-                : [...existingImages, ...uploadedUrls]; 
+                ? uploadedUrls
+                : [...existingImages, ...uploadedUrls];
             await editNote(
                 note.id,
                 note.etitle,
@@ -199,7 +182,7 @@ export default function Notes() {
             <Suspense fallback={null}>
                 <NavigationHandler isAuthenticated={isAuthenticated} loading={loading} />
             </Suspense>
-            
+
             <Addnote />
 
             {/* Edit Note Modal */}
@@ -249,50 +232,15 @@ export default function Notes() {
 
                             {/* Description Field */}
                             <div>
-                                <div className="flex items-center justify-between mb-3">
-                                    <label htmlFor="edescription" className="block text-sm font-medium text-gray-300">
-                                        Description
-                                    </label>
-                                    <div className="flex bg-gray-800 rounded-lg p-1 border border-gray-700">
-                                        <button
-                                            type="button"
-                                            onClick={() => setEditPreview(false)}
-                                            className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${!editPreview ? 'bg-gray-600 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'}`}
-                                        >
-                                            Write
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setEditPreview(true)}
-                                            className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${editPreview ? 'bg-gray-600 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'}`}
-                                        >
-                                            Preview
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {!editPreview ? (
-                                    <textarea
-                                        name="edescription"
-                                        id="edescription"
-                                        rows="4"
-                                        value={note.edescription}
-                                        onChange={onchange}
-                                        className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-800 text-white placeholder-gray-500 resize-none transition-all duration-200 outline-none font-mono text-sm"
-                                        placeholder="Enter note description (Markdown supported)"
-                                        minLength={5}
-                                        required
-                                    />
-                                ) : (
-                                    <div className="w-full px-4 py-3 border border-gray-600 rounded-lg bg-gray-800 min-h-[120px] max-w-none overflow-y-auto">
-                                        <ReactMarkdown 
-                                            remarkPlugins={[remarkGfm]}
-                                            components={customRenderers}
-                                        >
-                                            {note.edescription}
-                                        </ReactMarkdown>
-                                    </div>
-                                )}
+                                <label htmlFor="edescription" className="block text-sm font-medium text-gray-300 mb-3">
+                                    Description
+                                </label>
+                                <RichTextEditor
+                                    content={note.edescription}
+                                    onChange={(content) => setNote({ ...note, edescription: content })}
+                                    placeholder="Enter note description..."
+                                    className="bg-gray-800 border-gray-600 text-white"
+                                />
                                 <p className="text-xs text-gray-400 mt-2">
                                     {note.edescription.length}/5 characters
                                 </p>
@@ -376,7 +324,7 @@ export default function Notes() {
                                         className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-800 text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer transition-all duration-200 outline-none"
                                     />
                                 </div>
-                                
+
                                 {/* Replace Images Checkbox */}
                                 <div className="flex items-center gap-2 mt-3 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
                                     <input
@@ -390,7 +338,7 @@ export default function Notes() {
                                         Replace existing images (instead of adding to them)
                                     </label>
                                 </div>
-                                
+
                                 <p className="text-xs text-gray-400 mt-2">
                                     Select one or more images to {replaceImages ? 'replace all existing images' : 'add to your note'}
                                 </p>
@@ -484,7 +432,7 @@ export default function Notes() {
 
             {/* Image Preview Modal */}
             {previewImage && (
-                <div 
+                <div
                     className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-[60] backdrop-blur-sm"
                     onClick={() => setPreviewImage(null)}
                 >
@@ -499,7 +447,7 @@ export default function Notes() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
-                        
+
                         {/* Image */}
                         <img
                             src={previewImage}
@@ -546,11 +494,10 @@ export default function Notes() {
                         <div className="flex flex-wrap gap-2">
                             <button
                                 onClick={() => setSelectedTag('all')}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                    selectedTag === 'all' 
-                                        ? 'bg-blue-600 text-white' 
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${selectedTag === 'all'
+                                        ? 'bg-blue-600 text-white'
                                         : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                                }`}
+                                    }`}
                             >
                                 All
                             </button>
@@ -558,11 +505,10 @@ export default function Notes() {
                                 <button
                                     key={tag.id}
                                     onClick={() => setSelectedTag(tag.value)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                        selectedTag === tag.value 
-                                            ? `${tag.color} text-white` 
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${selectedTag === tag.value
+                                            ? `${tag.color} text-white`
                                             : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                                    }`}
+                                        }`}
                                 >
                                     {tag.value}
                                 </button>
@@ -589,7 +535,7 @@ export default function Notes() {
                                 {searchTerm || selectedTag !== 'all' ? 'No matching notes found' : 'No notes yet'}
                             </h3>
                             <p className="text-gray-500 max-w-md mx-auto">
-                                {searchTerm || selectedTag !== 'all' 
+                                {searchTerm || selectedTag !== 'all'
                                     ? 'Try adjusting your search or filter criteria'
                                     : 'Create your first note to get started!'
                                 }
