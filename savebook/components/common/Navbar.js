@@ -3,9 +3,12 @@ import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/context/auth/authContext';
+import { clsx } from 'clsx';
 
 export default function Navbar() {
     const pathname = usePathname();
+    const isLoginPage = pathname === '/login';
+    const isRegisterPage = pathname === '/register';
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isClient, setIsClient] = useState(false);
@@ -48,7 +51,7 @@ export default function Navbar() {
         const handleClickOutside = (event) => {
             const isDesktopDropdownClicked = desktopDropdownRef.current && desktopDropdownRef.current.contains(event.target);
             const isMobileDropdownClicked = mobileDropdownRef.current && mobileDropdownRef.current.contains(event.target);
-            
+
             if (dropdownOpen && !isDesktopDropdownClicked && !isMobileDropdownClicked) {
                 setDropdownOpen(false);
             }
@@ -71,11 +74,10 @@ export default function Navbar() {
     // Don't render auth-dependent UI until client-side hydration is complete
     if (!isClient) {
         return (
-            <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-                isScrolled 
-                    ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-lg' 
-                    : 'bg-transparent'
-            }`}>
+            <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+                ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-lg'
+                : 'bg-transparent'
+                }`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex-shrink-0 flex items-center">
@@ -101,11 +103,10 @@ export default function Navbar() {
     }
 
     return (
-        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-            isScrolled 
-                ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-lg' 
-                : 'bg-transparent'
-        }`}>
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+            ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-lg'
+            : 'bg-transparent'
+            }`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo/Brand */}
@@ -149,7 +150,7 @@ export default function Navbar() {
                                         )}
                                     </div>
                                 </button>
-                                
+
                                 {/* Dropdown menu */}
                                 {dropdownOpen && (
                                     <div role="menu" className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700 focus:outline-none">
@@ -190,15 +191,25 @@ export default function Navbar() {
                         ) : (
                             // Not authenticated - show login/signup buttons
                             <div className="flex items-center space-x-3">
-                                <Link 
+                                <Link
                                     href="/login"
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md"
+                                    className={clsx(
+                                        "px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md",
+                                        isLoginPage 
+                                            ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white" 
+                                            : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                                    )}
                                 >
                                     Login
                                 </Link>
-                                <Link 
+                                <Link
                                     href="/register"
-                                    className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+                                    className={clsx(
+                                        "px-4 py-2 text-sm font-medium rounded-lg hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900",
+                                        isRegisterPage 
+                                            ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white" 
+                                            : "bg-gradient-to-r from-blue-600 to-purple-600 text-white opacity-90 hover:opacity-100"
+                                    )}
                                 >
                                     Sign Up
                                 </Link>
@@ -233,7 +244,7 @@ export default function Navbar() {
                                             )}
                                         </div>
                                     </button>
-                                    
+
                                     {/* Dropdown menu for mobile */}
                                     {dropdownOpen && (
                                         <div role="menu" className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700 focus:outline-none">
@@ -271,7 +282,7 @@ export default function Navbar() {
                                         </div>
                                     )}
                                 </div>
-                                
+
                                 <button
                                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                                     aria-expanded={isMenuOpen}
@@ -365,16 +376,26 @@ export default function Navbar() {
                             </div>
                         ) : (
                             <div className="space-y-3">
-                                <Link 
-                                    href="/login" 
-                                    className="block w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white text-base font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+                                <Link
+                                    href="/login"
+                                    className={clsx(
+                                        "block w-full px-4 py-2 text-base font-medium rounded-lg transition-all duration-200 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900",
+                                        isLoginPage 
+                                            ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white" 
+                                            : "text-gray-700 dark:text-white bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
+                                    )}
                                     onClick={() => setIsMenuOpen(false)}
                                 >
                                     Login
                                 </Link>
-                                <Link 
-                                    href="/register" 
-                                    className="block w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-base font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+                                <Link
+                                    href="/register"
+                                    className={clsx(
+                                        "block w-full px-4 py-2 text-base font-medium rounded-lg transition-all duration-200 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900",
+                                        isRegisterPage 
+                                            ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white" 
+                                            : "text-gray-700 dark:text-white bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
+                                    )}
                                     onClick={() => setIsMenuOpen(false)}
                                 >
                                     Sign Up
