@@ -3,9 +3,12 @@ import React, { useEffect, useState, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/context/auth/authContext';
+import { clsx } from 'clsx';
 
 export default function Navbar() {
     const pathname = usePathname();
+    const isLoginPage = pathname === '/login';
+    const isRegisterPage = pathname === '/register';
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isClient, setIsClient] = useState(false);
@@ -44,7 +47,7 @@ export default function Navbar() {
         const handleClickOutside = (event) => {
             const isDesktopDropdownClicked = desktopDropdownRef.current && desktopDropdownRef.current.contains(event.target);
             const isMobileDropdownClicked = mobileDropdownRef.current && mobileDropdownRef.current.contains(event.target);
-            
+
             if (dropdownOpen && !isDesktopDropdownClicked && !isMobileDropdownClicked) {
                 setDropdownOpen(false);
             }
@@ -59,16 +62,15 @@ export default function Navbar() {
     // Don't render auth-dependent UI until client-side hydration is complete
     if (!isClient) {
         return (
-            <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-                isScrolled 
-                    ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-lg' 
-                    : 'bg-transparent'
-            }`}>
+            <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+                ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-lg'
+                : 'bg-transparent'
+                }`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex-shrink-0 flex items-center">
-                            <Link 
-                                href="/" 
+                            <Link
+                                href="/"
                                 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent flex items-center"
                             >
                                 <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,17 +90,16 @@ export default function Navbar() {
     }
 
     return (
-        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-            isScrolled 
-                ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-lg' 
-                : 'bg-transparent'
-        }`}>
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+            ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-lg'
+            : 'bg-transparent'
+            }`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo/Brand */}
                     <div className="flex-shrink-0 flex items-center">
-                        <Link 
-                            href="/" 
+                        <Link
+                            href="/"
                             className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent flex items-center"
                         >
                             <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,9 +124,9 @@ export default function Navbar() {
                                 >
                                     <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
                                         {user?.profileImage ? (
-                                            <img 
-                                                src={user.profileImage} 
-                                                alt="Profile" 
+                                            <img
+                                                src={user.profileImage}
+                                                alt="Profile"
                                                 className="w-full h-full object-cover cursor-pointer"
                                             />
                                         ) : (
@@ -133,7 +134,7 @@ export default function Navbar() {
                                         )}
                                     </div>
                                 </button>
-                                
+
                                 {/* Dropdown menu */}
                                 {dropdownOpen && (
                                     <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
@@ -145,15 +146,15 @@ export default function Navbar() {
                                                 {user?.email || ""}
                                             </p>
                                         </div>
-                                        <Link 
-                                            href="/profile" 
+                                        <Link
+                                            href="/profile"
                                             className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                             onClick={() => setDropdownOpen(false)}
                                         >
                                             Edit Profile
                                         </Link>
-                                        <Link 
-                                            href="/notes" 
+                                        <Link
+                                            href="/notes"
                                             className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                             onClick={() => setDropdownOpen(false)}
                                         >
@@ -171,15 +172,20 @@ export default function Navbar() {
                         ) : (
                             // Not authenticated - show login/signup buttons
                             <div className="flex items-center space-x-3">
-                                <Link 
+                                <Link
                                     href="/login"
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                    className={clsx("px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors",
+                                        isLoginPage ? "bg-gradient-to-r from-blue-600 to-purple-600 font-medium  text-white rounded-lg" : " hover:text-blue-600 dark:hover:text-blue-400"
+
+                                    )}
                                 >
                                     Login
                                 </Link>
-                                <Link 
+                                <Link
                                     href="/register"
-                                    className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all"
+                                    className={clsx("px-4 py-2 text-sm font-medium  text-white rounded-lg hover:shadow-lg transition-all ",
+                                        isRegisterPage ? "bg-gradient-to-r from-blue-600 to-purple-600 font-medium  text-white rounded-lg" : " hover:text-blue-600 dark:hover:text-blue-400"
+                                    )}
                                 >
                                     Sign Up
                                 </Link>
@@ -202,9 +208,9 @@ export default function Navbar() {
                                     >
                                         <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg overflow-hidden cursor-pointer">
                                             {user?.profileImage ? (
-                                                <img 
-                                                    src={user.profileImage} 
-                                                    alt="Profile" 
+                                                <img
+                                                    src={user.profileImage}
+                                                    alt="Profile"
                                                     className="w-full h-full object-cover cursor-pointer"
                                                 />
                                             ) : (
@@ -212,7 +218,7 @@ export default function Navbar() {
                                             )}
                                         </div>
                                     </button>
-                                    
+
                                     {/* Dropdown menu for mobile */}
                                     {dropdownOpen && (
                                         <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
@@ -224,15 +230,15 @@ export default function Navbar() {
                                                     {user?.email || ""}
                                                 </p>
                                             </div>
-                                            <Link 
-                                                href="/profile" 
+                                            <Link
+                                                href="/profile"
                                                 className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                                 onClick={() => setDropdownOpen(false)}
                                             >
                                                 Edit Profile
                                             </Link>
-                                            <Link 
-                                                href="/notes" 
+                                            <Link
+                                                href="/notes"
                                                 className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                                 onClick={() => setDropdownOpen(false)}
                                             >
@@ -247,7 +253,7 @@ export default function Navbar() {
                                         </div>
                                     )}
                                 </div>
-                                
+
                                 <button
                                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                                     className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-all duration-200"
@@ -291,9 +297,9 @@ export default function Navbar() {
                                     <div className="flex-shrink-0">
                                         <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg overflow-hidden">
                                             {user?.profileImage ? (
-                                                <img 
-                                                    src={user.profileImage} 
-                                                    alt="Profile" 
+                                                <img
+                                                    src={user.profileImage}
+                                                    alt="Profile"
                                                     className="w-full h-full object-cover"
                                                 />
                                             ) : (
@@ -310,49 +316,49 @@ export default function Navbar() {
                                         </p>
                                     </div>
                                 </div>
-                                
-                                <Link 
-                                    href="/notes" 
+
+                                <Link
+                                    href="/notes"
                                     className="block w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-base font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-center"
                                     onClick={() => setIsMenuOpen(false)}
                                 >
                                     My Notes
                                 </Link>
-                                
-                                <Link 
-                                    href="/profile" 
+
+                                <Link
+                                    href="/profile"
                                     className="block w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white text-base font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 text-center"
                                     onClick={() => setIsMenuOpen(false)}
                                 >
                                     Edit Profile
                                 </Link>
                                 <button
-                              onClick={handleLogout}
-                                  className="block w-full px-4 py-2 bg-red-100 dark:bg-red-900/30
+                                    onClick={handleLogout}
+                                    className="block w-full px-4 py-2 bg-red-100 dark:bg-red-900/30
                                               text-red-600 dark:text-red-400 text-base font-medium
                                              rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50
-                                                             transition-all duration-200 text-center"> 
-                                        Logout
-                                        </button>
+                                                             transition-all duration-200 text-center">
+                                    Logout
+                                </button>
 
                             </div>
                         ) : (
                             <div className="space-y-3">
-                                <Link 
-                                    href="/login" 
-                                    className="block w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white text-base font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 text-center"
+                                <Link
+                                    href="/login"
+                                    className={clsx("block w-full px-4 py-2 text-gray-700 dark:text-white text-base font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 text-center", isLoginPage ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white" : "bg-gray-200 dark:bg-gray-700")}
                                     onClick={() => setIsMenuOpen(false)}
                                 >
                                     Login
                                 </Link>
-                                <Link 
-                                    href="/register" 
-                                    className="block w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-base font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-center"
+                                <Link
+                                    href="/register"
+                                    className={clsx("block w-full px-4 py-2  text-white text-base font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-center", isRegisterPage ? "bg-gradient-to-r from-blue-600 to-purple-600" : "bg-gray-200 dark:bg-gray-700")}
                                     onClick={() => setIsMenuOpen(false)}
                                 >
                                     Sign Up
                                 </Link>
-                                
+
                             </div>
                         )}
                     </div>
