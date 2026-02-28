@@ -1,0 +1,52 @@
+// Add these imports at the top of NoteItem.js
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
+
+// Update the ReactMarkdown component to include math plugins:
+<ReactMarkdown 
+    remarkPlugins={[remarkGfm, remarkMath]} 
+    rehypePlugins={[rehypeKatex]}
+    components={customRenderers}
+>
+    {note.description}
+</ReactMarkdown>
+
+// Add table renderers to customRenderers object:
+table: ({node, ...props}) => (
+    <div className="overflow-x-auto my-4">
+        <table className="min-w-full border-collapse border border-gray-600" {...props} />
+    </div>
+),
+thead: ({node, ...props}) => <thead className="bg-gray-800" {...props} />,
+tbody: ({node, ...props}) => <tbody className="bg-gray-900" {...props} />,
+tr: ({node, ...props}) => <tr className="border-b border-gray-700" {...props} />,
+th: ({node, ...props}) => <th className="border border-gray-600 px-4 py-2 text-left font-semibold text-white" {...props} />,
+td: ({node, ...props}) => <td className="border border-gray-600 px-4 py-2 text-gray-300" {...props} />,
+
+// Add PDF attachments display section (add after images section):
+{note.attachments && note.attachments.length > 0 && (
+    <div className="mt-4 pt-4 border-t border-gray-700">
+        <h4 className="text-sm font-semibold text-gray-300 mb-2">📎 Attachments</h4>
+        <div className="space-y-2">
+            {note.attachments.map((attachment, index) => (
+                <a
+                    key={index}
+                    href={attachment.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 p-2 bg-gray-800 hover:bg-gray-750 rounded-lg transition-colors"
+                >
+                    <span className="text-2xl">📄</span>
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-white truncate">{attachment.name}</p>
+                        <p className="text-xs text-gray-400">{(attachment.size / 1024 / 1024).toFixed(2)} MB</p>
+                    </div>
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            ))}
+        </div>
+    </div>
+)}

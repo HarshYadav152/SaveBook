@@ -4,7 +4,9 @@ import LinkPreviewCard from './LinkPreviewCard';
 import toast from 'react-hot-toast';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Share2, Globe, Lock, Copy, Check } from 'lucide-react';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 export default function NoteItem(props) {
     const context = useContext(noteContext);
@@ -147,7 +149,17 @@ export default function NoteItem(props) {
             return inline ?
                 <code className="bg-gray-800 rounded px-1 py-0.5 text-sm font-mono text-pink-300" {...props}>{children}</code> :
                 <code className="block bg-gray-800 rounded p-2 text-sm font-mono overflow-x-auto text-gray-200 my-2" {...props}>{children}</code>
-        }
+        },
+        table: ({ node, ...props }) => (
+            <div className="overflow-x-auto my-4 relative z-20" onClick={(e) => e.stopPropagation()}>
+                <table className="min-w-full border-collapse border border-gray-600 text-sm" {...props} />
+            </div>
+        ),
+        thead: ({ node, ...props }) => <thead className="bg-gray-800" {...props} />,
+        tbody: ({ node, ...props }) => <tbody className="bg-gray-900" {...props} />,
+        tr: ({ node, ...props }) => <tr className="border-b border-gray-700" {...props} />,
+        th: ({ node, ...props }) => <th className="border border-gray-600 px-4 py-2 text-left font-semibold text-white" {...props} />,
+        td: ({ node, ...props }) => <td className="border border-gray-600 px-4 py-2 text-gray-300" {...props} />,
     };
 
     return (
@@ -195,7 +207,8 @@ export default function NoteItem(props) {
                             >
                                 {note?.description ? (
                                     <ReactMarkdown
-                                        remarkPlugins={[remarkGfm]}
+                                        remarkPlugins={[remarkGfm, remarkMath]}
+                                        rehypePlugins={[rehypeKatex]}
                                         components={customRenderers}
                                     >
                                         {note.description}
@@ -231,6 +244,34 @@ export default function NoteItem(props) {
                                 ))}
                             </div>
                         )}
+
+                        {/* Attachments (PDFs) */}
+                        {Array.isArray(note?.attachments) && note.attachments.length > 0 && (
+                            <div className="mt-4 space-y-2 relative z-30" onClick={(e) => e.stopPropagation()}>
+                                {note.attachments.map((file, index) => (
+                                    <a
+                                        key={index}
+                                        href={file.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-3 p-3 bg-gray-800/50 hover:bg-gray-800 rounded-xl border border-gray-700 transition-colors group/file"
+                                    >
+                                        <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 group-hover/file:bg-red-500/20 transition-colors">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-xs font-medium text-gray-200 truncate">{file.name}</p>
+                                            <p className="text-[10px] text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB • PDF</p>
+                                        </div>
+                                        <svg className="w-4 h-4 text-gray-400 group-hover/file:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                    </a>
+                                ))}
+                            </div>
+                        )}
                         {/* Link Previews */}
                         {noteUrls.map((url, index) => (
                             <div key={index} className="relative z-20" onClick={(e) => e.stopPropagation()}>
@@ -259,17 +300,16 @@ export default function NoteItem(props) {
 
                     {/* Enhanced Footer */}
                     <div className="px-5 py-4 bg-gray-800/50 border-t border-gray-700 backdrop-blur-sm relative z-10">
-                        <div className="flex items-center justify-between gap-4 mb-3">
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleEdit();
-                                    }}
-                                    disabled={isDeleting}
-                                    className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all duration-200 group/edit disabled:opacity-50 disabled:cursor-not-allowed"
-                                    title="Edit Note"
-                                >
+                        <div className="flex justify-between items-center mb-3">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEdit();
+                                }}
+                                disabled={isDeleting}
+                                className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-all duration-200 group/edit disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-500/10 group-hover/edit:bg-blue-500/20 border border-blue-500/20 group-hover/edit:border-blue-500/30 transition-all duration-200 group-hover/edit:scale-110">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
@@ -304,15 +344,15 @@ export default function NoteItem(props) {
                                     )}
                                 </div>
 
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDelete();
-                                    }}
-                                    disabled={isDeleting}
-                                    className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-200 group/delete disabled:opacity-50 disabled:cursor-not-allowed"
-                                    title="Delete Note"
-                                >
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDelete();
+                                }}
+                                disabled={isDeleting}
+                                className="flex items-center space-x-2 text-red-400 hover:text-red-300 transition-all duration-200 group/delete disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-red-500/10 group-hover/delete:bg-red-500/20 border border-red-500/20 group-hover/delete:border-red-500/30 transition-all duration-200 group-hover/delete:scale-110">
                                     {isDeleting ? (
                                         <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -407,9 +447,70 @@ export default function NoteItem(props) {
                             {note?.tag || 'General'}
                         </span>
 
-                        {/* Content */}
-                        <div className="mt-4 text-gray-300 whitespace-pre-wrap leading-relaxed max-h-[60vh] overflow-y-auto">
-                            {note?.description || 'No description provided.'}
+                        <div className="mt-4 text-gray-300 leading-relaxed max-h-[60vh] overflow-y-auto">
+                            <ReactMarkdown
+                                remarkPlugins={[remarkGfm, remarkMath]}
+                                rehypePlugins={[rehypeKatex]}
+                                components={customRenderers}
+                            >
+                                {note?.description || 'No description provided.'}
+                            </ReactMarkdown>
+
+                            {/* Images in Modal */}
+                            {Array.isArray(note?.images) && note.images.length > 0 && (
+                                <div className="mt-6 flex gap-3 flex-wrap">
+                                    {note.images.map((img, index) => (
+                                        <img
+                                            key={index}
+                                            src={img}
+                                            alt={`note image ${index + 1}`}
+                                            className="w-full max-w-md rounded-xl border border-gray-700 mx-auto"
+                                        />
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Audio in Modal */}
+                            {note?.audio && note.audio.url && (
+                                <div className="mt-6 p-4 bg-gray-800 rounded-xl border border-gray-700">
+                                    <p className="text-xs text-gray-400 mb-3 flex items-center gap-2">
+                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
+                                        </svg>
+                                        Voice Note
+                                    </p>
+                                    <audio controls src={note.audio.url} className="w-full" />
+                                </div>
+                            )}
+
+                            {/* Attachments in Modal */}
+                            {Array.isArray(note?.attachments) && note.attachments.length > 0 && (
+                                <div className="mt-6 space-y-3">
+                                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Attachments</p>
+                                    {note.attachments.map((file, index) => (
+                                        <a
+                                            key={index}
+                                            href={file.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-4 p-4 bg-gray-800 hover:bg-gray-700 rounded-xl border border-gray-700 transition-all group/modal-file"
+                                        >
+                                            <div className="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 group-hover/modal-file:bg-red-500/20">
+                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium text-white truncate">{file.name}</p>
+                                                <p className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB • PDF Document</p>
+                                            </div>
+                                            <div className="px-3 py-1 rounded-lg bg-gray-900 border border-gray-600 text-[10px] font-bold text-gray-400 group-hover/modal-file:text-white group-hover/modal-file:border-gray-500 uppercase">
+                                                View
+                                            </div>
+                                        </a>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         {/* Footer */}
