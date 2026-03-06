@@ -12,11 +12,13 @@ const SignupForm = () => {
     const { register, isAuthenticated } = useAuth();
     const [credentials, setCredentials] = useState({
         username: '',
+        email: '',
         password: '',
         confirmPassword: ''
     });
     const [errors, setErrors] = useState({
         username: '',
+        email: '',
         password: '',
         confirmPassword: ''
     });
@@ -48,6 +50,12 @@ const SignupForm = () => {
             newErrors.username = 'Username is required';
         }
 
+        if (!credentials.email.trim()) {
+            newErrors.email = 'Email is required';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(credentials.email)) {
+            newErrors.email = 'Please enter a valid email address';
+        }
+
         if (!credentials.password) {
             newErrors.password = 'Password is required';
         } else if (credentials.password.length < 6) {
@@ -72,6 +80,7 @@ const SignupForm = () => {
             // Use the register method from AuthContext
             const result = await register(
                 credentials.username,
+                credentials.email,
                 credentials.password
             );
 
@@ -163,8 +172,8 @@ const SignupForm = () => {
                     aria-invalid={!!errors.username}
                     aria-describedby={errors.username ? "username-error" : undefined}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 ${errors.username
-                            ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
-                            : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
+                        ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
+                        : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
                         }`}
                     placeholder="Choose a username"
                     required
@@ -172,6 +181,34 @@ const SignupForm = () => {
                 {errors.username && (
                     <p id="username-error" role="alert" className="mt-1 text-sm text-red-400">
                         {errors.username}
+                    </p>
+                )}
+            </div>
+
+            {/* Email Field */}
+            <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                    Email Address
+                </label>
+                <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    value={credentials.email}
+                    onChange={onchange}
+                    disabled={isLoading || isAuthenticated}
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? "email-error" : undefined}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 ${errors.email
+                        ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
+                        : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
+                        }`}
+                    placeholder="Enter your email"
+                    required
+                />
+                {errors.email && (
+                    <p id="email-error" role="alert" className="mt-1 text-sm text-red-400">
+                        {errors.email}
                     </p>
                 )}
             </div>
@@ -192,8 +229,8 @@ const SignupForm = () => {
                         aria-invalid={!!errors.password}
                         aria-describedby={errors.password ? "password-error" : "password-hint"}
                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 pr-10 ${errors.password
-                                ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
-                                : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
+                            ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
+                            : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
                             }`}
                         placeholder="Create a password"
                         required
@@ -236,8 +273,8 @@ const SignupForm = () => {
                         aria-invalid={!!errors.confirmPassword}
                         aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 pr-10 ${errors.confirmPassword
-                                ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
-                                : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
+                            ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
+                            : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
                             }`}
                         placeholder="Confirm your password"
                         required

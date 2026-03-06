@@ -4,62 +4,67 @@ import dbConnect from "@/lib/db/mongodb.js";
 import User from "@/lib/models/User.js";
 
 export async function POST(req) {
-  await dbConnect();
+  try {
+    await dbConnect();
 
-  const { username, password, recoveryCode } = await req.json();
+    const { email, password, otp } = await req.json();
 
-  //Validate input
-  if (!username || !password || !recoveryCode) {
-    return NextResponse.json(
-      { message: "Username, password and recovery code are required" },
-      { status: 400 }
-    );
-  }
-
-  // Find user by username
-  const user = await User.findOne({ username }).select(
-    "+password +recoveryCodes"
-  );
-
-  if (!user) {
-    // generic message
-    return NextResponse.json(
-      { message: "Invalid credentials" },
-      { status: 400 }
-    );
-  }
-
-  // Verify recovery code 
-  let matchedIndex = -1;
-
-  for (let i = 0; i < user.recoveryCodes.length; i++) {
-    const rc = user.recoveryCodes[i];
-
-    if (!rc.used) {
-      const isMatch = await bcrypt.compare(recoveryCode, rc.code);
-      if (isMatch) {
-        matchedIndex = i;
-        break;
-      }
+    //Validate input
+    if (!email || !password || !otp) {
+      return NextResponse.json(
+        { message: "Email, password and OTP are required" },
+        { status: 400 }
+      );
     }
-  }
 
-  if (matchedIndex === -1) {
+    // Find user by email
+    const user = await User.findOne({ email }).select(
+      "+password +resetPasswordOtp +resetPasswordOtpExpires"
+    );
+
+    if (!user) {
+      // generic message
+      return NextResponse.json(
+        { message: "Invalid credentials" },
+        { status: 400 }
+      );
+    }
+
+    // Check if OTP exists and is not expired
+    if (!user.resetPasswordOtp || !user.resetPasswordOtpExpires || user.resetPasswordOtpExpires < new Date()) {
+      return NextResponse.json(
+        { message: "OTP has expired or is invalid. Please request a new one." },
+        { status: 400 }
+      );
+    }
+
+    // Verify OTP
+    const isMatch = await bcrypt.compare(otp, user.resetPasswordOtp);
+
+    if (!isMatch) {
+      return NextResponse.json(
+        { message: "Invalid OTP" },
+        { status: 400 }
+      );
+    }
+
+    // Update password
+    user.password = password;
+
+    // Clear OTP fields
+    user.resetPasswordOtp = undefined;
+    user.resetPasswordOtpExpires = undefined;
+
+    await user.save();
+
+    return NextResponse.json({
+      message: "Password reset successful. Please login.",
+    });
+  } catch (error) {
+    console.error("Reset password error:", error);
     return NextResponse.json(
-      { message: "Invalid or already used recovery code" },
-      { status: 400 }
+      { message: "Server error occurred" },
+      { status: 500 }
     );
   }
-
-  //Mark recovery code as used
-  user.recoveryCodes[matchedIndex].used = true;
-
-  // Update password
-  user.password = password;
-
-  await user.save();
-
-  return NextResponse.json({
-    message: "Password reset successful. Please login.",
-  });
 }

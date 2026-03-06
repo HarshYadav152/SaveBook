@@ -6,8 +6,21 @@ const UserSchema = new Schema({
     username: {
         type: String,
         required: true,
-        lowercase:true,
+        lowercase: true,
         unique: true
+    },
+    email: {
+        type: String,
+        unique: true,
+        sparse: true,
+        lowercase: true,
+        trim: true
+    },
+    resetPasswordOtp: {
+        type: String,
+    },
+    resetPasswordOtpExpires: {
+        type: Date,
     },
     password: {
         type: String,
@@ -38,11 +51,11 @@ const UserSchema = new Schema({
         default: ''
     },
     recoveryCodes: [
-  {
-    code: { type: String }, // hashed
-    used: { type: Boolean, default: false }
-  }
-],
+        {
+            code: { type: String }, // hashed
+            used: { type: Boolean, default: false }
+        }
+    ],
 
 
 });
