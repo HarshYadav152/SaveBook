@@ -25,6 +25,7 @@
     "lucide-react": "^0.562.0",
     "mongoose": "^8.19.1",
     "next": "^15.5.7",
+    "nodemailer": "^8.0.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hot-toast": "^2.6.0",
