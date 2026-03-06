@@ -15,8 +15,6 @@ export default function AudioRecorder({ onRecordingComplete = null }) {
   const startRecording = async () => {
     try {
       setError(null);
-      
-      // Request microphone access
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           echoCancellation: true,
@@ -27,31 +25,20 @@ export default function AudioRecorder({ onRecordingComplete = null }) {
       
       streamRef.current = stream;
       chunksRef.current = [];
-      
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       
-      // Collect audio chunks
       mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunksRef.current.push(event.data);
-        }
+        if (event.data.size > 0) chunksRef.current.push(event.data);
       };
       
-      // Handle recording stop
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        
-        // Stop all tracks
         stream.getTracks().forEach(track => track.stop());
         streamRef.current = null;
         
-        // Call callback with blob
-        if (onRecordingComplete) {
-          onRecordingComplete(audioBlob);
-        }
+        if (onRecordingComplete) onRecordingComplete(audioBlob);
         
-        // Reset UI
         setRecordingTime(0);
         setIsProcessing(false);
       };
@@ -60,7 +47,6 @@ export default function AudioRecorder({ onRecordingComplete = null }) {
       setIsRecording(true);
       setRecordingTime(0);
       
-      // Start timer
       timerIntervalRef.current = setInterval(() => {
         setRecordingTime(prev => prev + 1);
       }, 1000);
@@ -81,13 +67,10 @@ export default function AudioRecorder({ onRecordingComplete = null }) {
     if (mediaRecorderRef.current && isRecording) {
       setIsProcessing(true);
       setIsRecording(false);
-      
-      // Clear timer
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
         timerIntervalRef.current = null;
       }
-      
       mediaRecorderRef.current.stop();
     }
   };
@@ -97,22 +80,15 @@ export default function AudioRecorder({ onRecordingComplete = null }) {
       setIsRecording(false);
       setRecordingTime(0);
       
-      // Clear timer
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
         timerIntervalRef.current = null;
       }
-      
-      if (mediaRecorderRef.current) {
-        mediaRecorderRef.current.stop();
-      }
-      
-      // Stop stream
+      if (mediaRecorderRef.current) mediaRecorderRef.current.stop();
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
         streamRef.current = null;
       }
-      
       chunksRef.current = [];
     }
   };
@@ -125,6 +101,7 @@ export default function AudioRecorder({ onRecordingComplete = null }) {
 
   return (
     <div
+      aria-label="Audio Recorder"
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -135,8 +112,9 @@ export default function AudioRecorder({ onRecordingComplete = null }) {
         border: '1px solid #e5e7eb',
       }}
     >
-      {/* Recording Status */}
       <div
+        aria-live="polite"
+        aria-atomic="true"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -148,6 +126,7 @@ export default function AudioRecorder({ onRecordingComplete = null }) {
         {isRecording && (
           <>
             <span
+              aria-hidden="true"
               style={{
                 display: 'inline-block',
                 width: '8px',
@@ -158,13 +137,13 @@ export default function AudioRecorder({ onRecordingComplete = null }) {
               }}
             />
             <span style={{ fontSize: '14px', fontWeight: '500', color: '#1f2937' }}>
-              Recording: {formatTime(recordingTime)}
+              <span className="sr-only">Currently </span>Recording: {formatTime(recordingTime)}
             </span>
           </>
         )}
         {isProcessing && (
           <span style={{ fontSize: '14px', color: '#6b7280' }}>
-            Processing...
+            Processing audio...
           </span>
         )}
         {!isRecording && !isProcessing && recordingTime === 0 && (
@@ -177,6 +156,7 @@ export default function AudioRecorder({ onRecordingComplete = null }) {
       {/* Error Message */}
       {error && (
         <div
+          role="alert"
           style={{
             padding: '8px 12px',
             backgroundColor: '#fee2e2',
@@ -202,6 +182,8 @@ export default function AudioRecorder({ onRecordingComplete = null }) {
           <button
             onClick={startRecording}
             disabled={isProcessing}
+            className="a11y-focus-ring"
+            aria-label="Start audio recording"
             style={{
               padding: '8px 16px',
               backgroundColor: isProcessing ? '#d1d5db' : '#eff6ff',
@@ -227,6 +209,8 @@ export default function AudioRecorder({ onRecordingComplete = null }) {
             <button
               onClick={stopRecording}
               disabled={isProcessing}
+              className="a11y-focus-ring"
+              aria-label="Stop and save recording"
               style={{
                 padding: '8px 16px',
                 backgroundColor: isProcessing ? '#d1d5db' : '#10b981',
@@ -250,6 +234,8 @@ export default function AudioRecorder({ onRecordingComplete = null }) {
             <button
               onClick={cancelRecording}
               disabled={isProcessing}
+              className="a11y-focus-ring"
+              aria-label="Cancel recording"
               style={{
                 padding: '8px 16px',
                 backgroundColor: isProcessing ? '#d1d5db' : '#6b7280',
@@ -274,8 +260,8 @@ export default function AudioRecorder({ onRecordingComplete = null }) {
         )}
       </div>
 
-      {/* Info Text */}
       <p
+        aria-hidden="true"
         style={{
           margin: '0',
           fontSize: '12px',
@@ -288,15 +274,25 @@ export default function AudioRecorder({ onRecordingComplete = null }) {
           : 'Click start to begin recording audio'}
       </p>
 
-      {/* Pulse animation */}
       <style>{`
         @keyframes pulse {
-          0%, 100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.5;
-          }
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        .a11y-focus-ring:focus-visible {
+          outline: 2px solid #3b82f6;
+          outline-offset: 2px;
+        }
+        .sr-only {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border-width: 0;
         }
       `}</style>
     </div>

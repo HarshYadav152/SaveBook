@@ -11,7 +11,6 @@ export default function AudioPlayer({ audioUrl = null, title = "Audio" }) {
   const audioRef = useRef(null);
   const progressBarRef = useRef(null);
 
-  // Handle audio metadata loaded
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -53,7 +52,6 @@ export default function AudioPlayer({ audioUrl = null, title = "Audio" }) {
     };
   }, []);
 
-  // Update audio src when URL changes
   useEffect(() => {
     if (audioUrl && audioRef.current) {
       setIsLoading(true);
@@ -117,6 +115,8 @@ export default function AudioPlayer({ audioUrl = null, title = "Audio" }) {
 
   return (
     <div
+      role="region"
+      aria-label={`Audio Player: ${title}`}
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -127,10 +127,8 @@ export default function AudioPlayer({ audioUrl = null, title = "Audio" }) {
         border: '1px solid #e5e7eb',
       }}
     >
-      {/* Audio Element (hidden) */}
       <audio ref={audioRef} crossOrigin="anonymous" />
 
-      {/* Title */}
       <h3
         style={{
           margin: '0',
@@ -143,9 +141,9 @@ export default function AudioPlayer({ audioUrl = null, title = "Audio" }) {
         {title}
       </h3>
 
-      {/* Error Message */}
       {error && (
         <div
+          role="alert"
           style={{
             padding: '8px 12px',
             backgroundColor: '#fee2e2',
@@ -159,9 +157,9 @@ export default function AudioPlayer({ audioUrl = null, title = "Audio" }) {
         </div>
       )}
 
-      {/* Loading State */}
       {isLoading && (
         <div
+          aria-live="polite"
           style={{
             padding: '8px 12px',
             backgroundColor: '#dbeafe',
@@ -175,7 +173,6 @@ export default function AudioPlayer({ audioUrl = null, title = "Audio" }) {
         </div>
       )}
 
-      {/* Play Button and Time */}
       <div
         style={{
           display: 'flex',
@@ -186,7 +183,8 @@ export default function AudioPlayer({ audioUrl = null, title = "Audio" }) {
         <button
           onClick={togglePlayPause}
           disabled={!audioUrl || isLoading || error}
-          aria-label={isPlaying ? 'Pause audio' : 'Play audio'}
+          className="a11y-focus-ring"
+          aria-label={isPlaying ? `Pause ${title}` : `Play ${title}`}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -215,11 +213,12 @@ export default function AudioPlayer({ audioUrl = null, title = "Audio" }) {
             }
           }}
         >
-          {isPlaying ? '⏸' : '▶'}
+          <span aria-hidden="true">{isPlaying ? '⏸' : '▶'}</span>
         </button>
 
         {/* Time Display */}
         <div
+          aria-live="off"
           style={{
             display: 'flex',
             gap: '8px',
@@ -229,9 +228,9 @@ export default function AudioPlayer({ audioUrl = null, title = "Audio" }) {
             minWidth: '80px',
           }}
         >
-          <span>{formatTime(currentTime)}</span>
-          <span>/</span>
-          <span>{formatTime(duration)}</span>
+          <span aria-label={`Current time: ${formatTime(currentTime)}`}>{formatTime(currentTime)}</span>
+          <span aria-hidden="true">/</span>
+          <span aria-label={`Total duration: ${formatTime(duration)}`}>{formatTime(duration)}</span>
         </div>
       </div>
 
@@ -250,7 +249,12 @@ export default function AudioPlayer({ audioUrl = null, title = "Audio" }) {
           max={duration || 0}
           value={currentTime}
           onChange={handleProgressChange}
-          aria-label="Audio progress"
+          className="a11y-focus-ring"
+          aria-label="Seek audio position"
+          aria-valuemin="0"
+          aria-valuemax={Math.round(duration || 0)}
+          aria-valuenow={Math.round(currentTime)}
+          aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`}
           style={{
             flex: 1,
             height: '6px',
@@ -265,7 +269,6 @@ export default function AudioPlayer({ audioUrl = null, title = "Audio" }) {
         />
       </div>
 
-      {/* Range slider styling */}
       <style>{`
         input[type="range"]::-webkit-slider-thumb {
           appearance: none;
@@ -309,6 +312,11 @@ export default function AudioPlayer({ audioUrl = null, title = "Audio" }) {
         input[type="range"]::-moz-range-progress {
           background: #3b82f6;
           border-radius: 3px;
+        }
+        
+        .a11y-focus-ring:focus-visible {
+          outline: 2px solid #2563eb;
+          outline-offset: 3px;
         }
       `}</style>
     </div>

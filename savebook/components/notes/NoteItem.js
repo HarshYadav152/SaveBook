@@ -1,12 +1,10 @@
 import noteContext from '@/context/noteContext';
-import React, { useContext, useState, useMemo } from 'react'
+import React, { useContext, useState, useMemo, useEffect } from 'react'
 import LinkPreviewCard from './LinkPreviewCard';
 import toast from 'react-hot-toast';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import 'katex/dist/katex.min.css';
+import { Share2, Globe, Copy, Check } from 'lucide-react';
 
 export default function NoteItem(props) {
     const context = useContext(noteContext);
@@ -15,7 +13,6 @@ export default function NoteItem(props) {
     const [isDeleting, setIsDeleting] = useState(false);
     const [isViewOpen, setIsViewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
-    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [copied, setCopied] = useState(false);
     const [sharing, setSharing] = useState(false);
 
@@ -133,6 +130,40 @@ export default function NoteItem(props) {
         return note.description.match(urlRegex) || [];
     }, [note?.description]);
 
+    useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+                setIsViewOpen(false);
+                setPreviewImage(null);
+            }
+        };
+        
+        if (isViewOpen || previewImage) {
+            document.addEventListener('keydown', handleEscape);
+            document.body.style.overflow = 'hidden';
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+            document.body.style.overflow = 'unset';
+        };
+    }, [isViewOpen, previewImage]);
+
+    const handleCardKeyDown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsViewOpen(true);
+        }
+    };
+
+    const handleActionKeyDown = (e, action) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            e.stopPropagation();
+            action(e);
+        }
+    };
+
     const customRenderers = {
         h1: ({ node, ...props }) => <h1 className="text-xl font-bold my-2 text-white border-b border-gray-700 pb-1" {...props} />,
         h2: ({ node, ...props }) => <h2 className="text-lg font-bold my-2 text-white" {...props} />,
@@ -143,7 +174,7 @@ export default function NoteItem(props) {
         p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
         strong: ({ node, ...props }) => <strong className="font-bold text-gray-100" {...props} />,
         em: ({ node, ...props }) => <em className="italic text-gray-200" {...props} />,
-        a: ({ node, ...props }) => <a className="text-blue-400 hover:underline cursor-pointer relative z-30" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} {...props} />,
+        a: ({ node, ...props }) => <a className="text-blue-400 hover:underline cursor-pointer relative z-30 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} {...props} />,
         blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-gray-600 pl-4 my-2 italic text-gray-400" {...props} />,
         code: ({ node, inline, className, children, ...props }) => {
             return inline ?
@@ -167,7 +198,11 @@ export default function NoteItem(props) {
             <div className="group relative">
                 <div
                     onClick={() => setIsViewOpen(true)}
-                    className="cursor-pointer relative bg-gray-900 rounded-2xl border border-gray-700 hover:border-gray-600 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:scale-[1.02]"
+                    onKeyDown={handleCardKeyDown}
+                    role="button"
+                    tabIndex="0"
+                    aria-label={`View full note: ${note?.title || 'Untitled Note'}`}
+                    className="cursor-pointer relative bg-gray-900 rounded-2xl border border-gray-700 hover:border-gray-600 shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
 
                     {/* Header with Gradient */}
@@ -185,16 +220,16 @@ export default function NoteItem(props) {
 
                         <div className="flex items-center justify-between text-xs text-gray-400">
                             <div className="flex items-center space-x-2">
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span>{getReadingTime(note?.description)}</span>
+                                <span aria-label={`Reading time: ${getReadingTime(note?.description)}`}>{getReadingTime(note?.description)}</span>
                             </div>
                             <div className="flex items-center space-x-2">
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                <span>{wordCount} words</span>
+                                <span aria-label={`${wordCount} words`}>{wordCount} words</span>
                             </div>
                         </div>
                     </div>
@@ -225,17 +260,21 @@ export default function NoteItem(props) {
                                 {note.images.map((img, index) => (
                                     <div
                                         key={index}
-                                        className="relative overflow-hidden rounded-xl border border-gray-700 bg-gray-800 hover:scale-105 transition-transform duration-300 cursor-pointer group/img"
-                                        onClick={() => setPreviewImage(img)}
+                                        role="button"
+                                        tabIndex="0"
+                                        aria-label={`View image ${index + 1}`}
+                                        className="relative overflow-hidden rounded-xl border border-gray-700 bg-gray-800 hover:scale-105 transition-transform duration-300 cursor-pointer group/img focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        onClick={(e) => { e.stopPropagation(); setPreviewImage(img); }}
+                                        onKeyDown={(e) => handleActionKeyDown(e, () => setPreviewImage(img))}
                                     >
                                         <img
                                             src={img}
-                                            alt={`note image ${index + 1}`}
+                                            alt={`Attached note image ${index + 1}`}
                                             loading="lazy"
                                             className="w-24 h-24 object-cover"
                                         />
-                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+                                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
@@ -274,16 +313,16 @@ export default function NoteItem(props) {
                         )}
                         {/* Link Previews */}
                         {noteUrls.map((url, index) => (
-                            <div key={index} className="relative z-20" onClick={(e) => e.stopPropagation()}>
+                            <div key={index} className="relative z-20" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
                                 <LinkPreviewCard url={url} />
                             </div>
                         ))}
 
                         {/* Audio */}
                         {note?.audio && note.audio.url && (
-                            <div className="mt-4 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                            <div className="mt-4 p-3 bg-gray-800/50 rounded-lg border border-gray-700" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
                                 <p className="text-xs text-gray-400 mb-2 flex items-center gap-2">
-                                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                         <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
                                     </svg>
                                     Audio Recording
@@ -291,8 +330,9 @@ export default function NoteItem(props) {
                                 <audio
                                     controls
                                     src={note.audio.url}
-                                    className="w-full"
+                                    className="w-full focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
                                     style={{ maxHeight: '32px' }}
+                                    aria-label="Attached audio recording"
                                 />
                             </div>
                         )}
@@ -300,17 +340,20 @@ export default function NoteItem(props) {
 
                     {/* Enhanced Footer */}
                     <div className="px-5 py-4 bg-gray-800/50 border-t border-gray-700 backdrop-blur-sm relative z-10">
-                        <div className="flex justify-between items-center mb-3">
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleEdit();
-                                }}
-                                disabled={isDeleting}
-                                className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-all duration-200 group/edit disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-500/10 group-hover/edit:bg-blue-500/20 border border-blue-500/20 group-hover/edit:border-blue-500/30 transition-all duration-200 group-hover/edit:scale-110">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="flex items-center justify-between gap-4 mb-3">
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEdit();
+                                    }}
+                                    onKeyDown={(e) => handleActionKeyDown(e, handleEdit)}
+                                    disabled={isDeleting}
+                                    aria-label={`Edit note: ${note?.title || 'Untitled Note'}`}
+                                    className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all duration-200 group/edit disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    title="Edit Note"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                 </button>
@@ -319,16 +362,18 @@ export default function NoteItem(props) {
                                 <div className="relative group/share">
                                     <button
                                         onClick={handleShare}
+                                        onKeyDown={(e) => handleActionKeyDown(e, handleShare)}
                                         disabled={sharing}
-                                        className={`p-2 ${note.isPublic ? 'text-green-400 hover:text-green-300 hover:bg-green-500/10' : 'text-gray-400 hover:text-gray-300 hover:bg-gray-700/50'} rounded-lg transition-all duration-200 disabled:opacity-50`}
+                                        aria-label={note.isPublic ? "Make note private" : "Make note public"}
+                                        className={`p-2 ${note.isPublic ? 'text-green-400 hover:text-green-300 hover:bg-green-500/10' : 'text-gray-400 hover:text-gray-300 hover:bg-gray-700/50'} rounded-lg transition-all duration-200 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                                         title={note.isPublic ? "Make Private" : "Share Note"}
                                     >
                                         {sharing ? (
-                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current"></div>
+                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current" aria-hidden="true"></div>
                                         ) : note.isPublic ? (
-                                            <Globe className="w-5 h-5" />
+                                            <Globe className="w-5 h-5" aria-hidden="true" />
                                         ) : (
-                                            <Share2 className="w-5 h-5" />
+                                            <Share2 className="w-5 h-5" aria-hidden="true" />
                                         )}
                                     </button>
 
@@ -336,30 +381,34 @@ export default function NoteItem(props) {
                                     {note.isPublic && (
                                         <button
                                             onClick={copyLink}
-                                            className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover/share:opacity-100 transition-opacity duration-200 whitespace-nowrap border border-gray-700 flex items-center gap-1 z-50"
+                                            onKeyDown={(e) => handleActionKeyDown(e, copyLink)}
+                                            aria-label={copied ? "Link copied" : "Copy share link"}
+                                            className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover/share:opacity-100 transition-opacity duration-200 whitespace-nowrap border border-gray-700 flex items-center gap-1 z-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:opacity-100"
                                         >
-                                            {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                                            {copied ? <Check className="w-3 h-3" aria-hidden="true" /> : <Copy className="w-3 h-3" aria-hidden="true" />}
                                             {copied ? 'Copied!' : 'Copy Link'}
                                         </button>
                                     )}
                                 </div>
 
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDelete();
-                                }}
-                                disabled={isDeleting}
-                                className="flex items-center space-x-2 text-red-400 hover:text-red-300 transition-all duration-200 group/delete disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-red-500/10 group-hover/delete:bg-red-500/20 border border-red-500/20 group-hover/delete:border-red-500/30 transition-all duration-200 group-hover/delete:scale-110">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete();
+                                    }}
+                                    onKeyDown={(e) => handleActionKeyDown(e, handleDelete)}
+                                    disabled={isDeleting}
+                                    aria-label={`Delete note: ${note?.title || 'Untitled Note'}`}
+                                    className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-200 group/delete disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-red-500"
+                                    title="Delete Note"
+                                >
                                     {isDeleting ? (
-                                        <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                                        <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
                                     ) : (
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
                                     )}
@@ -367,7 +416,7 @@ export default function NoteItem(props) {
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center justify-between text-xs" aria-hidden="true">
                             <div className="flex items-center space-x-2 text-gray-400">
                                 <div className="flex items-center space-x-1 bg-gray-700/50 px-2 py-1 rounded-lg border border-gray-600">
                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -397,21 +446,28 @@ export default function NoteItem(props) {
                 <div
                     className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
                     onClick={() => setPreviewImage(null)}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Image preview"
                 >
-                    <div className="relative max-w-7xl max-h-[90vh] w-full flex items-center justify-center">
+                    <div 
+                        className="relative max-w-7xl max-h-[90vh] w-full flex items-center justify-center focus:outline-none"
+                        tabIndex="-1"
+                        autoFocus
+                    >
                         <button
                             onClick={() => setPreviewImage(null)}
-                            className="absolute top-4 right-4 bg-gray-900/80 hover:bg-gray-900 text-white rounded-full p-3 transition-all duration-200 z-10 border border-gray-700"
-                            title="Close preview"
+                            className="absolute top-4 right-4 bg-gray-900/80 hover:bg-gray-900 text-white rounded-full p-3 transition-all duration-200 z-10 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
+                            aria-label="Close image preview"
                         >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
 
                         <img
                             src={previewImage}
-                            alt="Preview"
+                            alt="Full screen preview"
                             className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
                             onClick={(e) => e.stopPropagation()}
                         />
@@ -424,19 +480,25 @@ export default function NoteItem(props) {
                 <div
                     onClick={() => setIsViewOpen(false)}
                     className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby={`dialog-title-${note?._id}`}
                 >
                     <div
                         onClick={(e) => e.stopPropagation()}
-                        className="max-w-2xl w-full bg-gray-900 rounded-2xl border border-gray-700 shadow-2xl p-6"
+                        className="max-w-2xl w-full bg-gray-900 rounded-2xl border border-gray-700 shadow-2xl p-6 focus:outline-none"
+                        tabIndex="-1"
+                        autoFocus
                     >
                         {/* Header */}
                         <div className="flex justify-between items-start mb-4">
-                            <h2 className="text-xl font-bold text-white">
+                            <h2 id={`dialog-title-${note?._id}`} className="text-xl font-bold text-white">
                                 {note?.title || 'Untitled Note'}
                             </h2>
                             <button
                                 onClick={() => setIsViewOpen(false)}
-                                className="text-gray-400 hover:text-gray-200"
+                                aria-label="Close note view"
+                                className="text-gray-400 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 rounded-md p-1"
                             >
                                 ✕
                             </button>
@@ -447,74 +509,16 @@ export default function NoteItem(props) {
                             {note?.tag || 'General'}
                         </span>
 
-                        <div className="mt-4 text-gray-300 leading-relaxed max-h-[60vh] overflow-y-auto">
-                            <ReactMarkdown
-                                remarkPlugins={[remarkGfm, remarkMath]}
-                                rehypePlugins={[rehypeKatex]}
-                                components={customRenderers}
-                            >
-                                {note?.description || 'No description provided.'}
-                            </ReactMarkdown>
-
-                            {/* Images in Modal */}
-                            {Array.isArray(note?.images) && note.images.length > 0 && (
-                                <div className="mt-6 flex gap-3 flex-wrap">
-                                    {note.images.map((img, index) => (
-                                        <img
-                                            key={index}
-                                            src={img}
-                                            alt={`note image ${index + 1}`}
-                                            className="w-full max-w-md rounded-xl border border-gray-700 mx-auto"
-                                        />
-                                    ))}
-                                </div>
-                            )}
-
-                            {/* Audio in Modal */}
-                            {note?.audio && note.audio.url && (
-                                <div className="mt-6 p-4 bg-gray-800 rounded-xl border border-gray-700">
-                                    <p className="text-xs text-gray-400 mb-3 flex items-center gap-2">
-                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
-                                        </svg>
-                                        Voice Note
-                                    </p>
-                                    <audio controls src={note.audio.url} className="w-full" />
-                                </div>
-                            )}
-
-                            {/* Attachments in Modal */}
-                            {Array.isArray(note?.attachments) && note.attachments.length > 0 && (
-                                <div className="mt-6 space-y-3">
-                                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Attachments</p>
-                                    {note.attachments.map((file, index) => (
-                                        <a
-                                            key={index}
-                                            href={file.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-4 p-4 bg-gray-800 hover:bg-gray-700 rounded-xl border border-gray-700 transition-all group/modal-file"
-                                        >
-                                            <div className="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 group-hover/modal-file:bg-red-500/20">
-                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                                </svg>
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-white truncate">{file.name}</p>
-                                                <p className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB • PDF Document</p>
-                                            </div>
-                                            <div className="px-3 py-1 rounded-lg bg-gray-900 border border-gray-600 text-[10px] font-bold text-gray-400 group-hover/modal-file:text-white group-hover/modal-file:border-gray-500 uppercase">
-                                                View
-                                            </div>
-                                        </a>
-                                    ))}
-                                </div>
-                            )}
+                        {/* Content */}
+                        <div 
+                            className="mt-4 text-gray-300 whitespace-pre-wrap leading-relaxed max-h-[60vh] overflow-y-auto focus:outline-none focus:ring-2 focus:ring-blue-500 rounded p-1"
+                            tabIndex="0"
+                        >
+                            {note?.description || 'No description provided.'}
                         </div>
 
                         {/* Footer */}
-                        <div className="mt-6 text-xs text-gray-400 flex justify-between">
+                        <div className="mt-6 text-xs text-gray-400 flex justify-between" aria-hidden="true">
                             <span>{wordCount} words</span>
                             <span>{note?.date ? formatDate(note.date) : 'Unknown date'}</span>
                         </div>

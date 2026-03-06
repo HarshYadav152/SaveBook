@@ -50,14 +50,16 @@ export default function ForgotPasswordPage() {
         <div className="bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-700">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
                 Username
               </label>
               <input
+                id="username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                aria-required="true"
                 className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 outline-none"
                 placeholder="Enter your username"
               />
@@ -66,19 +68,22 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-800 transition disabled:opacity-50"
+              aria-live="polite"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-800 transition disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
             >
               {loading ? "Checking..." : "Continue"}
             </button>
 
             {message && (
-              <p className="text-sm text-center text-gray-300">{message}</p>
+              <p role="alert" className="text-sm text-center text-gray-300">
+                {message}
+              </p>
             )}
 
             <div className="text-center">
               <Link
                 href="/login"
-                className="text-sm text-blue-400 hover:text-blue-300"
+                className="text-sm text-blue-400 hover:text-blue-300 focus:outline-none focus:underline rounded-sm"
               >
                 Back to Login
               </Link>

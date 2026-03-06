@@ -19,7 +19,6 @@ const RichTextEditor = ({
     className,
     minHeight = "200px"
 }) => {
-
     const editor = useEditor({
         immediatelyRender: false,
         extensions: [
@@ -40,11 +39,8 @@ const RichTextEditor = ({
             TaskList,
             TaskItem.configure({
                 nested: true,
-                // Add a custom rendering for task items
                 render: {
                     item: ({ node, updateAttributes }) => {
-                        console.log(node.content);
-                        
                         return (
                             <div className="flex items-center">
                                 <input
@@ -55,8 +51,8 @@ const RichTextEditor = ({
                                             checked: !node.attrs.checked,
                                         });
                                     }}
-                                    className="mr-2"
-                                    aria-label=''
+                                    className="mr-2 focus:ring-2 focus:ring-blue-500 rounded"
+                                    aria-label={`Toggle task: ${node.textContent || 'empty task'}`}
                                 />
                             </div>
                         );
@@ -72,6 +68,9 @@ const RichTextEditor = ({
         content: content || '',
         editorProps: {
             attributes: {
+                'aria-label': 'Note content editor',
+                role: 'textbox',
+                'aria-multiline': 'true',
                 class: clsx(
                     'prose dark:prose-invert max-w-none focus:outline-none p-4 min-h-[150px]',
                     'text-white',
