@@ -8,27 +8,32 @@ import { Eye, EyeOff } from "lucide-react";
 export default function ForgotPasswordPage() {
   const router = useRouter();
 
-  // Step 1: Request OTP
-  const [email, setEmail] = useState("");
-  // Step 2 & 3: Reset Password
+  // Reset Method: "otp" or "recoveryCode"
+  const [method, setMethod] = useState("otp");
+
+  // Step 1: Request OTP or Enter Recovery Code Details
+  const [identifier, setIdentifier] = useState(""); // Email for OTP, Email/Username for Recovery
+  const [recoveryCode, setRecoveryCode] = useState("");
+
+  // Step 2: Reset Password (OTP specific or Shared)
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [step, setStep] = useState(1); // 1: Email, 2: OTP & New Password
+  const [step, setStep] = useState(1); // 1: Initial (Email/Recovery Code), 2: OTP Entry & New Password
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [errorType, setErrorType] = useState(""); // "email", "otp", "password", etc.
+  const [errorType, setErrorType] = useState(""); // "identifier", "otp", "password", etc.
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleRequestOTP = async (e) => {
     e.preventDefault();
-    if (!email) {
+    if (!identifier) {
       setMessage("Email is required");
-      setErrorType("email");
+      setErrorType("identifier");
       return;
     }
 
@@ -40,7 +45,7 @@ export default function ForgotPasswordPage() {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: identifier }),
       });
 
       const data = await res.json();
@@ -55,7 +60,7 @@ export default function ForgotPasswordPage() {
         }, 1500);
       } else {
         setMessage(data.message || "Failed to send OTP.");
-        setErrorType("email");
+        setErrorType("identifier");
       }
     } catch {
       setMessage("Something went wrong. Please try again.");
@@ -68,12 +73,20 @@ export default function ForgotPasswordPage() {
   const handleResetPassword = async (e) => {
     e.preventDefault();
 
-    if (!otp) {
+    // Method specific validations
+    if (method === "otp" && !otp) {
       setMessage("OTP is required");
       setErrorType("otp");
       return;
     }
 
+    if (method === "recoveryCode" && !recoveryCode) {
+      setMessage("Recovery code is required");
+      setErrorType("recoveryCode");
+      return;
+    }
+
+    // Shared validations
     if (password.length < 6) {
       setMessage("Password must be at least 6 characters");
       setErrorType("password");
@@ -95,9 +108,11 @@ export default function ForgotPasswordPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email,
+          identifier,
           password,
-          otp,
+          otp: method === "otp" ? otp : undefined,
+          recoveryCode: method === "recoveryCode" ? recoveryCode : undefined,
+          method
         }),
       });
 
@@ -105,7 +120,8 @@ export default function ForgotPasswordPage() {
 
       if (!res.ok) {
         setMessage(data.message || "Reset failed");
-        setErrorType(data.message?.toLowerCase().includes("otp") ? "otp" : "general");
+        setErrorType(data.message?.toLowerCase().includes("otp") ? "otp" :
+          data.message?.toLowerCase().includes("recovery") ? "recoveryCode" : "general");
         return;
       }
 
@@ -130,11 +146,11 @@ export default function ForgotPasswordPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <h2 className="text-3xl font-extrabold text-white">
-            {step === 1 ? "Forgot Password" : "Reset Password"}
+            {step === 1 ? "Reset Password" : "Set New Password"}
           </h2>
           <p className="mt-2 text-sm text-gray-300">
             {step === 1
-              ? "Enter your email to receive a One-Time Password"
+              ? "Choose a method to reset your password"
               : "Enter the OTP sent to your email and your new password"}
           </p>
         </div>
@@ -142,20 +158,37 @@ export default function ForgotPasswordPage() {
         {/* Card */}
         <div className="bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-700">
 
-          {step === 1 ? (
+          {step === 1 && (
+            <div className="mb-6 flex space-x-2 p-1 bg-gray-900 rounded-lg">
+              <button
+                onClick={() => { setMethod("otp"); setErrorType(""); setMessage(""); }}
+                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${method === "otp" ? "bg-blue-600 text-white shadow-sm" : "text-gray-400 hover:text-gray-200"
+                  }`}
+              >
+                Get OTP via Email
+              </button>
+              <button
+                onClick={() => { setMethod("recoveryCode"); setErrorType(""); setMessage(""); }}
+                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${method === "recoveryCode" ? "bg-blue-600 text-white shadow-sm" : "text-gray-400 hover:text-gray-200"
+                  }`}
+              >
+                Use Recovery Code
+              </button>
+            </div>
+          )}
+
+          {step === 1 && method === "otp" && (
             <form onSubmit={handleRequestOTP} className="space-y-6">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Email Address
                 </label>
                 <input
-                  id="email"
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
                   required
-                  aria-required="true"
-                  className={`w-full px-4 py-3 bg-gray-700 border rounded-lg text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${errorType === "email" ? "border-red-500 focus:border-red-500" : "border-gray-600"
+                  className={`w-full px-4 py-3 bg-gray-700 border rounded-lg text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${errorType === "identifier" ? "border-red-500 focus:border-red-500" : "border-gray-600"
                     }`}
                   placeholder="Enter your registered email"
                   disabled={loading}
@@ -165,43 +198,71 @@ export default function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={loading}
-                aria-live="polite"
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-800 transition disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 flex justify-center items-center"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-800 transition disabled:opacity-50 flex justify-center items-center"
               >
-                {loading ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Sending OTP...
-                  </>
-                ) : (
-                  "Send OTP"
-                )}
+                {loading ? "Sending OTP..." : "Send OTP"}
               </button>
             </form>
-          ) : (
-            <form onSubmit={handleResetPassword} className="space-y-5">
-              {/* OTP */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  One-Time Password (OTP)
-                </label>
-                <input
-                  type="text"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.trim())}
-                  required
-                  className={`w-full px-4 py-3 bg-gray-700 border rounded-lg text-white font-mono tracking-wider focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${errorType === "otp" ? "border-red-500 focus:border-red-500" : "border-gray-600"
-                    }`}
-                  placeholder="Enter 6-digit OTP"
-                  disabled={loading}
-                  maxLength={6}
-                />
-              </div>
+          )}
 
-              {/* New Password */}
+          {(step === 2 || (step === 1 && method === "recoveryCode")) && (
+            <form onSubmit={handleResetPassword} className="space-y-5">
+
+              {method === "recoveryCode" && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Username or Email
+                    </label>
+                    <input
+                      type="text"
+                      value={identifier}
+                      onChange={(e) => setIdentifier(e.target.value)}
+                      required
+                      className={`w-full px-4 py-3 bg-gray-700 border rounded-lg text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${errorType === "identifier" ? "border-red-500 focus:border-red-500" : "border-gray-600"
+                        }`}
+                      placeholder="Enter your username or email"
+                      disabled={loading}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Recovery Code
+                    </label>
+                    <input
+                      type="text"
+                      value={recoveryCode}
+                      onChange={(e) => setRecoveryCode(e.target.value)}
+                      required
+                      className={`w-full px-4 py-3 bg-gray-700 border rounded-lg text-white font-mono tracking-wider focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${errorType === "recoveryCode" ? "border-red-500 focus:border-red-500" : "border-gray-600"
+                        }`}
+                      placeholder="XXXX-XXXX"
+                      disabled={loading}
+                    />
+                  </div>
+                </>
+              )}
+
+              {method === "otp" && step === 2 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    One-Time Password (OTP)
+                  </label>
+                  <input
+                    type="text"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.trim())}
+                    required
+                    className={`w-full px-4 py-3 bg-gray-700 border rounded-lg text-white font-mono tracking-wider focus:ring-2 focus:ring-blue-500 outline-none transition-colors ${errorType === "otp" ? "border-red-500 focus:border-red-500" : "border-gray-600"
+                      }`}
+                    placeholder="Enter 6-digit OTP"
+                    disabled={loading}
+                    maxLength={6}
+                  />
+                </div>
+              )}
+
+              {/* New Password (Shared) */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   New Password
@@ -229,7 +290,7 @@ export default function ForgotPasswordPage() {
                 </div>
               </div>
 
-              {/* Confirm Password */}
+              {/* Confirm Password (Shared) */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Confirm Password
@@ -260,37 +321,29 @@ export default function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-800 transition disabled:opacity-50 flex justify-center items-center"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-800 transition disabled:opacity-50 flex justify-center items-center mt-4"
               >
-                {loading ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Verifying & Resetting...
-                  </>
-                ) : (
-                  "Reset Password"
-                )}
+                {loading ? "Processing..." : "Reset Password"}
               </button>
 
-              <div className="text-center pt-2">
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="text-sm text-gray-400 hover:text-white transition-colors"
-                  disabled={loading}
-                >
-                  Didn't receive code? Resend
-                </button>
-              </div>
+              {method === "otp" && step === 2 && (
+                <div className="text-center pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setStep(1)}
+                    className="text-sm text-gray-400 hover:text-white transition-colors"
+                    disabled={loading}
+                  >
+                    Didn't receive code? Resend
+                  </button>
+                </div>
+              )}
             </form>
           )}
 
           {message && (
             <div className={`mt-4 p-3 rounded-lg text-sm text-center ${errorType === "success" ? "bg-green-900/30 text-green-400 border border-green-800" :
-              "bg-red-900/30 text-red-400 border border-red-800"
+                "bg-red-900/30 text-red-400 border border-red-800"
               }`}>
               {message}
             </div>
