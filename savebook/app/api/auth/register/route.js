@@ -6,13 +6,15 @@ export async function POST(request) {
   try {
     await dbConnect();
 
-    const { username, password } = await request.json();
+    const { username, email, password } = await request.json();
 
     // ✅ Input validation
     if (
       !username ||
+      !email ||
       !password ||
       typeof username !== "string" ||
+      typeof email !== "string" ||
       typeof password !== "string" ||
       password.length < 6
     ) {
@@ -22,12 +24,14 @@ export async function POST(request) {
       );
     }
 
-    // ✅ Prevent username enumeration
-    const existingUser = await User.findOne({ username });
+    // ✅ Prevent username or email enumeration
+    const existingUser = await User.findOne({
+      $or: [{ username }, { email }]
+    });
 
     if (existingUser) {
       return NextResponse.json(
-        { success: false, message: "Unable to create account" },
+        { success: false, message: "User already exists." },
         { status: 400 }
       );
     }
@@ -35,6 +39,7 @@ export async function POST(request) {
     // ✅ Create user
     await User.create({
       username,
+      email,
       password
     });
 
