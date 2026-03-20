@@ -13,10 +13,13 @@ const SignupForm = () => {
         username: '',
         email: '',
         password: '',
-        confirmPassword: '',
-        name: '',
-        course: '',
-        subjectsOfInterest: ''
+        confirmPassword: ''
+    });
+    const [errors, setErrors] = useState({
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -51,6 +54,12 @@ const SignupForm = () => {
             newErrors.email = 'Email is required';
         } else if (!emailRegex.test(credentials.email)) {
             newErrors.email = 'Invalid email address';
+        }
+
+        if (!credentials.email.trim()) {
+            newErrors.email = 'Email is required';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(credentials.email)) {
+            newErrors.email = 'Please enter a valid email address';
         }
 
         if (!credentials.password) {
@@ -89,7 +98,11 @@ const SignupForm = () => {
             };
 
             // Use the register method from AuthContext
-            const result = await register(userData);
+            const result = await register(
+                credentials.username,
+                credentials.email,
+                credentials.password
+            );
 
             if (result.success) {
                 toast.success("Account created successfully! 🎉");
@@ -138,37 +151,88 @@ const SignupForm = () => {
 
             {/* Email */}
             <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Email Address *</label>
-                <input type="email" name="email" value={credentials.email} onChange={onchange} disabled={isLoading}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 bg-gray-700 text-white ${errors.email ? 'border-red-500' : 'border-gray-600'}`} placeholder="john@example.com" />
-                {errors.email && <p className="mt-1 text-sm text-red-400">{errors.email}</p>}
+                <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
+                    Username
+                </label>
+                <input
+                    type="text"
+                    name="username"
+                    id="username"
+                    value={credentials.username}
+                    onChange={onchange}
+                    disabled={isLoading || isAuthenticated}
+                    aria-invalid={!!errors.username}
+                    aria-describedby={errors.username ? "username-error" : undefined}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 ${errors.username
+                        ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
+                        : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
+                        }`}
+                    placeholder="Choose a username"
+                    required
+                />
+                {errors.username && (
+                    <p id="username-error" role="alert" className="mt-1 text-sm text-red-400">
+                        {errors.username}
+                    </p>
+                )}
             </div>
 
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Course */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Course</label>
-                    <input type="text" name="course" value={credentials.course} onChange={onchange} disabled={isLoading}
-                        className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:border-blue-500 bg-gray-700 text-white" placeholder="B.Tech, B.Sc, etc." />
-                </div>
-
-                {/* Subjects of Interest */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Interests</label>
-                    <input type="text" name="subjectsOfInterest" value={credentials.subjectsOfInterest} onChange={onchange} disabled={isLoading}
-                        className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:border-blue-500 bg-gray-700 text-white" placeholder="Coding, Design (comma separated)" />
-                </div>
+            {/* Email Field */}
+            <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                    Email Address
+                </label>
+                <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    value={credentials.email}
+                    onChange={onchange}
+                    disabled={isLoading || isAuthenticated}
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? "email-error" : undefined}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 ${errors.email
+                        ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
+                        : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
+                        }`}
+                    placeholder="Enter your email"
+                    required
+                />
+                {errors.email && (
+                    <p id="email-error" role="alert" className="mt-1 text-sm text-red-400">
+                        {errors.email}
+                    </p>
+                )}
             </div>
 
-            {/* Password */}
+            {/* Password Field */}
             <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Password *</label>
                 <div className="relative">
-                    <input type={showPassword ? "text" : "password"} name="password" value={credentials.password} onChange={onchange} disabled={isLoading}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 bg-gray-700 text-white pr-10 ${errors.password ? 'border-red-500' : 'border-gray-600'}`} placeholder="Create a password" />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200">
-                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        id="password"
+                        value={credentials.password}
+                        onChange={onchange}
+                        disabled={isLoading || isAuthenticated}
+                        aria-invalid={!!errors.password}
+                        aria-describedby={errors.password ? "password-error" : "password-hint"}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 pr-10 ${errors.password
+                            ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
+                            : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
+                            }`}
+                        placeholder="Create a password"
+                        required
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full p-1"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                        aria-pressed={showPassword}
+                    >
+                        {showPassword ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
                     </button>
                 </div>
                 {errors.password && <p className="mt-1 text-sm text-red-400">{errors.password}</p>}
@@ -179,10 +243,30 @@ const SignupForm = () => {
             <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Confirm Password *</label>
                 <div className="relative">
-                    <input type={showConfirmPassword ? "text" : "password"} name="confirmPassword" value={credentials.confirmPassword} onChange={onchange} disabled={isLoading}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 bg-gray-700 text-white pr-10 ${errors.confirmPassword ? 'border-red-500' : 'border-gray-600'}`} placeholder="Confirm your password" />
-                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200">
-                        {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        name="confirmPassword"
+                        id="confirmPassword"
+                        value={credentials.confirmPassword}
+                        onChange={onchange}
+                        disabled={isLoading || isAuthenticated}
+                        aria-invalid={!!errors.confirmPassword}
+                        aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-blue-500 transition-all duration-200 outline-none disabled:opacity-50 pr-10 ${errors.confirmPassword
+                            ? 'border-red-500 bg-red-900/20 focus:ring-red-500'
+                            : 'border-gray-600 bg-gray-700 text-white focus:ring-blue-500'
+                            }`}
+                        placeholder="Confirm your password"
+                        required
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full p-1"
+                        aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                        aria-pressed={showConfirmPassword}
+                    >
+                        {showConfirmPassword ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
                     </button>
                 </div>
                 {errors.confirmPassword && <p className="mt-1 text-sm text-red-400">{errors.confirmPassword}</p>}

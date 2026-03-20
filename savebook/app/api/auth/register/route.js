@@ -6,14 +6,16 @@ export async function POST(request) {
   try {
     await dbConnect();
 
-    const { username, password, email, course, subjectsOfInterest, name } = await request.json();
+    const { username, email, password } = await request.json();
 
     // ✅ Input validation
     if (
       !username ||
+      !email ||
       !password ||
       !email ||
       typeof username !== "string" ||
+      typeof email !== "string" ||
       typeof password !== "string" ||
       typeof email !== "string" ||
       password.length < 6
@@ -24,21 +26,14 @@ export async function POST(request) {
       );
     }
 
-    // Basic email validation regex
-    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { success: false, message: "Invalid email format." },
-        { status: 400 }
-      );
-    }
-
-    // ✅ Prevent username/email enumeration
-    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    // ✅ Prevent username or email enumeration
+    const existingUser = await User.findOne({
+      $or: [{ username }, { email }]
+    });
 
     if (existingUser) {
       return NextResponse.json(
-        { success: false, message: "Username or Email already exists" },
+        { success: false, message: "User already exists." },
         { status: 400 }
       );
     }
@@ -55,12 +50,8 @@ export async function POST(request) {
     // ✅ Create user
     await User.create({
       username,
-      password,
       email,
-      course,
-      subjectsOfInterest: Array.isArray(subjectsOfInterest) ? subjectsOfInterest : [],
-      firstName,
-      lastName
+      password
     });
 
     return NextResponse.json(

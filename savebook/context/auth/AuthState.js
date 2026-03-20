@@ -82,7 +82,7 @@ const AuthProvider = ({ children }) => {
     };
 
     // Register function
-    const register = async (userData) => {
+    const register = async (username, email, password) => {
         try {
             setLoading(true);
             const response = await fetch('/api/auth/register', {
@@ -90,7 +90,7 @@ const AuthProvider = ({ children }) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(userData),
+                body: JSON.stringify({ username, email, password }),
                 credentials: 'include'
             });
 
