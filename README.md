@@ -77,10 +77,10 @@ SaveBook/
 
 ---
 
-## 🤝 Contributing to ECWoC 2026
+## 🤝 Contributing to SaveBook
 
 > [!IMPORTANT]
-> We are proud to be part of **ECWoC 2026**! We welcome contributors of all skill levels to help shape the future of SaveBook.
+> We are proud to be part of **SaveBook**! We welcome contributors of all skill levels to help shape the future of SaveBook.
 
 1.  🔍 **Find an Issue**: Check our [Issues](https://github.com/HarshYadav152/SaveBook/issues) page for "good first issues."
 2.  📖 **Guidelines**: Read our [Contributing Guidelines](CONTRIBUTING.md) to understand our workflow.
@@ -99,6 +99,6 @@ SaveBook/
 
 ## 🌟 Show Your Support
 
-Give a ⭐️ if this project helped you! Your support means a lot to the maintainers and the **ECWoC** community.
+Give a ⭐️ if this project helped you! Your support means a lot to the maintainers.
 
 **Built with ❤️ by the [SaveBook Community](https://github.com/HarshYadav152/SaveBook/graphs/contributors)**
