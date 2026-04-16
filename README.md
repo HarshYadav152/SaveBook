@@ -77,7 +77,7 @@ SaveBook/
 
 ---
 
-## 🤝 Contributing to SaveBook
+## 🤝 Contributing to SaveBook through Nexus Spring of Code
 
 > [!IMPORTANT]
 > We are proud to be part of **SaveBook**! We welcome contributors of all skill levels to help shape the future of SaveBook.
