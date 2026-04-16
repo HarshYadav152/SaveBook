@@ -1,3 +1,32 @@
+## [2026-04-16]
+
+### ✨ Features
+-  Password reset with recovery code added. (1e9ab6b) - @Sibsankar-de
+-  #208 Reset password with OTP validation added. (89efbaf) - @Sibsankar-de
+-  #188 Database Caching added. (4d441af) - @Sibsankar-de
+-  #190 Text editor updated and tools added. (32e61c2) - @Sibsankar-de
+-  #189 Note sharing feature added. (9fe30c6) - @Sibsankar-de
+
+### 📝 Documentation
+-  auto update changelog (b33d396) - @HarshYadav152
+-  auto update changelog (de14dd3) - @HarshYadav152
+-  auto update changelog (dda5c41) - @VinayKumar42
+-  auto update changelog (66bb57a) - @HarshYadav152
+-  auto update changelog (86e10d3) - @HarshYadav152
+-  auto update changelog (6022304) - @HarshYadav152
+-  auto update changelog (28f655b) - @HarshYadav152
+-  auto update changelog (cc87bc0) - @HarshYadav152
+-  auto update changelog (e9ffa69) - @vinayboss9669
+
+### 📦 Other Changes
+- Revise contributing section for SaveBook (9114cb2) - @Harsh Yadav
+- Change project name from ECWoC 2026 to SaveBook (85e1a19) - @Harsh Yadav
+- Complete screen reader support and keyboard navigation (08f00fa) - @Gaurav Karakoti
+- #195 bug fix (239d721) - @Rounak
+- Modal (e1f77b5) - @Gaurav Karakoti
+- Change Discord link in greeting workflow (210ebfd) - @Harsh Yadav
+
+
 ## [2026-04-12]
 
 ### ✨ Features
