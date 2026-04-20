@@ -1,6 +1,6 @@
 "use client"
 import noteContext from '@/context/noteContext';
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast';
 
 import Modal from '../common/Modal';
@@ -149,6 +149,7 @@ export default function Addnote() {
 
             toast.success("Note has been saved");
             setNote({ title: "", description: "", tag: "" });
+            localStorage.removeItem('savebook_note_draft'); // Clear draft on success
             setImages([]);
             setPreview([]);
             clearAudioRecording(); 
@@ -190,6 +191,39 @@ export default function Addnote() {
         setShowModal(false);
         setPendingTemplate(null);
     }
+
+    const hasRestored = useRef(false);
+
+    // Restore draft from localStorage on mount
+    useEffect(() => {
+        if (hasRestored.current) return;
+
+        const savedDraft = localStorage.getItem('savebook_note_draft');
+        if (savedDraft) {
+            try {
+                const parsedDraft = JSON.parse(savedDraft);
+                setNote(parsedDraft);
+                toast.success("Resumed your unsaved draft", {
+                    duration: 3000,
+                    icon: '📝',
+                });
+                hasRestored.current = true;
+            } catch (error) {
+                console.error("Failed to parse saved draft", error);
+                localStorage.removeItem('savebook_note_draft');
+            }
+        }
+    }, [setNote]);
+
+    useEffect(() => {
+        if (note.title || (note.description && note.description !== "<p></p>") || note.tag) {
+            const timeoutId = setTimeout(() => {
+                localStorage.setItem('savebook_note_draft', JSON.stringify(note));
+            }, 1000); // 1s debounce
+
+            return () => clearTimeout(timeoutId);
+        }
+    }, [note]);
 
     const userTags = Array.from(
         new Set(
