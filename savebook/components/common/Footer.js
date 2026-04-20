@@ -102,7 +102,7 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="https://raw.githubusercontent.com/HarshYadav152/SaveBook/main/LICENSE" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors">
+                                <Link href="/licence" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors">
                                     MIT License
                                 </Link>
                             </li>
