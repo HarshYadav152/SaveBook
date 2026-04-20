@@ -166,6 +166,7 @@ export default function Footer() {
                     </div>
                 </div>
 
+
                 {/* Newsletter Signup */}
                 <div className="border-t border-gray-200 dark:border-gray-800 pt-8 mb-8">
                     <div className="max-w-md mx-auto text-center">
