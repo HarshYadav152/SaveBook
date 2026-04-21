@@ -134,6 +134,9 @@ export default function Footer() {
                                 <a href="https://github.com/HarshYadav152/SaveBook/blob/main/CODE_OF_CONDUCT.md" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                                     Code of Conduct
                                 </a>
+                                <Link href="/licence" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors">
+                                    MIT License
+                                </Link>
                             </li>
                         </ul>
                     </div>
