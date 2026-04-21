@@ -138,41 +138,9 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    {/* Legal & Support */}
-                    <div>
-                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
-                            Legal & Support
-                        </h3>
-                        <ul className="space-y-3">
-                            <li>
-                                <Link href="/privacy" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors">
-                                    Privacy Policy
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/terms" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors">
-                                    Terms of Service
-                                </Link>
-                            </li>
-                            <li>
-                                <a href="https://github.com/HarshYadav152/SaveBook/blob/main/SECURITY.md" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors">
-                                    Security
-                                </a>
-                            </li>
-                            <li>
-                                <a href="https://raw.githubusercontent.com/HarshYadav152/SaveBook/main/LICENSE" target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors">
-                                    MIT License
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-
-                {/* Newsletter Signup */}
-                <div className="border-t border-gray-200 dark:border-gray-800 pt-8 mb-8">
-                    <div className="max-w-md mx-auto text-center">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    {/* Newsletter */}
+                    <div className="lg:col-span-2">
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-3">
                             Stay Updated
                         </h3>
 
