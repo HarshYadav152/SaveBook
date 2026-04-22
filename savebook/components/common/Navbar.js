@@ -178,6 +178,14 @@ export default function Navbar() {
                                         >
                                             My Notes
                                         </Link>
+                                        <Link 
+                                            href="/faq" 
+                                            role="menuitem"
+                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none"
+                                            onClick={() => setDropdownOpen(false)}
+                                        >
+                                            FAQ
+                                        </Link>
                                         <button
                                             role="menuitem"
                                             onClick={handleLogout}
@@ -191,6 +199,12 @@ export default function Navbar() {
                         ) : (
                             // Not authenticated - show login/signup buttons
                             <div className="flex items-center space-x-3">
+                                <Link
+                                    href="/faq"
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md"
+                                >
+                                    FAQ
+                                </Link>
                                 <Link
                                     href="/login"
                                     className={clsx(
@@ -271,6 +285,14 @@ export default function Navbar() {
                                                 onClick={() => setDropdownOpen(false)}
                                             >
                                                 My Notes
+                                            </Link>
+                                            <Link 
+                                                href="/faq" 
+                                                role="menuitem"
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none"
+                                                onClick={() => setDropdownOpen(false)}
+                                            >
+                                                FAQ
                                             </Link>
                                             <button
                                                 role="menuitem"
@@ -361,6 +383,14 @@ export default function Navbar() {
                                 </Link>
                                 
                                 <Link 
+                                    href="/faq" 
+                                    className="block w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white text-base font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+                                    onClick={() => setIsMenuOpen(false)}
+                                >
+                                    FAQ
+                                </Link>
+
+                                <Link 
                                     href="/profile" 
                                     className="block w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white text-base font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
                                     onClick={() => setIsMenuOpen(false)}
@@ -376,6 +406,13 @@ export default function Navbar() {
                             </div>
                         ) : (
                             <div className="space-y-3">
+                                <Link
+                                    href="/faq"
+                                    className="block w-full px-4 py-2 text-base font-medium rounded-lg text-gray-700 dark:text-white bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 text-center"
+                                    onClick={() => setIsMenuOpen(false)}
+                                >
+                                    FAQ
+                                </Link>
                                 <Link
                                     href="/login"
                                     className={clsx(
