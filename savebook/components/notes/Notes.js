@@ -159,7 +159,7 @@ export default function Notes() {
                 console.error("Autosave failed", err);
                 setSaveStatus('error');
             }
-        }, 2000); // 2s debounce
+        }, 1000); // 1s debounce
 
         return () => clearTimeout(timer);
     }, [note.etitle, note.edescription, note.etag, isEditModalOpen, note.id, editNote, existingImages]);
