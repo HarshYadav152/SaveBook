@@ -1,55 +1,66 @@
-import { BriefcaseBusiness, GraduationCap, Lightbulb, PenSquare } from "lucide-react";
-import SectionHeading from "./SectionHeading";
+import { motion } from "framer-motion";
+import { BriefcaseBusiness, GraduationCap, PenSquare, Sparkle } from "lucide-react";
 
 const audiences = [
   {
     icon: GraduationCap,
-    title: "Students and learners",
-    description: "Keep course notes, reading highlights, and revision material organized in one accessible space.",
+    title: "Students",
+    copy: "Course notes, reading summaries, and revision prep become easier to revisit when they are not buried in random files.",
   },
   {
     icon: BriefcaseBusiness,
     title: "Professionals",
-    description: "Capture meeting notes, project context, and daily planning without juggling scattered tools.",
+    copy: "Meeting notes, project context, and personal task planning can live together without forcing a heavy workflow tool.",
   },
   {
     icon: PenSquare,
     title: "Writers and creators",
-    description: "Use SaveBook as a quick drafting area for ideas, outlines, references, and rough content fragments.",
+    copy: "SaveBook works well as a draft bench for outlines, fragments, references, and content ideas that are still taking shape.",
   },
   {
-    icon: Lightbulb,
-    title: "Curious builders",
-    description: "Anyone who collects thoughts, experiments, and research can use it as a lightweight thinking system.",
+    icon: Sparkle,
+    title: "Independent thinkers",
+    copy: "If you like collecting thoughts and returning later with fresh context, SaveBook gives those ideas a stable place to stay useful.",
   },
 ];
 
 export default function AudienceSection() {
   return (
-    <section className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
-      <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-        <SectionHeading
-          eyebrow="Best for"
-          title="Built for people who need clarity more than complexity."
-          description="Instead of trying to be everything for everyone, SaveBook works best for people who want a reliable place to capture and shape everyday knowledge."
-        />
+    <section id="audiences" className="band py-24 md:py-32">
+      <div className="site-container px-4 md:px-8">
+        <div className="grid gap-12 xl:grid-cols-[0.86fr_1.14fr]">
+          <div>
+            <p className="section-kicker">Who It&apos;s For</p>
+            <h2 className="section-heading mt-5">SaveBook works best for people who want a simple place to think, write, and come back later.</h2>
+            <p className="section-copy mt-6">
+              It is useful for anyone who saves ideas regularly and wants those notes to remain organized, accessible, and worth revisiting over time.
+            </p>
+          </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          {audiences.map((audience) => {
-            const Icon = audience.icon;
+          <div className="grid gap-4 md:grid-cols-2">
+            {audiences.map((audience, index) => {
+              const Icon = audience.icon;
 
-            return (
-              <article key={audience.title} className="landing-panel p-6">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white">
-                    <Icon className="h-6 w-6" />
+              return (
+                <motion.article
+                  key={audience.title}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.6, delay: index * 0.08 }}
+                  className="glass-panel rounded-[2rem] p-6 md:p-7"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500/15 to-violet-500/15 text-[color:var(--accent)]">
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-2xl font-semibold text-[color:var(--foreground)]">{audience.title}</h3>
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-950">{audience.title}</h3>
-                </div>
-                <p className="mt-4 text-sm leading-7 text-slate-600">{audience.description}</p>
-              </article>
-            );
-          })}
+                  <p className="mt-5 text-sm leading-7 text-[color:var(--muted)]">{audience.copy}</p>
+                </motion.article>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

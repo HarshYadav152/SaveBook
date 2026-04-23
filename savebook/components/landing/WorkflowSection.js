@@ -1,41 +1,48 @@
-import SectionHeading from "./SectionHeading";
+import { motion } from "framer-motion";
 
 const steps = [
   {
     number: "01",
-    title: "Start with a thought",
-    description: "Open SaveBook and capture ideas before they disappear. The interface stays simple so writing can begin immediately.",
+    title: "Capture the thought",
+    description: "Start with a reminder, meeting note, research point, or passing idea before it slips away.",
   },
   {
     number: "02",
     title: "Shape it into something useful",
-    description: "Add detail, structure, links, and supporting context until the note becomes a resource you can actually return to.",
+    description: "Add detail, links, media, and structure so a quick note can become something you can really use again.",
   },
   {
     number: "03",
-    title: "Reuse and revisit",
-    description: "Come back later, find what matters, and keep building a knowledge base that grows with your work and life.",
+    title: "Return whenever you need it",
+    description: "Open SaveBook later and still have your context, ideas, and personal knowledge ready when you need them.",
   },
 ];
 
 export default function WorkflowSection() {
   return (
-    <section className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
-      <SectionHeading
-        eyebrow="How it works"
-        title="A simple flow that makes the product easy to understand in one pass."
-        description="This section gives the homepage momentum. Visitors can immediately see how the app fits into a real note-taking habit from capture to reuse."
-        align="center"
-      />
+    <section className="py-24 md:py-32">
+      <div className="site-container px-4 md:px-8">
+        <div className="max-w-4xl">
+          <p className="section-kicker">Flow</p>
+          <h2 className="section-heading mt-5">SaveBook follows a simple note-taking rhythm that fits real everyday use.</h2>
+        </div>
 
-      <div className="mt-12 grid gap-5 lg:grid-cols-3">
-        {steps.map((step) => (
-          <article key={step.number} className="landing-step-card">
-            <div className="text-sm font-semibold uppercase tracking-[0.28em] text-teal-700">{step.number}</div>
-            <h3 className="mt-6 text-2xl font-semibold text-slate-950">{step.title}</h3>
-            <p className="mt-4 text-sm leading-7 text-slate-600">{step.description}</p>
-          </article>
-        ))}
+        <div className="mt-10 grid gap-5 lg:grid-cols-3">
+          {steps.map((step, index) => (
+            <motion.article
+              key={step.number}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.6, delay: index * 0.08 }}
+              className="glass-panel rounded-[2.25rem] p-6 md:p-8"
+            >
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-2)]">{step.number}</p>
+              <h3 className="mt-6 text-2xl font-semibold text-[color:var(--foreground)]">{step.title}</h3>
+              <p className="mt-4 text-sm leading-7 text-[color:var(--muted)]">{step.description}</p>
+            </motion.article>
+          ))}
+        </div>
       </div>
     </section>
   );

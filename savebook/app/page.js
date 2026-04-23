@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth/authContext";
-import AudienceSection from "@/components/landing/AudienceSection";
-import CTASection from "@/components/landing/CTASection";
-import FeatureGrid from "@/components/landing/FeatureGrid";
 import HeroSection from "@/components/landing/HeroSection";
 import ValueSection from "@/components/landing/ValueSection";
+import FeatureGrid from "@/components/landing/FeatureGrid";
+import AudienceSection from "@/components/landing/AudienceSection";
 import WorkflowSection from "@/components/landing/WorkflowSection";
+import CTASection from "@/components/landing/CTASection";
 
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
@@ -19,24 +19,22 @@ export default function Home() {
 
   if (!isClient) {
     return (
-      <main className="landing-page">
-        <div className="mx-auto min-h-screen max-w-7xl px-4 pt-32 sm:px-6 lg:px-8">
-          <div className="landing-panel animate-pulse p-8 sm:p-10">
-            <div className="h-4 w-40 rounded-full bg-slate-200" />
-            <div className="mt-6 h-16 max-w-3xl rounded-[28px] bg-slate-200 sm:h-24" />
-            <div className="mt-4 h-6 max-w-2xl rounded-full bg-slate-200" />
-            <div className="mt-8 flex gap-4">
-              <div className="h-14 w-40 rounded-full bg-slate-200" />
-              <div className="h-14 w-36 rounded-full bg-slate-200" />
+      <main className="site-shell">
+        <section className="hero-surface min-h-screen pt-36">
+          <div className="site-container px-4 pb-16 md:px-8">
+            <div className="glass-panel rounded-[2.5rem] p-8 md:p-10 animate-pulse">
+              <div className="h-5 w-32 rounded-full bg-slate-300/50 dark:bg-slate-700/50" />
+              <div className="mt-6 h-20 max-w-4xl rounded-[2rem] bg-slate-300/50 dark:bg-slate-700/50" />
+              <div className="mt-4 h-6 max-w-2xl rounded-full bg-slate-300/40 dark:bg-slate-700/40" />
             </div>
           </div>
-        </div>
+        </section>
       </main>
     );
   }
 
   return (
-    <main className="landing-page">
+    <main className="site-shell">
       <HeroSection isAuthenticated={isAuthenticated} user={user} loading={loading} />
       <ValueSection />
       <FeatureGrid />

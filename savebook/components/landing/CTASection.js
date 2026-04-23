@@ -1,32 +1,37 @@
 import Link from "next/link";
-import { ArrowRight, NotebookText } from "lucide-react";
+import { ArrowRight, LogIn, NotebookText } from "lucide-react";
 
 export default function CTASection({ isAuthenticated, loading }) {
-  const href = isAuthenticated ? "/notes" : "/register";
-  const label = loading ? "Loading..." : isAuthenticated ? "Go to your notes" : "Create your account";
+  const primaryHref = isAuthenticated ? "/notes" : "/register";
+  const primaryLabel = loading ? "Loading..." : isAuthenticated ? "Open your notes" : "Start using SaveBook";
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-4 pb-20 sm:px-6 sm:pb-24 lg:px-8">
-      <div className="landing-cta-shell">
-        <div className="max-w-3xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white/72">Ready to use</p>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            Give SaveBook a first impression that feels as polished as the product ambition.
-          </h2>
-          <p className="mt-4 text-base leading-7 text-white/78 sm:text-lg">
-            New visitors should understand the app quickly, and returning users should still have a fast path back to their notes.
-          </p>
-        </div>
+    <section className="pb-24 md:pb-32">
+      <div className="site-container px-4 md:px-8">
+        <div className="glass-panel overflow-hidden rounded-[2.75rem]">
+          <div className="grid gap-8 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.18),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.14),transparent_26%)] px-6 py-8 md:px-10 md:py-10 xl:grid-cols-[1.15fr_0.85fr]">
+            <div className="max-w-3xl">
+              <p className="section-kicker">Ready To Go</p>
+              <h2 className="section-heading mt-5">Start building a note space you will actually want to return to.</h2>
+              <p className="section-copy mt-6">
+                SaveBook is ready for personal notes, planning, research capture, and everything in between. Create an account and keep your ideas close.
+              </p>
+            </div>
 
-        <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-          <Link href={href} className="landing-button bg-white text-slate-950 shadow-[0_18px_45px_rgba(255,255,255,0.2)] hover:-translate-y-0.5">
-            <NotebookText className="h-5 w-5" />
-            <span>{label}</span>
-            {!loading && <ArrowRight className="h-5 w-5" />}
-          </Link>
-          <Link href="/docs" className="landing-button border border-white/30 bg-white/10 text-white hover:bg-white/20">
-            <span>Read the docs</span>
-          </Link>
+            <div className="flex flex-col justify-center gap-4">
+              <Link href={primaryHref} className="site-button w-full md:w-auto">
+                <NotebookText className="h-5 w-5" />
+                <span>{primaryLabel}</span>
+                {!loading && <ArrowRight className="h-5 w-5" />}
+              </Link>
+              {!isAuthenticated && (
+                <Link href="/login" className="site-button-ghost w-full md:w-auto">
+                  <LogIn className="h-5 w-5" />
+                  <span>Already using SaveBook?</span>
+                </Link>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </section>
