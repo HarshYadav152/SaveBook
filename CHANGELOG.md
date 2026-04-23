@@ -1,3 +1,61 @@
+## [2026-04-22]
+
+### ✨ Features
+-  add FAQ page with accordion and navbar/footer links (51f097b) - @DevAbhay07
+-  Password reset with recovery code added. (1e9ab6b) - @Sibsankar-de
+-  #208 Reset password with OTP validation added. (89efbaf) - @Sibsankar-de
+
+### 📝 Documentation
+-  auto update changelog (3ce0444) - @HarshYadav152
+-  auto update changelog (8c23b35) - @HarshYadav152
+-  auto update changelog (2c22fc7) - @JackSparrow-BlackPearl
+-  auto update changelog (90746b7) - @HarshYadav152
+-  auto update changelog (b33d396) - @HarshYadav152
+-  auto update changelog (de14dd3) - @HarshYadav152
+-  auto update changelog (dda5c41) - @VinayKumar42
+
+### 📦 Other Changes
+- Updated the footer (5169ca3) - @Dipanita45
+- a (9290344) - @Dipanita45
+- Updated (2846537) - @Dipanita45
+- licence link added in footer (7f92ccf) - @Priyanshu-codes999
+- licence page added (61a72ef) - @Priyanshu-codes999
+- Improve the footer of the website ## Description (61a17c8) - @Dipanita45
+- Commit (c83d600) - @Dipanita45
+- update greeting.yml for nsoc discord url (3f650a9) - @Harsh Yadav
+- Revise contributing section for SaveBook (9114cb2) - @Harsh Yadav
+- Change project name from ECWoC 2026 to SaveBook (85e1a19) - @Harsh Yadav
+
+
+## [2026-04-21]
+
+### ✨ Features
+-  Password reset with recovery code added. (1e9ab6b) - @Sibsankar-de
+-  #208 Reset password with OTP validation added. (89efbaf) - @Sibsankar-de
+
+### 📝 Documentation
+-  auto update changelog (8c23b35) - @HarshYadav152
+-  auto update changelog (2c22fc7) - @JackSparrow-BlackPearl
+-  auto update changelog (90746b7) - @HarshYadav152
+-  auto update changelog (b33d396) - @HarshYadav152
+-  auto update changelog (de14dd3) - @HarshYadav152
+-  auto update changelog (dda5c41) - @VinayKumar42
+-  auto update changelog (66bb57a) - @HarshYadav152
+
+### 📦 Other Changes
+- Updated the footer (5169ca3) - @Dipanita45
+- a (9290344) - @Dipanita45
+- Updated (2846537) - @Dipanita45
+- licence link added in footer (7f92ccf) - @Priyanshu-codes999
+- licence page added (61a72ef) - @Priyanshu-codes999
+- Improve the footer of the website ## Description (61a17c8) - @Dipanita45
+- Commit (c83d600) - @Dipanita45
+- update greeting.yml for nsoc discord url (3f650a9) - @Harsh Yadav
+- Revise contributing section for SaveBook (9114cb2) - @Harsh Yadav
+- Change project name from ECWoC 2026 to SaveBook (85e1a19) - @Harsh Yadav
+- Complete screen reader support and keyboard navigation (08f00fa) - @Gaurav Karakoti
+
+
 ## [2026-04-20]
 
 ### ✨ Features
