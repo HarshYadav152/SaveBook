@@ -2,8 +2,15 @@
 
 @plugin "@tailwindcss/typography";
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background-color: #101828;
+  background:
+    radial-gradient(circle at top, rgba(45, 212, 191, 0.18), transparent 32%),
+    linear-gradient(180deg, #f8fafc 0%, #f8fafc 55%, #eef2ff 100%);
+  color: #0f172a;
 }
 
 input::-ms-reveal,
@@ -12,11 +19,178 @@ input::-ms-clear {
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --landing-panel: rgba(255, 255, 255, 0.82);
+  --landing-border: rgba(148, 163, 184, 0.24);
+  --landing-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
 }
 
 .dark {
   --background: #0a0a0a;
   --foreground: #ededed;
+}
+
+.landing-page {
+  position: relative;
+  overflow: clip;
+}
+
+.landing-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(251, 191, 36, 0.16), transparent 24%),
+    radial-gradient(circle at 88% 18%, rgba(20, 184, 166, 0.16), transparent 24%),
+    linear-gradient(180deg, rgba(248, 250, 252, 0.92) 0%, rgba(255, 255, 255, 0.6) 100%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.landing-grid {
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.16) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.08));
+}
+
+.landing-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(30px);
+  pointer-events: none;
+}
+
+.landing-orb-a {
+  top: 8%;
+  left: -3rem;
+  width: 15rem;
+  height: 15rem;
+  background: rgba(251, 191, 36, 0.24);
+}
+
+.landing-orb-b {
+  right: 3%;
+  top: 18%;
+  width: 19rem;
+  height: 19rem;
+  background: rgba(45, 212, 191, 0.22);
+}
+
+.landing-panel {
+  border: 1px solid var(--landing-border);
+  border-radius: 32px;
+  background: var(--landing-panel);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--landing-shadow);
+}
+
+.landing-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(20, 184, 166, 0.2);
+  background: rgba(240, 253, 250, 0.9);
+  padding: 0.7rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0f766e;
+  box-shadow: 0 14px 34px rgba(45, 212, 191, 0.12);
+}
+
+.landing-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border-radius: 9999px;
+  padding: 0.95rem 1.45rem;
+  font-weight: 600;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.landing-button:hover {
+  transform: translateY(-1px);
+}
+
+.landing-button-primary {
+  background: linear-gradient(135deg, #0f172a 0%, #115e59 100%);
+  color: white;
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.18);
+}
+
+.landing-button-secondary {
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(255, 255, 255, 0.88);
+  color: #0f172a;
+}
+
+.landing-button-ghost {
+  border: 1px dashed rgba(148, 163, 184, 0.45);
+  background: transparent;
+  color: #334155;
+}
+
+.landing-stat-card {
+  border-radius: 28px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 1.25rem;
+  backdrop-filter: blur(14px);
+}
+
+.landing-showcase {
+  position: relative;
+}
+
+.landing-showcase-window {
+  border-radius: 36px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(248, 250, 252, 0.82) 100%);
+  box-shadow: 0 28px 90px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(22px);
+}
+
+.landing-step-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 32px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(241, 245, 249, 0.9) 100%);
+  padding: 2rem;
+  box-shadow: 0 24px 52px rgba(15, 23, 42, 0.08);
+}
+
+.landing-step-card::after {
+  content: "";
+  position: absolute;
+  inset: auto -20% -45% auto;
+  width: 11rem;
+  height: 11rem;
+  border-radius: 9999px;
+  background: rgba(20, 184, 166, 0.08);
+}
+
+.landing-cta-shell {
+  border-radius: 36px;
+  background:
+    radial-gradient(circle at top right, rgba(251, 191, 36, 0.24), transparent 26%),
+    linear-gradient(135deg, #0f172a 0%, #134e4a 100%);
+  padding: 2rem;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.22);
+}
+
+@media (min-width: 640px) {
+  .landing-cta-shell {
+    padding: 3rem;
+  }
 }
