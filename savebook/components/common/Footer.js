@@ -196,9 +196,27 @@ export default function Footer() {
                 >
                   Code of Conduct
                 </a>
+              </li>
+              <li>
+                <Link
+                  href="/privacy"
+                  className="text-sm text-[#94a3b8] hover:text-white transition-colors"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms"
+                  className="text-sm text-[#94a3b8] hover:text-white transition-colors"
+                >
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
                 <Link
                   href="/licence"
-                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm transition-colors"
+                  className="text-sm text-[#94a3b8] hover:text-white transition-colors"
                 >
                   MIT License
                 </Link>
