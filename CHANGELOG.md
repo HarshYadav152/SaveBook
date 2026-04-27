@@ -1,3 +1,34 @@
+## [2026-04-27]
+
+### ✨ Features
+-  add FAQ page with accordion and navbar/footer links (51f097b) - @DevAbhay07
+
+### 🐛 Bug Fixes
+-  add privacy/terms links and fix broken list structure (551464d) - @Ved Prakash Arya
+
+### 📝 Documentation
+-  auto update changelog (18dc574) - @HarshYadav152
+-  auto update changelog (01c3641) - @HarshYadav152
+-  auto update changelog (3ce0444) - @HarshYadav152
+-  auto update changelog (8c23b35) - @HarshYadav152
+-  auto update changelog (2c22fc7) - @JackSparrow-BlackPearl
+-  auto update changelog (90746b7) - @HarshYadav152
+-  auto update changelog (b33d396) - @HarshYadav152
+
+### 📦 Other Changes
+- Reduce debounce time from 2s to 1s (59a27b5) - @Sahil Rajput
+- updated to support no notes lost on refresh (bb3f84b) - @Sahil Rajput
+- Updated the footer (5169ca3) - @Dipanita45
+- a (9290344) - @Dipanita45
+- Updated (2846537) - @Dipanita45
+- licence link added in footer (7f92ccf) - @Priyanshu-codes999
+- licence page added (61a72ef) - @Priyanshu-codes999
+- Improve the footer of the website ## Description (61a17c8) - @Dipanita45
+- Commit (c83d600) - @Dipanita45
+- update greeting.yml for nsoc discord url (3f650a9) - @Harsh Yadav
+- Revise contributing section for SaveBook (9114cb2) - @Harsh Yadav
+
+
 ## [2026-04-23]
 
 ### ✨ Features
