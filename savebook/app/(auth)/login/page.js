@@ -1,86 +1,65 @@
 "use client";
 
-import { useAuth } from "@/context/auth/authContext";
-import { useRouter } from "next/navigation";
-import React, { useState, useEffect } from "react";
-import toast from "react-hot-toast";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { Eye, EyeOff, Github, ShieldCheck, Sparkles } from "lucide-react";
+import AuthShell from "@/components/auth/AuthShell";
+import { useAuth } from "@/context/auth/authContext";
 
-import { Eye, EyeOff } from "lucide-react";
+function LoginFormSkeleton() {
+  return (
+    <div className="space-y-6" aria-hidden="true">
+      <div className="h-14 rounded-[1.2rem] bg-[color:var(--background)]/80 animate-pulse" />
+      <div className="h-14 rounded-[1.2rem] bg-[color:var(--background)]/80 animate-pulse" />
+      <div className="h-14 rounded-[1.2rem] bg-[color:var(--background)]/80 animate-pulse" />
+    </div>
+  );
+}
 
-/* =========================
-   Login Form
-========================= */
-const LoginForm = () => {
+function LoginForm() {
   const { login, isAuthenticated, loading } = useAuth();
   const router = useRouter();
-
-  const [credentials, setCredentials] = useState({
-    username: "",
-    password: "",
-  });
-
+  const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [hasRedirected, setHasRedirected] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  //  Recovery Codes
   const [recoveryCodes, setRecoveryCodes] = useState(null);
   const [showRecoveryModal, setShowRecoveryModal] = useState(false);
 
-  /* -------------------------
-     Redirect after login
-  ------------------------- */
   useEffect(() => {
-    if (
-      isAuthenticated &&
-      !loading &&
-      !hasRedirected &&
-      !showRecoveryModal
-    ) {
+    if (isAuthenticated && !loading && !hasRedirected && !showRecoveryModal) {
       setHasRedirected(true);
       router.push("/notes");
     }
-  }, [isAuthenticated, loading, hasRedirected, showRecoveryModal, router]);
+  }, [hasRedirected, isAuthenticated, loading, router, showRecoveryModal]);
 
-  /* -------------------------
-     Submit
-  ------------------------- */
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     if (isLoading || isAuthenticated) return;
 
     setIsLoading(true);
 
     try {
-      const result = await login(
-        credentials.username,
-        credentials.password
-      );
+      const result = await login(credentials.username, credentials.password);
 
       if (result.success) {
-        toast.success("Welcome back! 🎉");
+        toast.success("Welcome back!");
 
-        // First login show recovery codes
-        if (result.recoveryCodes && result.recoveryCodes.length > 0) {
+        if (result.recoveryCodes?.length) {
           setRecoveryCodes(result.recoveryCodes);
           setShowRecoveryModal(true);
         }
       } else {
         toast.error(result.message || "Invalid credentials");
       }
-    } catch (err) {
+    } catch (error) {
       toast.error("Something went wrong");
     } finally {
       setIsLoading(false);
     }
   };
-
-  /* -------------------------
-     Helpers
-  ------------------------- */
-  const onchange = (e) =>
-    setCredentials({ ...credentials, [e.target.name]: e.target.value });
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(recoveryCodes.join("\n"));
@@ -88,156 +67,125 @@ const LoginForm = () => {
   };
 
   const handleDownload = () => {
-    const blob = new Blob([recoveryCodes.join("\n")], {
-      type: "text/plain",
-    });
+    const blob = new Blob([recoveryCodes.join("\n")], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "savebook-recovery-codes.txt";
-    a.click();
-
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "savebook-recovery-codes.txt";
+    anchor.click();
     URL.revokeObjectURL(url);
+  };
+
+  const onChange = (event) => {
+    setCredentials((current) => ({ ...current, [event.target.name]: event.target.value }));
   };
 
   if (loading) return <LoginFormSkeleton />;
 
   return (
     <>
-      {/* ========== LOGIN FORM ========== */}
       <form className="space-y-6" onSubmit={handleSubmit}>
-        {/* Username */}
         <div>
-          <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="username" className="mb-2 block text-sm font-medium text-[color:var(--foreground)]">
             Username
           </label>
-          <input
-            id="username"
-            type="text"
-            name="username"
-            value={credentials.username}
-            onChange={onchange}
-            required
-            disabled={isLoading}
-            aria-required="true"
-            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 outline-none"
-            placeholder="Enter username"
-          />
+          <div className="field-shell px-4 py-3">
+            <input
+              id="username"
+              type="text"
+              name="username"
+              value={credentials.username}
+              onChange={onChange}
+              required
+              disabled={isLoading}
+              className="field-input"
+              placeholder="Enter username"
+            />
+          </div>
         </div>
 
-        {/* Password */}
         <div>
-          <div className="flex justify-between mb-2">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+          <div className="mb-2 flex justify-between">
+            <label htmlFor="password" className="block text-sm font-medium text-[color:var(--foreground)]">
               Password
             </label>
-            <Link href="/forgot-password" className="text-sm text-blue-400 hover:text-blue-300 focus:outline-none focus:underline">
+            <Link href="/forgot-password" className="text-sm text-[color:var(--accent)] hover:opacity-80">
               Forgot password?
             </Link>
           </div>
-          <div className="relative">
+          <div className="field-shell relative px-4 py-3">
             <input
               id="password"
               type={showPassword ? "text" : "password"}
               name="password"
               value={credentials.password}
-              onChange={onchange}
+              onChange={onChange}
               required
-              aria-required="true"
               disabled={isLoading}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white pr-10 focus:ring-2 focus:ring-blue-500 outline-none"
+              className="field-input pr-10"
               placeholder="Enter password"
             />
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full p-1"
+              onClick={() => setShowPassword((value) => !value)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-[color:var(--muted)] hover:text-[color:var(--foreground)]"
               aria-label={showPassword ? "Hide password" : "Show password"}
-              aria-pressed={showPassword}
             >
-              {showPassword ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
           </div>
         </div>
 
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-gradient-to-r from-blue-600 to-purple-700 text-white py-3 rounded-lg"
-        >
+        <button type="submit" disabled={isLoading} className="site-button w-full disabled:opacity-60">
           {isLoading ? "Signing in..." : "Sign in"}
         </button>
 
         <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-gray-600"></span></div>
-          <div className="relative flex justify-center text-xs uppercase"><span className="bg-gray-800 px-2 text-gray-400">Or continue with</span></div>
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-[var(--border)]" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-[color:var(--background-strong)] px-2 text-[color:var(--muted)]">Or continue with</span>
+          </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => window.location.href = "/api/auth/github"}
-          className="w-full flex items-center justify-center gap-3 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg transition-colors"
-        >
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.041-1.412-4.041-1.412-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        <button type="button" onClick={() => { window.location.href = "/api/auth/github"; }} className="site-button-ghost w-full">
+          <Github className="h-5 w-5" />
           Continue with GitHub
         </button>
 
-        <p className="text-center text-sm text-gray-300">
-          Don’t have an account?{" "}
-          <Link href="/register" className="text-blue-400">
+        <p className="text-center text-sm text-[color:var(--muted)]">
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="text-[color:var(--accent)]">
             Register
           </Link>
         </p>
       </form>
 
-      {/* ========== RECOVERY CODES MODAL ========== */}
       {showRecoveryModal && recoveryCodes && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70" role="dialog" aria-modal="true" aria-labelledby="recovery-title">
-          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-md focus:outline-none" tabIndex="-1">
-            <h3 id="recovery-title" className="text-xl font-semibold text-white mb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4" role="dialog" aria-modal="true" aria-labelledby="recovery-title">
+          <div className="auth-panel w-full max-w-md rounded-[2rem] p-6">
+            <h3 id="recovery-title" className="mb-3 text-xl font-semibold text-[color:var(--foreground)]">
               Save your recovery codes
             </h3>
-
-            <p className="text-sm text-gray-300 mb-4">
-              These codes will be shown only once.
-              Save them securely.
+            <p className="mb-4 text-sm text-[color:var(--muted)]">
+              These codes are shown only once. Save them securely before you continue.
             </p>
 
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              {recoveryCodes.map((code, index) => (
-                <div
-                  key={index}
-                  className="bg-gray-800 border border-gray-600 rounded px-3 py-2 text-center text-white font-mono"
-                >
+            <div className="mb-4 grid grid-cols-2 gap-2">
+              {recoveryCodes.map((code) => (
+                <div key={code} className="rounded-2xl border border-[var(--border)] bg-[color:var(--background)]/70 px-3 py-2 text-center font-mono text-[color:var(--foreground)]">
                   {code}
                 </div>
               ))}
             </div>
 
-            {/* Copy + Download */}
-            <div className="flex gap-3 mb-4">
-              <button
-                type="button"
-                onClick={handleCopy}
-                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded"
-              >
-                Copy
-              </button>
-              <button
-                type="button"
-                onClick={handleDownload}
-                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded"
-              >
-                Download
-              </button>
+            <div className="mb-4 flex gap-3">
+              <button type="button" onClick={handleCopy} className="site-button-ghost flex-1">Copy</button>
+              <button type="button" onClick={handleDownload} className="site-button-ghost flex-1">Download</button>
             </div>
 
-            <button
-              onClick={() => setShowRecoveryModal(false)}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg"
-            >
+            <button type="button" onClick={() => setShowRecoveryModal(false)} className="site-button w-full">
               I have saved these codes
             </button>
           </div>
@@ -245,39 +193,36 @@ const LoginForm = () => {
       )}
     </>
   );
-};
+}
 
-/* =========================
-   Skeleton
-========================= */
-const LoginFormSkeleton = () => (
-  <div className="space-y-6 animate-pulse">
-    <div className="h-12 bg-gray-700 rounded"></div>
-    <div className="h-12 bg-gray-700 rounded"></div>
-    <div className="h-12 bg-gray-700 rounded"></div>
-  </div>
-);
-
-/* =========================
-   Page Wrapper
-========================= */
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-white">
-            Welcome back
-          </h2>
-          <p className="mt-2 text-sm text-gray-300">
-            Sign in to your account
-          </p>
+    <AuthShell
+      eyebrow="Login"
+      title="Sign in and return to your notes, plans, and saved ideas."
+      description="Access your SaveBook workspace to continue writing, reviewing, and organizing everything you have saved."
+      asideTitle="Why people return"
+      asideCopy="SaveBook is built to keep useful notes close, whether you are picking up a project, checking a reminder, or reviewing something important."
+    >
+      <div className="mb-8">
+        <div className="inline-flex items-center gap-2 rounded-full bg-[color:var(--background)]/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-[color:var(--accent-2)]">
+          <ShieldCheck className="h-3.5 w-3.5" />
+          Secure sign in
         </div>
-
-        <div className="bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-700">
-          <LoginForm />
-        </div>
+        <h2 className="mt-5 text-3xl font-semibold text-[color:var(--foreground)]">Welcome back</h2>
+        <p className="mt-3 text-sm leading-7 text-[color:var(--muted)]">
+          Sign in to keep writing, organizing, and sharing your notes with SaveBook.
+        </p>
       </div>
-    </div>
+
+      <div className="rounded-[2rem] border border-[var(--border)] bg-[color:var(--background)]/55 p-6 md:p-7">
+        <LoginForm />
+      </div>
+
+      <div className="mt-6 flex items-center gap-3 rounded-[1.5rem] border border-[var(--border)] bg-[color:var(--background)]/45 px-4 py-3 text-sm text-[color:var(--muted)]">
+        <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
+        Pick up where you left off in your personal notebook.
+      </div>
+    </AuthShell>
   );
 }
