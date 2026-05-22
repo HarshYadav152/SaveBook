@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { clsx } from "clsx";
-import { Menu, NotebookPen, User, X } from "lucide-react";
+import { Menu, User, X } from "lucide-react";
 import { useAuth } from "@/context/auth/authContext";
 import ThemeToggle from "@/components/common/ThemeToggle";
 
@@ -67,8 +68,14 @@ export default function Navbar() {
         href="/"
         className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[color:var(--background-elevated)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.28em] text-[color:var(--foreground)] shadow-[0_14px_40px_rgba(15,23,42,0.08)]"
       >
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 via-blue-500 to-violet-500 text-white shadow-[0_16px_36px_rgba(59,130,246,0.34)]">
-          <NotebookPen className="h-4 w-4" />
+        <span className="flex h-9 w-9 items-center justify-center">
+          <Image
+            src="/savebook.png"
+            alt="SaveBook logo"
+            width={22}
+            height={22}
+            className="h-[22px] w-[22px] object-contain"
+          />
         </span>
         SaveBook
       </Link>

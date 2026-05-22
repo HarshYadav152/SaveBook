@@ -1,3 +1,34 @@
+## [2026-05-15]
+
+### ✨ Features
+-  add FAQ page with accordion and navbar/footer links (51f097b) - @DevAbhay07
+
+### 🐛 Bug Fixes
+-  fixes (aaea882) - @itzzavdheshh
+-  oAuth (12758b5) - @itzzavdheshh
+-  oAuth (4f31cd0) - @itzzavdheshh
+-  add privacy/terms links and fix broken list structure (551464d) - @Ved Prakash Arya
+-  correct navbar client directive (164b11c) - @suzannet-menon
+
+### 📝 Documentation
+-  auto update changelog (f620dce) - @HarshYadav152
+-  auto update changelog (3868e22) - @HarshYadav152
+-  auto update changelog (9ed5f0a) - @HarshYadav152
+-  auto update changelog (18dc574) - @HarshYadav152
+-  auto update changelog (01c3641) - @HarshYadav152
+
+### 📦 Other Changes
+- Add logo to docs page (9168b49) - @aliya mahaboob
+- Update navbar logo image (bee0300) - @aliya mahaboob
+- Resolved forget pass error (d001679) - @itzzavdheshh
+- 🔐 feat: Zero-Knowledge End-to-End Encryption for All Notes (040b47f) - @itzzavdheshh
+- 🔐 feat: Zero-Knowledge End-to-End Encryption for All Notes (e7da5bf) - @itzzavdheshh
+- Reduce debounce time from 2s to 1s (59a27b5) - @Sahil Rajput
+- updated to support no notes lost on refresh (bb3f84b) - @Sahil Rajput
+- Redesign landing page and add global theme support (521de9a) - @suzannet-menon
+- Update landing page (e096f2f) - @suzannet-menon
+
+
 ## [2026-05-11]
 
 ### ✨ Features
