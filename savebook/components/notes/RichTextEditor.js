@@ -4,13 +4,18 @@ import React, { useEffect } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
-import Link from '@tiptap/extension-link'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import { Markdown } from 'tiptap-markdown'
 import EditorToolbar from './EditorToolbar'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import Mathematics from '@tiptap/extension-mathematics'
+import { Table } from '@tiptap/extension-table'
+import { TableRow } from '@tiptap/extension-table-row'
+import { TableCell } from '@tiptap/extension-table-cell'
+import { TableHeader } from '@tiptap/extension-table-header'
+import 'katex/dist/katex.min.css'
 
 const RichTextEditor = ({
     content,
@@ -30,11 +35,6 @@ const RichTextEditor = ({
             Placeholder.configure({
                 placeholder: placeholder || 'Start writing...',
                 emptyEditorClass: 'is-editor-empty',
-            }),
-            Link.configure({
-                openOnClick: false,
-                autolink: true,
-                defaultProtocol: 'https',
             }),
             TaskList,
             TaskItem.configure({
@@ -64,6 +64,11 @@ const RichTextEditor = ({
                 transformPastedText: true,
                 transformCopiedText: true,
             }),
+            Mathematics,
+            Table.configure({ resizable: true }),
+            TableRow,
+            TableCell,
+            TableHeader,
         ],
         content: content || '',
         editorProps: {
@@ -91,6 +96,11 @@ const RichTextEditor = ({
                     'prose-blockquote:border-l-4 prose-blockquote:border-gray-500 prose-blockquote:text-gray-300 prose-blockquote:italic prose-blockquote:my-1',
                     'prose-code:text-pink-400 prose-code:bg-gray-800 prose-code:px-1 prose-code:rounded prose-code:before:content-none prose-code:after:content-none',
                     'prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:my-1',
+                    '[&_.tableWrapper]:overflow-x-auto [&_.tableWrapper]:my-2',
+                    '[&_table]:border-collapse [&_table]:w-full [&_table]:my-2',
+                    '[&_th]:border [&_th]:border-gray-500 [&_th]:bg-gray-700 [&_th]:text-white [&_th]:p-2 [&_th]:text-left',
+                    '[&_td]:border [&_td]:border-gray-500 [&_td]:text-white [&_td]:p-2',
+                    '[&_.math-node]:text-blue-300',
                 ),
             },
         },
@@ -110,7 +120,6 @@ const RichTextEditor = ({
         }
     }, [content, editor])
 
-    // safely render editor
     if (!editor) return null
 
     return (
@@ -137,6 +146,36 @@ const RichTextEditor = ({
           float: left;
           height: 0;
           pointer-events: none;
+        }
+        .math-node {
+          cursor: pointer;
+          padding: 2px 4px;
+          border-radius: 4px;
+          background: rgba(59, 130, 246, 0.1);
+        }
+        .math-node.ProseMirror-selectednode {
+          background: rgba(59, 130, 246, 0.25);
+          outline: 2px solid #3b82f6;
+        }
+        .tableWrapper {
+          overflow-x: auto;
+          margin: 8px 0;
+        }
+        table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+        th, td {
+          border: 1px solid #4b5563;
+          padding: 6px 12px;
+          text-align: left;
+        }
+        th {
+          background-color: #374151;
+          font-weight: 600;
+        }
+        tr:nth-child(even) td {
+          background-color: #1f2937;
         }
       `}</style>
         </div>
