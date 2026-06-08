@@ -8,6 +8,7 @@ import Addnote from './AddNote';
 import NoteItem from './NoteItem';
 import { useAuth } from '@/context/auth/authContext';
 import RichTextEditor from './RichTextEditor';
+import Trash from './Trash';
 
 // Separate navigation handler component to use router with Suspense
 const NavigationHandler = ({ isAuthenticated, loading }) => {
@@ -560,6 +561,9 @@ export default function Notes() {
                     </p>
                 </div>
 
+                {activeTab === 'trash' ? (
+                    <Trash />
+                ) : (
                 <div className="lg:flex lg:items-start lg:gap-8">
                     <div className="flex-1">
                         {/* Search and Filter Section */}
@@ -705,6 +709,16 @@ export default function Notes() {
                                     <span>Whiteboards</span>
                                     <span className="text-xs">{totalWhiteboards}</span>
                                 </button>
+                                <button
+                                    onClick={() => setActiveTab('trash')}
+                                    className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === 'trash'
+                                            ? 'bg-red-600 text-white'
+                                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                                        }`}
+                                >
+                                    <span>🗑️ Trash</span>
+                                    <span className="text-xs">Recover</span>
+                                </button>
                             </div>
 
                             <div className="border-t border-gray-700 pt-4 space-y-3">
@@ -721,6 +735,7 @@ export default function Notes() {
                         </div>
                     </aside>
                 </div>
+                )}
             </div>
             </div>
         </>
