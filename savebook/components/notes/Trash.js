@@ -130,6 +130,22 @@ export default function Trash() {
                     </p>
                 </div>
 
+                {/* Navigation Tabs */}
+                <div className="mb-8 flex flex-wrap gap-3">
+                    <button
+                        onClick={() => window.location.href = '/#notes'}
+                        className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
+                    >
+                        📝 Back to Notes
+                    </button>
+                    <button
+                        onClick={() => window.location.href = '/#whiteboard'}
+                        className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
+                    >
+                        🎨 Back to Whiteboard
+                    </button>
+                </div>
+
                 {/* Search and Filter */}
                 <div className="mb-8 flex flex-col gap-4 md:flex-row">
                     <input
