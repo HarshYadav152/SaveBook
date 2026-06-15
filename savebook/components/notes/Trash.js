@@ -1,11 +1,14 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import toast from 'react-hot-toast';
 import NoteItem from './NoteItem';
 import { useAuth } from '@/context/auth/authContext';
+import noteContext from '@/context/noteContext';
 
 export default function Trash() {
     const { isAuthenticated, loading } = useAuth();
+    const context = useContext(noteContext);
+    const { decryptNote } = context || {};
     const [trashedNotes, setTrashedNotes] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -22,10 +25,17 @@ export default function Trash() {
             }
 
             const data = await response.json();
-            setTrashedNotes(data.data || []);
+            const notesData = data.data || [];
 
-            if (data.data && data.data.length > 0) {
-                toast.success(`Loaded ${data.data.length} deleted notes`);
+            // Decrypt notes if decryptNote function is available
+            const decryptedNotes = decryptNote
+                ? await Promise.all(notesData.map(note => decryptNote(note)))
+                : notesData;
+
+            setTrashedNotes(decryptedNotes);
+
+            if (decryptedNotes.length > 0) {
+                toast.success(`Loaded ${decryptedNotes.length} deleted notes`);
             }
         } catch (error) {
             console.error('Error fetching trash:', error);
@@ -41,7 +51,7 @@ export default function Trash() {
         if (isAuthenticated && !loading) {
             getTrashedNotes();
         }
-    }, [isAuthenticated, loading]);
+    }, [isAuthenticated, loading, decryptNote]);
 
     // Restore note from trash
     const restoreNote = async (noteId) => {
@@ -133,13 +143,13 @@ export default function Trash() {
                 {/* Navigation Tabs */}
                 <div className="mb-8 flex flex-wrap gap-3">
                     <button
-                        onClick={() => window.location.href = '/#notes'}
+                        onClick={() => window.location.href = '/notes'}
                         className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
                     >
                         📝 Back to Notes
                     </button>
                     <button
-                        onClick={() => window.location.href = '/#whiteboard'}
+                        onClick={() => window.location.href = '/notes/whiteboard'}
                         className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
                     >
                         🎨 Back to Whiteboard

@@ -4,15 +4,11 @@ import Notes from "@/lib/models/Notes";
 import mongoose from "mongoose";
 import { verifyJwtToken } from "@/lib/utils/jwtAuth";
 
-/**
- * GET /api/notes/trash
- * Retrieve all soft-deleted notes for the current user
- * Notes are recoverable for 30 days after deletion
- */
-export async function GET(request) {
+export async function PUT(request, { params }) {
   await dbConnect();
 
   try {
+    const { id: noteId } = await params;
     const token = request.cookies.get("authToken");
 
     if (!token) {
@@ -31,21 +27,34 @@ export async function GET(request) {
       );
     }
 
-    // Get deleted notes within 30-day recovery window
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    if (!mongoose.Types.ObjectId.isValid(noteId)) {
+      return NextResponse.json(
+        { error: "Invalid note ID" },
+        { status: 400 }
+      );
+    }
 
-    const trash = await Notes.find({
-      user: new mongoose.Types.ObjectId(decoded.userId),
+    const note = await Notes.findOne({
+      _id: noteId,
+      user: decoded.userId,
       isDeleted: true,
-      deletedAt: { $gte: thirtyDaysAgo }, // Only show notes deleted within last 30 days
-    })
-      .sort({ deletedAt: -1 })
-      .lean();
+    });
+
+    if (!note) {
+      return NextResponse.json(
+        { error: "Note not found in trash or recovery period expired" },
+        { status: 404 }
+      );
+    }
+
+    note.isDeleted = false;
+    note.deletedAt = null;
+    await note.save();
 
     return NextResponse.json({
       success: true,
-      data: trash,
-      message: `${trash.length} deleted notes available for recovery (expires in 30 days)`,
+      data: note,
+      message: "Note restored successfully",
     });
   } catch (error) {
     console.error(error);
@@ -55,4 +64,3 @@ export async function GET(request) {
     );
   }
 }
-
