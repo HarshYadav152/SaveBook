@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import NoteItem from './NoteItem';
 import { useAuth } from '@/context/auth/authContext';
@@ -48,7 +48,7 @@ export default function Trash() {
 
     // Load trash on mount
     useEffect(() => {
-        if (isAuthenticated && !loading) {
+        if (isAuthenticated && !loading && decryptNote) {
             getTrashedNotes();
         }
     }, [isAuthenticated, loading, decryptNote]);
