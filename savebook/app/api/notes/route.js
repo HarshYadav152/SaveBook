@@ -35,6 +35,7 @@ export async function GET(request) {
 
     const notes = await Notes.find({
       user: new mongoose.Types.ObjectId(decoded.userId),
+      isDeleted: false, // Exclude soft-deleted notes from active notes
     }).lean();
 
     // 👇 Attach isBookmarked to each note

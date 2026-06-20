@@ -37,7 +37,11 @@ export async function GET(request, { params }) {
       );
     }
 
-    const note = await Notes.findOne({ _id: id, user: decoded.userId });
+    const note = await Notes.findOne({
+      _id: id,
+      user: decoded.userId,
+      isDeleted: false, // Exclude soft-deleted notes
+    });
 
     if (!note) {
       return NextResponse.json(
@@ -108,12 +112,20 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    // Delete the note
-    await Notes.findByIdAndDelete(id);
+    // Soft delete: mark as deleted instead of removing permanently
+    // User has 30 days to recover from trash before permanent deletion via TTL
+    await Notes.findByIdAndUpdate(
+      id,
+      {
+        isDeleted: true,
+        deletedAt: new Date(),
+      },
+      { new: true }
+    );
 
     return NextResponse.json({
       success: true,
-      message: "Note deleted successfully"
+      message: "Note deleted. Recover from trash within 30 days."
     });
   } catch (error) {
     console.error(error);
