@@ -1,3 +1,36 @@
+## [2026-06-20]
+
+### ✨ Features
+-  Add trash UI component with recovery functionality (5e9513f) - @anshul23102
+-  implement soft delete with 30-day recovery period for notes (828df0e) - @anshul23102
+
+### 🐛 Bug Fixes
+-  add navigation buttons to return from trash tab to notes and whiteboard tabs (ec6521e) - @Anshul Jain
+-  improve footer theme consistency and dark mode input styling (b3124cb) - @Muskankr
+
+### 📝 Documentation
+-  auto update changelog (d5bf0d4) - @HarshYadav152
+-  auto update changelog (edd801e) - @HarshYadav152
+-  auto update changelog (348694d) - @HarshYadav152
+-  auto update changelog (ff681d2) - @HarshYadav152
+-  auto update changelog (daddd7e) - @HarshYadav152
+-  auto update changelog (b264ce6) - @HarshYadav152
+
+### 🔧 Chore
+-  prepare footer UI before rebase (f4196cb) - @Muskankr
+
+### 📦 Other Changes
+- Add note decryption to trash display and restore/delete API support (2794e8a) - @Anshul Jain
+- Fix trash navigation, API routing, and note decryption (cae1467) - @Anshul Jain
+- fixed-all-issues (8396a11) - @Moresh-Mishra
+- fonts-moved-to-public/fonts (bd0e36a) - @Moresh-Mishra
+- refactor: move docs to docusaurus-app (31748da) - @Muskankr
+- style: update forgot password UI to match home page theme (2d6acd1) - @Atiqumer
+- Updated (d0f3429) - @Dipanita45
+- Update (950e5ad) - @Dipanita45
+- Updated (71c3bbb) - @Dipanita45
+
+
 ## [2026-05-24]
 
 ### 🐛 Bug Fixes
